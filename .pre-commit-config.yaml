@@ -1,0 +1,55 @@
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Terraform static checks - run on every commit via direnv-provided tools
+  # (Nix shell at .envrc supplies tofu, terraform, tflint).
+  # Same checks run in CI via .github/workflows/ci-gate.yml as a safety net.
+  # NOTE: the README-docs-injection hook is intentionally omitted. It writes an
+  # HTML-anchored table into README.md that trips the org-wide markdownlint
+  # ruleset this repo itself defines (MD033 no-inline-html) — self-defeating
+  # governance.
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.92.0
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+        args:
+          - --args=--only=terraform_deprecated_interpolation
+          - --args=--only=terraform_deprecated_index
+          - --args=--only=terraform_unused_declarations
+          - --args=--only=terraform_comment_syntax
+          - --args=--only=terraform_documented_outputs
+          - --args=--only=terraform_documented_variables
+          - --args=--only=terraform_typed_variables
+          - --args=--only=terraform_module_pinned_source
+          - --args=--only=terraform_naming_convention
+          - --args=--only=terraform_required_version
+          - --args=--only=terraform_required_providers
+          - --args=--only=terraform_standard_module_structure
+
+  # Checkov - Terraform IaC security scanner
+  - repo: https://github.com/bridgecrewio/checkov.git
+    rev: 3.2.526
+    hooks:
+      - id: checkov
+        args: ['-d', '.', '--framework', 'terraform', '--quiet']
+        pass_filenames: false
+
+  # Local hooks using nix toolchain
+  - repo: local
+    hooks:
+      - id: tofu-test
+        name: tofu test (mock providers)
+        entry: direnv exec . bash -c 'tofu init -backend=false -no-color && tofu test -no-color'
+        language: system
+        files: '\.(tf|hcl)$'
+        pass_filenames: false

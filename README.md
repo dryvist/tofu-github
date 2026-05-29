@@ -30,20 +30,20 @@ variables.tf   # markdown_lint_enforcement (evaluate | active | disabled)
 rulesets.tf    # org rulesets
 ```
 
-## Installation
+## Requirements
 
-Clone and enter the dev shell (direnv auto-loads OpenTofu via the org's Nix
-flake):
+- **OpenTofu** (>= 1.6) and the `integrations/github` provider, pinned in
+  `versions.tf`. The dev shell supplies the toolchain via direnv:
 
-```bash
-git clone git@github.com:dryvist/terraform-github.git
-cd terraform-github
-direnv allow   # provides tofu, terraform, terragrunt
-```
+  ```bash
+  git clone git@github.com:dryvist/terraform-github.git
+  cd terraform-github && direnv allow   # provides tofu, terraform, terragrunt
+  ```
 
-**Auth and tier:** the provider reads `GITHUB_TOKEN`. Managing org rulesets
-requires `admin:org` — the **ORG_ADMIN** token tier (`gh-claude-org-admin`).
-The default `DRYVIST` tier is read-only on org rulesets and will `403` on apply.
+- **`GITHUB_TOKEN` with `admin:org`** (the ORG_ADMIN token tier,
+  `gh-claude-org-admin`) to create or modify org rulesets. The provider reads it
+  from the environment.
+- **S3 state backend** access — bucket / key / region supplied at init (see Usage).
 
 ## Usage
 
