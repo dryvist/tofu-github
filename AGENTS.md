@@ -18,6 +18,17 @@ tooling, not its Proxmox domain content.
   `owner`, `uses:`, renovate presets, remotes, links — is `dryvist`. Do not
   introduce any personal-account owner references; this repo manages the
   `dryvist` org and must point only at it.
+- **No magic numbers in `.tf`.** Every numeric or string value goes in
+  `variables.tf` (with type + validation + description) or in
+  `config/<scope>.yml` (parsed via `yamldecode(file(...))` into a local). The
+  canonical example is `var.dot_github_repository_id`: a GitHub repo ID with a
+  default and validation, referenced from `rulesets.tf` as
+  `var.dot_github_repository_id`. Never inline a repo ID, threshold, port,
+  extension list, or branch name.
+- **`config/` and `templates/` hold non-`.tf` source data.** `config/*.yml`
+  carries ruleset defaults (`yamldecode`); `templates/*.tmpl` carries per-repo
+  file bodies (`templatefile()`) for resources like
+  `github_repository_file.license` that materialize files into every repo.
 - **No local markdownlint config.** This repo *defines* the org-wide
   markdownlint ruleset (`github_organization_ruleset.markdown_lint`), whose
   single source of truth is the workflow + `.markdownlint-cli2.yaml` in
@@ -38,11 +49,17 @@ Org ruleset changes require the **ORG_ADMIN** token tier
 (`gh-claude-org-admin`) — the provider needs `admin:org`. The default `DRYVIST`
 tier is read-only on org rulesets and will `403` on apply.
 
-Roll out enforcement safely with the `evaluate` → `active` path: new org-wide
-rules default to `evaluate` (dry-run, reports in Rulesets / Insights without
-blocking merges). Confirm the fleet is green in Insights, then flip to `active`.
+**New rulesets default to `active`.** Rules added going forward — push
+protection, branch protection, commit format, etc. — set their
+`<name>_enforcement` variable's default to `"active"` and apply enabled
+directly. No dry-run gate. The variable still exists so a misbehaving rule
+can be disabled with `-var <name>_enforcement=disabled` without a code
+change.
+
+**The existing `markdown_lint_enforcement` keeps its legacy `evaluate`
+default** (changing it would silently flip enforcement on the next apply for
+any operator who runs `tofu apply` without overrides). Enforce explicitly:
 
 ```bash
-tofu apply                                          # evaluate (default)
-tofu apply -var markdown_lint_enforcement=active    # enforce
+tofu apply -var markdown_lint_enforcement=active
 ```

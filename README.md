@@ -24,11 +24,18 @@ policy, file-size limits, and repo settings can move here next.
 ## Layout
 
 ```text
-versions.tf    # terraform + provider pins, S3 backend (partial)
-providers.tf   # github provider (owner = dryvist), GITHUB_TOKEN auth
-variables.tf   # markdown_lint_enforcement (evaluate | active | disabled)
-rulesets.tf    # org rulesets
+versions.tf       # terraform + provider pins, S3 backend (partial)
+providers.tf      # github provider (owner = dryvist), GITHUB_TOKEN auth
+variables.tf      # all input variables (no magic numbers in .tf below)
+rulesets.tf       # org rulesets (markdown_lint, …)
+config/           # YAML defaults consumed via yamldecode(file(...))
+templates/        # per-repo file templates rendered via templatefile()
 ```
+
+`config/` and `templates/` are the no-magic-numbers staging area: thresholds,
+extension lists, and per-repo file bodies live here as plain data, not inlined
+in `.tf`. `rulesets.tf` reads them via `yamldecode(file(...))` and
+`templatefile()`.
 
 ## Requirements
 
@@ -64,11 +71,17 @@ tofu init -backend=false && tofu validate
 ```
 
 **Rolling out a rule safely.** Org-wide enforcement can block merges everywhere
-at once. Default the enforcement to `evaluate` (dry-run — reports in
-**Rulesets / Insights** without blocking), confirm the fleet is green, then flip
-to `active`:
+at once. For `markdown_lint_enforcement` (legacy default `evaluate`), use the
+dry-run gate before enforcing:
 
 ```bash
-tofu apply                                          # evaluate (default)
+tofu apply                                          # evaluate (legacy default)
 tofu apply -var markdown_lint_enforcement=active    # enforce
 ```
+
+**New rulesets default to `active`.** The `evaluate` dry-run gate above is
+specific to `markdown_lint_enforcement`'s legacy default. Rulesets added going
+forward — push protection, branch protection, commit format, etc. — default
+their `<name>_enforcement` variable to `"active"` and are applied enabled
+directly. The variable still exists so a misbehaving rule can be disabled with
+`-var <name>_enforcement=disabled` without a code change.
