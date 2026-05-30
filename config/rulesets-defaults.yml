@@ -1,0 +1,27 @@
+# Default thresholds and value sets for org-wide rulesets defined in
+# rulesets.tf. Read with yamldecode(file(...)) and expose as locals. No
+# literal numbers, lists, or thresholds in any .tf file — keep them here so
+# they're tunable without editing Terraform code, and reviewable in a single
+# place.
+
+# Consumed by github_organization_ruleset.org_push_protection (added in a
+# follow-up commit). Native GitHub push rules — enforced at the git layer
+# without any workflow involvement.
+push_protection:
+  # Hard ceiling on individual file size. Any push containing a single file
+  # larger than this is rejected by GitHub before it lands. Repos with a
+  # legitimate need for larger files get added to the bypass actor list
+  # rather than raising the org-wide ceiling.
+  max_file_size_mb: 1
+
+  # Banned file extensions. These extensions usually carry credentials or
+  # keys; pushes containing files with these extensions are rejected at the
+  # git layer. Repos that legitimately need to commit one of these (e.g. a
+  # test fixture) put them in a bypass-allowed path or add the actor to
+  # bypass.
+  banned_file_extensions:
+    - env
+    - pem
+    - key
+    - p12
+    - pfx

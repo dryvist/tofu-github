@@ -24,11 +24,23 @@ policy, file-size limits, and repo settings can move here next.
 ## Layout
 
 ```text
-versions.tf    # terraform + provider pins, S3 backend (partial)
-providers.tf   # github provider (owner = dryvist), GITHUB_TOKEN auth
-variables.tf   # markdown_lint_enforcement (evaluate | active | disabled)
-rulesets.tf    # org rulesets
+versions.tf       # terraform + provider pins, S3 backend (partial)
+providers.tf      # github provider, GITHUB_TOKEN auth
+variables.tf      # all input variables (no magic numbers in .tf below)
+data.tf           # live lookups: repo IDs, org metadata — never literals
+rulesets.tf       # org rulesets (markdown_lint, …)
+main.tf           # multi-file entrypoint stub (resources organized by topic)
+outputs.tf       # intentionally empty — see file header
+config/           # YAML thresholds + lists consumed via yamldecode(file(...))
 ```
+
+`config/` holds plain-data thresholds, extension lists, label sets — read
+into Terraform via `yamldecode(file(...))` and exposed as locals, never
+inlined as `.tf` literals. `data.tf` holds live lookups (repo IDs, org
+metadata, future repo enumerations) so no specific identity values are
+baked into the code. Canonical text the org doesn't author — MIT LICENSE
+body, CODE_OF_CONDUCT, etc. — is fetched at apply time from a trustworthy
+upstream via `data "http"`, not committed as a local template.
 
 ## Requirements
 
@@ -64,11 +76,17 @@ tofu init -backend=false && tofu validate
 ```
 
 **Rolling out a rule safely.** Org-wide enforcement can block merges everywhere
-at once. Default the enforcement to `evaluate` (dry-run — reports in
-**Rulesets / Insights** without blocking), confirm the fleet is green, then flip
-to `active`:
+at once. For `markdown_lint_enforcement` (legacy default `evaluate`), use the
+dry-run gate before enforcing:
 
 ```bash
-tofu apply                                          # evaluate (default)
+tofu apply                                          # evaluate (legacy default)
 tofu apply -var markdown_lint_enforcement=active    # enforce
 ```
+
+**New rulesets default to `active`.** The `evaluate` dry-run gate above is
+specific to `markdown_lint_enforcement`'s legacy default. Rulesets added going
+forward — push protection, branch protection, commit format, etc. — default
+their `<name>_enforcement` variable to `"active"` and are applied enabled
+directly. The variable still exists so a misbehaving rule can be disabled with
+`-var <name>_enforcement=disabled` without a code change.
