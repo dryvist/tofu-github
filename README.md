@@ -16,12 +16,22 @@ defined **once** here and applied to **every** repo automatically.
 
 | Resource | Effect |
 | --- | --- |
-| `github_organization_ruleset.org_push_protection` | Native GitHub push rules enforced at the git layer (no workflow runs). Hard ceiling on individual file size and a banned-extension list, applied to every repo, every ref. Thresholds and list live in `config/rulesets-defaults.yml`. |
-| `github_organization_ruleset.markdown_lint` | Requires the markdownlint workflow in the org's `.github` repo to pass on the default branch of **every** repo. Single source of truth: the workflow + `.markdownlint-cli2.yaml` both live in `.github`. |
+| `github_organization_ruleset.org_push_protection` | Native GitHub push rules at the git layer (no workflow runs). Hard ceiling on individual file size + banned-extension list, applied to every repo, every ref. Thresholds + list live in `config/rulesets-defaults.yml`. |
+| `github_organization_ruleset.org_branch_protection` | Quality gate on every default branch: required signatures, linear history, branch name pattern, strict Conventional Commits regex, PR thread resolution. **No bypass** — applies to everyone including org admins. |
+| `github_organization_ruleset.org_review_gate` | Review gate on every default branch: 1 approving review + CODEOWNER review on PRs. **OrganizationAdmin bypass in `pull_request` mode** so admins can merge their own PRs; bots and other contributors must obtain the review. |
+| `github_organization_ruleset.markdown_lint` | Requires the markdownlint workflow in the org's `.github` repo to pass on every ref of every repo. Single source of truth: the workflow + `.markdownlint-cli2.yaml` both live in `.github`. `do_not_enforce_on_create` so brand-new repos don't fail before their default branch exists. |
 
-Start small — this is the seed. Branch protection, commit-message format,
-the verified-signature policy, repo settings, labels, and per-repo file
-content (LICENSE, CODEOWNERS) move here next.
+Imports needed on first apply (declared in `rulesets.tf` via `import`
+blocks, executed automatically by `tofu apply`):
+
+- `org_branch_protection` ← live ruleset id 15555419 (originally named "main")
+- `markdown_lint` ← live ruleset id 17062292 (originally named "Required Workflows - All Branches")
+
+After successful apply, the `import` blocks can be removed in a follow-up
+PR (they're idempotent but only useful once).
+
+Next up (separate PRs): org Actions permissions, org-level settings, org
+variables, per-repo labels and LICENSE files via `for_each`.
 
 ## Layout
 
@@ -31,11 +41,18 @@ providers.tf      # github provider, GITHUB_TOKEN auth
 variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # config/*.yml decoded into named locals for rulesets.tf
-rulesets.tf       # org rulesets (markdown_lint, org_push_protection, …)
+rulesets.tf       # org rulesets + import blocks for pre-Terraform state
 main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
 config/           # YAML thresholds + lists consumed via yamldecode(file(...))
 ```
+
+CODEOWNERS is deliberately NOT committed in this repo. CODEOWNERS files
+for every dryvist repo (this one included) are materialized at apply time
+by a `github_repository_file` resource in a follow-up PR, with the owner
+identity supplied as a Terraform variable. Keeping a static
+`.github/CODEOWNERS` here would bake a specific identity into the source
+tree, which the no-identity-in-code rule forbids.
 
 `config/` holds plain-data thresholds, extension lists, label sets — read
 into Terraform via `yamldecode(file(...))` and exposed as locals, never
