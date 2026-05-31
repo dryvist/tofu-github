@@ -18,6 +18,46 @@ variable "markdown_lint_enforcement" {
   }
 }
 
+variable "org_branch_protection_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-wide branch-protection ruleset on default
+    branches. Quality rules — required signatures, linear history, branch
+    name pattern, Conventional Commits commit messages, PR thread
+    resolution. NO bypass actors: applies to everyone, so admin-authored
+    commits get the same quality gates as everyone else.
+
+    One of: disabled, evaluate, active. Defaults to "active" — matches the
+    pre-Terraform live enforcement state of the imported ruleset.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_branch_protection_enforcement)
+    error_message = "org_branch_protection_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
+variable "org_review_gate_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-wide review-gate ruleset on default
+    branches. Requires 1 approving review + CODEOWNER review on PRs.
+    Bypass actor: OrganizationAdmin in `pull_request` mode — any account
+    holding the OrganizationAdmin role can merge their own PRs without
+    external review. Non-admin actors (bots, external contributors) must
+    obtain the review.
+
+    One of: disabled, evaluate, active. Defaults to "active".
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_review_gate_enforcement)
+    error_message = "org_review_gate_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_push_protection_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide push-protection ruleset (native

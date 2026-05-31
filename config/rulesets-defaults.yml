@@ -4,9 +4,8 @@
 # they're tunable without editing Terraform code, and reviewable in a single
 # place.
 
-# Consumed by github_organization_ruleset.org_push_protection (added in a
-# follow-up commit). Native GitHub push rules — enforced at the git layer
-# without any workflow involvement.
+# Consumed by github_organization_ruleset.org_push_protection. Native GitHub
+# push rules — enforced at the git layer without any workflow involvement.
 push_protection:
   # Hard ceiling on individual file size. Any push containing a single file
   # larger than this is rejected by GitHub before it lands. Repos with a
@@ -26,3 +25,23 @@ push_protection:
     - "*.key"
     - "*.p12"
     - "*.pfx"
+
+# Consumed by github_organization_ruleset.org_branch_protection — the
+# non-bypassable quality gate on every repo's default branch.
+branch_protection:
+  # Branch name pattern enforced on every PR. Defined here so the regex
+  # can change without editing rulesets.tf.
+  branch_name_operator: starts_with
+  branch_name_pattern: "(main|develop|feat|fix|hotfix|release|chore)"
+
+  # Strict Conventional Commits regex. Types are the v1.0.0 spec set;
+  # scope is optional and restricted to lowercase alphanumeric + hyphen;
+  # `!` indicates a breaking change. Anything else fails.
+  commit_message_pattern: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9\-]+\))?(!)?: .+$'
+
+  # Merge methods allowed on PRs. Merge commits explicitly disallowed —
+  # required_linear_history would reject them anyway, this just removes
+  # them from the GitHub UI dropdown so contributors can't try.
+  allowed_merge_methods:
+    - squash
+    - rebase
