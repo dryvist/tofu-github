@@ -1,0 +1,20 @@
+# Copy to `terraform.tfvars` (gitignored) and fill in the placeholders.
+# `terraform.tfvars` carries identities (GitHub org login, repo name,
+# operator IAM user ARN) — those values stay out of git per the
+# no-identities-in-source rule. The example file ships with placeholders
+# so the shape is obvious; it doesn't disclose anything.
+
+github_org  = "<github-org-login>"
+github_repo = "<repo-name>"
+
+# IAM user ARN(s) allowed to assume `tf-github` from a local shell.
+# Each entry must match `arn:aws:iam::<account-id>:user/<user-name>`.
+# Operator must have MFA enabled — the role's trust policy requires
+# `aws:MultiFactorAuthPresent = true`.
+operator_user_arns = [
+  "arn:aws:iam::<account-id>:user/<operator-user>",
+]
+
+# Optional overrides (defaults below match this stack's convention):
+# aws_region     = "us-east-2"
+# branch_pattern = "main"

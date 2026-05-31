@@ -64,36 +64,52 @@ upstream via `data "http"`, not committed as a local template.
 
 ## Requirements
 
-- **OpenTofu** (>= 1.6) and the `integrations/github` provider, pinned in
-  `versions.tf`. The dev shell supplies the toolchain via direnv:
+- **OpenTofu** (>= 1.10 for S3 native locking) and the
+  `integrations/github` provider, pinned in `versions.tf`. Dev shell via
+  direnv:
 
   ```bash
   git clone git@github.com:dryvist/terraform-github.git
-  cd terraform-github && direnv allow   # provides tofu, terraform, terragrunt
+  cd terraform-github && direnv allow   # provides tofu, terraform, terragrunt, aws-vault
   ```
 
+- **AWS state backend bootstrapped.** The dedicated state bucket
+  (`tfstate-github-<account-id>`) and scoped IAM role (`tf-github`) must
+  exist. First-time setup runs once with elevated AWS admin creds —
+  see [`bootstrap/README.md`](bootstrap/README.md). After bootstrap, all
+  ongoing operations use the scoped role via `aws-vault`.
+
+- **`aws-vault` profile `tf-github`** in `~/.aws/config`. Profile shape
+  is documented in `bootstrap/README.md` → "Hand off to the operator".
+  Verify with `aws-vault exec tf-github -- aws sts get-caller-identity`
+  before running terragrunt.
+
 - **`GITHUB_TOKEN` with `admin:org`** (the ORG_ADMIN token tier,
-  `gh-claude-org-admin`) to create or modify org rulesets. The provider reads it
-  from the environment.
-- **S3 state backend** access — bucket / key / region supplied at init (see Usage).
+  `gh-claude-org-admin`) for apply. The github provider reads it from
+  the environment; the default `DRYVIST` tier is read-only on org
+  rulesets and will `403` on apply.
 
 ## Usage
 
-State lives in S3 (org convention). Backend values (bucket / key / region) are
-supplied at init — never committed, because the bucket name embeds the AWS
-account ID:
+Daily flow (after bootstrap):
 
 ```bash
-tofu init -backend-config=bucket=<state-bucket> \
-          -backend-config=key=terraform-github/terraform.tfstate \
-          -backend-config=region=us-east-2
+aws-vault exec tf-github -- terragrunt init    # one-time per worktree
+aws-vault exec tf-github -- terragrunt plan
+aws-vault exec tf-github -- terragrunt apply
 ```
 
-Validation needs no backend or credentials:
+`terragrunt.hcl` resolves the state bucket name from
+`get_aws_account_id()` at runtime, so no account identifier is committed.
+
+Validation only (no backend, no credentials):
 
 ```bash
 tofu init -backend=false && tofu validate
 ```
+
+First-time setup (one-time, elevated AWS creds): see
+[`bootstrap/README.md`](bootstrap/README.md).
 
 **Rolling out a rule safely.** Org-wide enforcement can block merges everywhere
 at once. For `markdown_lint_enforcement` (legacy default `evaluate`), use the

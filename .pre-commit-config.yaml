@@ -21,6 +21,14 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
+        # `terraform_validate` fails on first run when a module source is
+        # pinned to a new commit SHA and `.terraform/modules/` still holds
+        # the previous install. `--retry-once-with-cleanup` makes the hook
+        # purge `.terraform/` and re-init on first validate failure, then
+        # re-run validate — the documented escape hatch from
+        # antonbabenko/pre-commit-terraform for SHA-pinned module sources.
+        args:
+          - --hook-config=--retry-once-with-cleanup=true
       - id: terraform_tflint
         args:
           - --args=--only=terraform_deprecated_interpolation

@@ -1,16 +1,24 @@
-# Terragrunt configuration for terraform-github (dryvist org governance).
+# Terragrunt configuration for the org governance stack.
 #
-# Governance state is small and has no SOPS/Doppler/deployment.json layers —
-# this file only wires the shared S3 remote state backend. The github provider
-# reads GITHUB_TOKEN from the environment (ORG_ADMIN tier to apply).
+# State backend is this stack's own dedicated S3 bucket, provisioned once by
+# `bootstrap/` calling the terraform-aws-template module. Bucket and role
+# naming follow the template's formula (`tfstate-${project}-${account}` and
+# `tf-${project}` with `project = "github"`). The bucket name embeds the AWS
+# account id, resolved at runtime via `get_aws_account_id()` so no account
+# identifier is committed.
+#
+# Apply requires assumed-role STS credentials from the `tf-github` role
+# (operator: `aws-vault exec tf-github`; CI: `aws-actions/configure-aws-credentials@v4`
+# with the role ARN). The github provider reads `GITHUB_TOKEN` separately —
+# ORG_ADMIN tier to apply org-level rulesets.
 
 terraform {
   source = "."
 }
 
-# Remote state backend configuration using S3 (org convention).
-# The bucket name embeds the AWS account id, so it is resolved at runtime
-# rather than committed.
+# Remote state backend.
+# S3 native locking (`use_lockfile = true`) — no DynamoDB table needed.
+# Requires OpenTofu/Terraform >= 1.10 (declared in versions.tf).
 remote_state {
   backend = "s3"
   generate = {
@@ -18,13 +26,13 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket       = "terraform-proxmox-state-useast2-${get_aws_account_id()}"
-    key          = "terraform-github/terraform.tfstate"
+    bucket       = "tfstate-github-${get_aws_account_id()}"
+    key          = "github/terraform.tfstate"
     region       = "us-east-2"
     encrypt      = true
     use_lockfile = true
 
-    # Retry configuration for transient S3 failures
+    # Retry configuration for transient S3 failures.
     max_retries = 5
   }
 }

@@ -1,5 +1,7 @@
 terraform {
-  required_version = ">= 1.6.0"
+  # >= 1.10 required for S3 native locking (`use_lockfile = true` in
+  # terragrunt.hcl). Earlier versions ignore the option and run unlocked.
+  required_version = ">= 1.10"
 
   required_providers {
     github = {
@@ -8,9 +10,9 @@ terraform {
     }
   }
 
-  # Remote state in S3 (org convention). Backend values are supplied at init
-  # time (bucket / key / region) via `-backend-config` or terragrunt and are
-  # never hardcoded here, because the bucket name embeds the AWS account ID.
-  # See README.md → "State". Use `tofu init -backend=false` for validation only.
+  # Remote state in S3. Backend values come from terragrunt.hcl
+  # (`tfstate-github-<account>` / `github/terraform.tfstate` / us-east-2)
+  # so no bucket name is committed here. Use `tofu init -backend=false`
+  # for validation-only runs.
   backend "s3" {}
 }

@@ -82,6 +82,58 @@ any operator who runs `tofu apply` without overrides). Enforce explicitly:
 tofu apply -var markdown_lint_enforcement=active
 ```
 
+## State backend
+
+State for the org-rulesets stack lives in **its own dedicated S3 bucket
+and is gated by its own scoped IAM role.** Cross-stack state-bucket
+sharing is not used; every Terraform stack in this account gets its own
+bucket via the `terraform-aws-template` module, on the principle that
+"a misapply against this repo cannot reach another stack's state and
+its IAM grants don't widen as new stacks come online."
+
+| Component | Value |
+| --- | --- |
+| State bucket | `tfstate-github-<account-id>` (us-east-2) |
+| State key | `github/terraform.tfstate` |
+| Bootstrap state key | `_bootstrap/terraform.tfstate` (same bucket) |
+| Lock | S3 native (`use_lockfile = true` — no DynamoDB) |
+| Encryption | AES256 / SSE-S3 (no KMS) |
+| IAM role | `tf-github` — scoped to that one bucket only |
+
+Identity flow:
+
+1. Operator's underlying IAM user (e.g. `terraform`) sits in `~/.aws/config`
+   as a `source_profile`. MFA is required on this user — the role's
+   trust policy denies sessions without `aws:MultiFactorAuthPresent`.
+2. `aws-vault exec tf-github -- <cmd>` calls AWS STS to assume
+   `tf-github`. aws-vault prompts for MFA once per session and caches
+   the STS credentials.
+3. The STS credentials reach `tofu` / `terragrunt` via environment
+   variables. The `aws` provider in the github provider's wire-up
+   has no work — the github provider uses `GITHUB_TOKEN`, not AWS — but
+   the backend's S3 access does, and it's scoped to the one bucket.
+
+The aws-vault profile name (`tf-github`) **matches the role name** by
+convention. Sibling stacks bootstrapped via `terraform-aws-template`
+follow the same pattern: profile name = `tf-<project>` = role name.
+
+Future CI uses GitHub OIDC instead of MFA AssumeRole. The role's trust
+policy already accepts `repo:<github_org>/<github_repo>` on push to
+the default branch and on pull_request events — no operator user
+involvement. `.github/workflows/terragrunt.yml` is not in this repo
+yet; when added, it uses `aws-actions/configure-aws-credentials@v4`
+with `role-to-assume = arn:aws:iam::<account>:role/tf-github`.
+
+**Never** run this stack with the elevated bootstrap credentials
+(`iam-user` or any admin identity). Those are only for one-time
+`bootstrap/` applies. All ongoing operations — `terragrunt init`,
+`plan`, `apply` — go through `aws-vault exec tf-github`.
+
+First-time setup walkthrough lives in
+[`bootstrap/README.md`](bootstrap/README.md). Re-run only when the
+template's pinned ref bumps or the role / bucket configuration
+intentionally changes.
+
 ## Cost policy
 
 **Never apply a policy or enable a feature that costs money unless the
