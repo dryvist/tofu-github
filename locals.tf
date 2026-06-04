@@ -6,4 +6,8 @@ locals {
 
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection
+
+  # Org-level Actions variables, decoded from config/actions-variables.yml so
+  # org_settings.tf carries no inline values.
+  ai_model_variables = yamldecode(file("${path.module}/config/actions-variables.yml")).ai_models
 }
