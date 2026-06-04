@@ -16,10 +16,15 @@
 # (feat: Add github_repository_code_scanning_default_setup resource).
 # Opened 2026-04-01 by oda251. Adds the resource with the schema below.
 #
+# Before uncommenting, RE-VERIFY the resource's schema against the *released*
+# provider docs (not the PR draft). The block below reflects the schema as
+# proposed in PR #3315 as of writing; argument names/requiredness may change
+# before release.
+#
 # When that PR merges and ships in a tagged release:
 #
 #   1. Bump `version = "~> 6.X"` in versions.tf to the release that includes it.
-#   2. Uncomment the data + resource blocks below.
+#   2. Uncomment the local + data + resource blocks below.
 #   3. `tofu apply` — for_each fans out across every public, non-archived,
 #      non-fork org repo. The provider's underlying API will return success
 #      on repos with a supported language and a clear error on repos
@@ -30,8 +35,17 @@
 # public repos and the data source's `visibility:public` filter is the safety
 # belt — no private repo can land in the for_each.
 #
+# Org-agnostic per AGENTS.md: the org login is NEVER written as a literal
+# outside providers.tf. It's derived from the existing `.github`-repo lookup
+# in data.tf, whose owner is implied by the provider — so this file clones
+# cleanly into another org with no edit.
+#
+# locals {
+#   org_login = split("/", data.github_repository.dot_github.full_name)[0]
+# }
+#
 # data "github_repositories" "public_for_codeql" {
-#   query = "org:dryvist archived:false fork:false visibility:public"
+#   query = "org:${local.org_login} archived:false fork:false visibility:public"
 # }
 #
 # resource "github_repository_code_scanning_default_setup" "codeql" {
