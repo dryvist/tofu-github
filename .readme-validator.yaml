@@ -1,8 +1,8 @@
 # README validator configuration for terraform-github
-# Terraform governance READMEs use Usage + Requirements instead of Installation
+# Standard ecosystem README shape: Installation + Usage.
 required_sections:
+  - Installation
   - Usage
-  - Requirements
 optional_sections:
   - Contributing
   - License

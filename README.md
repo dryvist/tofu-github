@@ -2,7 +2,7 @@
 
 Terraform-managed GitHub **organization governance** for the `dryvist` org:
 rulesets, required workflows, and (over time) org/repo settings — as code, in
-one place, instead of click-ops scattered across 32 repos.
+one place, instead of click-ops scattered across the org's repos.
 
 ## Why this exists
 
@@ -66,7 +66,7 @@ baked into the code. Canonical text the org doesn't author — MIT LICENSE
 body, CODE_OF_CONDUCT, etc. — is fetched at apply time from a trustworthy
 upstream via `data "http"`, not committed as a local template.
 
-## Requirements
+## Installation
 
 - **OpenTofu** (>= 1.10 for S3 native locking) and the
   `integrations/github` provider, pinned in `versions.tf`. Dev shell via
@@ -130,3 +130,7 @@ forward — push protection, branch protection, commit format, etc. — default
 their `<name>_enforcement` variable to `"active"` and are applied enabled
 directly. The variable still exists so a misbehaving rule can be disabled with
 `-var <name>_enforcement=disabled` without a code change.
+
+---
+
+> Part of a [larger ecosystem of ~40 repos](https://docs.jacobpevans.com) — see how it all fits together.
