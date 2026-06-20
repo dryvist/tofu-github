@@ -38,6 +38,23 @@ variable "org_branch_protection_enforcement" {
   }
 }
 
+variable "required_signatures_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-wide required-signatures ruleset on every
+    branch. This preserves the all-branch coverage of the imported live
+    ruleset.
+
+    One of: disabled, evaluate, active. Defaults to "active" to match live.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.required_signatures_enforcement)
+    error_message = "required_signatures_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_review_gate_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide review-gate ruleset on default

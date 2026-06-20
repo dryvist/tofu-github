@@ -4,6 +4,7 @@
 locals {
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
 
+  ruleset_imports            = local.rulesets_defaults.imports
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection
 

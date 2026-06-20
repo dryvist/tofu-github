@@ -4,6 +4,13 @@
 # they're tunable without editing Terraform code, and reviewable in a single
 # place.
 
+# Existing live rulesets adopted into state. These IDs are GitHub-assigned
+# identifiers, not policy settings; keeping them here avoids literals in HCL.
+imports:
+  org_branch_protection: "15555419"
+  markdown_lint: "17062292"
+  required_signatures: "17916554"
+
 # Consumed by github_organization_ruleset.org_push_protection. Native GitHub
 # push rules — enforced at the git layer without any workflow involvement.
 push_protection:

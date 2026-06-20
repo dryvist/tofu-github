@@ -1,4 +1,4 @@
-# README validator configuration for terraform-github
+# README validator configuration for tofu-github
 # Standard ecosystem README shape: Installation + Usage.
 required_sections:
   - Installation
