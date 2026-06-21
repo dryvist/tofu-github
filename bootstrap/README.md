@@ -1,7 +1,7 @@
 # bootstrap
 
 One-time provisioning of the AWS state backend (S3 bucket) and scoped IAM
-role (`tf-github`) that the parent terraform-github stack uses for all
+role (`tf-github`) that the parent tofu-github stack uses for all
 subsequent operations. Calls the canonical
 [dryvist/terraform-aws-template](https://github.com/dryvist/terraform-aws-template)
 module at the pinned `v0.1.0` ref.

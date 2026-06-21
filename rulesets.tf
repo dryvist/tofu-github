@@ -31,19 +31,20 @@ resource "github_organization_ruleset" "org_push_protection" {
 
 # Org-wide branch-protection — quality rules on every default branch.
 #
-# Reverse-engineered from the pre-Terraform "main" org ruleset (id
-# 15555419) plus new directives: Conventional Commits enforcement and PR
+# Reverse-engineered from the pre-Terraform "main" org ruleset plus new
+# directives: Conventional Commits enforcement and PR
 # thread resolution. No bypass actors: rules apply to everyone including
 # org admins, so an admin's own commits are still signed, linear, and
-# Conventional-format. Review-count enforcement lives in a separate
+# Conventional-format. A separate imported ruleset below extends signature
+# enforcement to every branch. Review-count enforcement lives in a separate
 # ruleset (org_review_gate) so admin bypass on review doesn't accidentally
 # weaken these quality gates.
 #
-# Import-on-first-apply: the import block below adopts ruleset 15555419
+# Import-on-first-apply: the import block below adopts the live ruleset
 # into Terraform state so apply reconciles instead of creating a duplicate.
 import {
   to = github_organization_ruleset.org_branch_protection
-  id = "15555419"
+  id = local.ruleset_imports.org_branch_protection
 }
 
 resource "github_organization_ruleset" "org_branch_protection" {
@@ -88,6 +89,37 @@ resource "github_organization_ruleset" "org_branch_protection" {
       required_review_thread_resolution = true
       allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
     }
+  }
+}
+
+# Org-wide signature enforcement on every branch.
+#
+# This ruleset already exists live and is adopted without changing its
+# behavior. Keeping it separate from default-branch protection preserves the
+# broader all-branch coverage.
+import {
+  to = github_organization_ruleset.required_signatures
+  id = local.ruleset_imports.required_signatures
+}
+
+resource "github_organization_ruleset" "required_signatures" {
+  name        = "required_signatures"
+  target      = "branch"
+  enforcement = var.required_signatures_enforcement
+
+  conditions {
+    ref_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+    repository_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+  }
+
+  rules {
+    required_signatures = true
   }
 }
 
@@ -143,17 +175,14 @@ resource "github_organization_ruleset" "org_review_gate" {
 
 # Org-wide markdown linting, enforced as a Required Workflow.
 #
-# Adopts the pre-Terraform "Required Workflows - All Branches" ruleset (id
-# 17062292) so apply reconciles instead of creating a duplicate. Live state
-# at import time: enforcement=disabled, ref_name=~ALL, do_not_enforce_on_create.
-# Terraform code below uses ~ALL refs (matching live) and keeps
-# do_not_enforce_on_create so brand-new repos aren't blocked on first push
-# before their default branch exists. Enforcement variable defaults to
-# `evaluate` (the legacy default) — pass `-var markdown_lint_enforcement=active`
-# to flip on.
+# Adopts the existing disabled live ruleset so apply reconciles instead of
+# creating a duplicate. `do_not_enforce_on_create` keeps brand-new repos from
+# being blocked before their default branch exists. Enforcement defaults to
+# the legacy `evaluate` posture; pass `-var markdown_lint_enforcement=active`
+# to enforce.
 import {
   to = github_organization_ruleset.markdown_lint
-  id = "17062292"
+  id = local.ruleset_imports.markdown_lint
 }
 
 resource "github_organization_ruleset" "markdown_lint" {

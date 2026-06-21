@@ -1,6 +1,6 @@
-# terraform-github
+# tofu-github
 
-Terraform-managed GitHub **organization governance** for the `dryvist` org:
+OpenTofu-managed GitHub **organization governance** for the `dryvist` org:
 rulesets, required workflows, and (over time) org/repo settings — as code, in
 one place, instead of click-ops scattered across the org's repos.
 
@@ -18,14 +18,16 @@ defined **once** here and applied to **every** repo automatically.
 | --- | --- |
 | `github_organization_ruleset.org_push_protection` | Native GitHub push rules at the git layer (no workflow runs). Hard ceiling on individual file size + banned-extension list, applied to every repo, every ref. Thresholds + list live in `config/rulesets-defaults.yml`. |
 | `github_organization_ruleset.org_branch_protection` | Quality gate on every default branch: required signatures, linear history, branch name pattern, strict Conventional Commits regex, PR thread resolution. **No bypass** — applies to everyone including org admins. |
+| `github_organization_ruleset.required_signatures` | Extends required signatures to every branch. Imported from the live org ruleset without narrowing its all-branch coverage. |
 | `github_organization_ruleset.org_review_gate` | Review gate on every default branch: 1 approving review + CODEOWNER review on PRs. **OrganizationAdmin bypass in `pull_request` mode** so admins can merge their own PRs; bots and other contributors must obtain the review. |
 | `github_organization_ruleset.markdown_lint` | Requires the markdownlint workflow in the org's `.github` repo to pass on every ref of every repo. Single source of truth: the workflow + `.markdownlint-cli2.yaml` both live in `.github`. `do_not_enforce_on_create` so brand-new repos don't fail before their default branch exists. |
 
 Imports needed on first apply (declared in `rulesets.tf` via `import`
 blocks, executed automatically by `tofu apply`):
 
-- `org_branch_protection` ← live ruleset id 15555419 (originally named "main")
-- `markdown_lint` ← live ruleset id 17062292 (originally named "Required Workflows - All Branches")
+- `org_branch_protection` ← the live ruleset originally named `main`
+- `markdown_lint` ← the live disabled required-workflow ruleset
+- `required_signatures` ← the live all-branch signature ruleset
 
 After successful apply, the `import` blocks can be removed in a follow-up
 PR (they're idempotent but only useful once).
@@ -73,8 +75,8 @@ upstream via `data "http"`, not committed as a local template.
   direnv:
 
   ```bash
-  git clone git@github.com:dryvist/terraform-github.git
-  cd terraform-github && direnv allow   # provides tofu, terraform, terragrunt, aws-vault
+  git clone git@github.com:dryvist/tofu-github.git
+  cd tofu-github && direnv allow   # provides tofu, terraform, terragrunt, aws-vault
   ```
 
 - **AWS state backend bootstrapped.** The dedicated state bucket

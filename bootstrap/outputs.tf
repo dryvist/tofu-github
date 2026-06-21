@@ -9,7 +9,7 @@ output "state_bucket_arn" {
 }
 
 output "tf_role_arn" {
-  description = "IAM role ARN the operator assumes (via aws-vault + MFA) and CI assumes (via GitHub OIDC) to run terraform-github."
+  description = "IAM role ARN the operator assumes (via aws-vault + MFA) and CI assumes (via GitHub OIDC) to run tofu-github."
   value       = module.state_backend.tf_role_arn
 }
 
