@@ -1,0 +1,31 @@
+# MANAGED BY tofu-github (config/workflows/ai-ci.yml) — do not edit in the repo.
+# CI failure router: PR-branch failures -> Claude auto-fix (cc-ci-fix); main
+# failures -> tracking issue (ci-fail-issue). suite-ci gates on conclusion.
+name: AI CI
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["$CI_WORKFLOW_NAME"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+  id-token: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ai-ci-${{ github.event.workflow_run.head_branch || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  ci-suite:
+    uses: dryvist/ai-workflows/.github/workflows/suite-ci.yml@v0
+    with:
+      repo_context: "$REPO_CONTEXT"
+      ci_structure: "$CI_STRUCTURE"
+      workflow_name: "$CI_WORKFLOW_NAME"
+      extra_tools: "$EXTRA_TOOLS"
+    secrets: inherit

@@ -1,0 +1,99 @@
+# Single source of truth for the AI caller-workflow rollout (sync-ai-callers.yml).
+#
+# Each repo under `repos:` is OPTED IN to the AI caller chain — the sync Action
+# renders config/workflows/*.yml per repo with these params and opens an
+# admin-merged PR into the repo (and removes superseded legacy callers). Repos
+# NOT listed here are never touched. `labels:` are applied (gh label create
+# --force, idempotent) to every repo listed here.
+#
+# Per-repo params:
+#   ci_workflow_name: the EXACT display name of the repo's CI workflow. The
+#       ai-ci caller's `workflow_run` trigger watches this — if it is wrong, CI
+#       auto-fix silently never fires. Verify with:
+#         gh api repos/dryvist/<repo>/actions/workflows --jq '.workflows[].name'
+#   repo_context:     one-line description fed to Claude (usually the repo description).
+#   ci_structure:     one line on what CI runs (for the ci-fix prompt).
+#   extra_tools:      language tools Claude may run, e.g. Bash(nix *) / Bash(ansible*) / Bash(tofu:*).
+
+repos:
+  nix-darwin:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Flakes-based nix-darwin config for macOS (system packages, networking, security, home-manager)."
+    ci_structure: "ci-gate.yml: nix build/validate + markdown-lint + file-size, aggregated by an alls-green gate."
+    extra_tools: "Bash(nix *)"
+  nix-ai:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Nix home-manager modules for AI CLI tools (Claude, Gemini, Copilot, 15+ MCP servers)."
+    ci_structure: "ci-gate.yml: nix flake check / lint / alls-green gate."
+    extra_tools: "Bash(nix *)"
+  nix-claude-code:
+    ci_workflow_name: "CI"
+    repo_context: "Declarative Claude Code in Nix — plugins, marketplaces, skills, hooks, MCP as home-manager modules."
+    ci_structure: "ci.yml: nix flake check + OSV scan."
+    extra_tools: "Bash(nix *)"
+  nix-home:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Cross-platform dev environment in Nix — git, zsh, VS Code, tmux via home-manager."
+    ci_structure: "ci-gate.yml: nix build/validate + lint, alls-green gate."
+    extra_tools: "Bash(nix *)"
+  terraform-proxmox:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Terraform/Terragrunt IaC for Proxmox VE (VMs, LXC, networking, cloud-init, Packer, S3 state)."
+    ci_structure: "ci-gate.yml + Terraform CI: tofu fmt/validate/tflint per directory, alls-green gate."
+    extra_tools: "Bash(tofu:*),Bash(terraform:*)"
+  ansible-proxmox:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Production Ansible roles for Proxmox host tuning (ZFS swap, limits, monitoring)."
+    ci_structure: "ci-gate.yml + Ansible Lint + Molecule test, alls-green gate."
+    extra_tools: "Bash(ansible*),Bash(yamllint:*)"
+  ansible-proxmox-apps:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Ansible roles for apps on Proxmox VMs/LXC (Cribl Edge/Stream, HAProxy syslog LB)."
+    ci_structure: "ci-gate.yml + Molecule + E2E pipeline tests, alls-green gate."
+    extra_tools: "Bash(ansible*),Bash(yamllint:*)"
+  ansible-splunk:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Ansible role for Splunk Enterprise (HEC, indexes, apps, multi-disk, Doppler secrets)."
+    ci_structure: "ci-gate.yml + Data Contract checks, alls-green gate."
+    extra_tools: "Bash(ansible*),Bash(yamllint:*)"
+  claude-code-plugins:
+    # TODO(verify): this repo has no single "CI Gate" — its CI is validate-plugins/
+    # validate-skills + "AI Merge Gate". Confirm the right workflow to watch before
+    # relying on CI auto-fix here.
+    ci_workflow_name: "AI Merge Gate"
+    repo_context: "Custom Claude Code plugins (hooks, skills, marketplace) for dryvist."
+    ci_structure: "validate-plugins.yml / validate-skills.yml + AI Merge Gate."
+    extra_tools: ""
+  ai-assistant-instructions:
+    ci_workflow_name: "CI Gate"
+    repo_context: "Vendor-agnostic AI-assisted development framework (instructions + commands across Claude/Gemini/Copilot)."
+    ci_structure: "ci-gate.yml: markdown-lint + yaml-lint + cclint + schema validation, alls-green gate."
+    extra_tools: ""
+
+# Label taxonomy the AI chain depends on — applied to every repo above.
+labels:
+  "ai:ready":
+    color: "0e8a16"
+    description: "Trigger: dispatches issue through the autonomous resolve pipeline"
+  "ai:created":
+    color: "c5def5"
+    description: "Issue/PR was created by an AI workflow"
+  "type:bug": { color: "d73a4a", description: "Something isn't working" }
+  "type:chore": { color: "fef2c0", description: "Maintenance / dependencies" }
+  "type:docs": { color: "0075ca", description: "Documentation" }
+  "type:ci": { color: "bfdadc", description: "CI/CD changes" }
+  "type:test": { color: "c2e0c6", description: "Tests" }
+  "type:refactor": { color: "d4c5f9", description: "Code restructuring" }
+  "type:perf": { color: "fbca04", description: "Performance" }
+  "type:feature": { color: "a2eeef", description: "New capability" }
+  "type:security": { color: "b60205", description: "Security-sensitive" }
+  "type:breaking": { color: "5319e7", description: "Breaking change" }
+  "size:xs": { color: "ededed", description: "Trivial (<1h)" }
+  "size:s": { color: "ededed", description: "Small (1-4h)" }
+  "size:m": { color: "ededed", description: "Medium (1-2d)" }
+  "size:l": { color: "ededed", description: "Large (3-5d)" }
+  "size:xl": { color: "ededed", description: "Extra large (1w+)" }
+  "priority:critical": { color: "b60205", description: "Production broken" }
+  "priority:high": { color: "d93f0b", description: "Address soon" }
+  "priority:medium": { color: "fbca04", description: "Normal" }
+  "priority:low": { color: "0e8a16", description: "Nice to have" }

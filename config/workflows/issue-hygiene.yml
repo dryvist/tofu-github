@@ -1,0 +1,19 @@
+# MANAGED BY tofu-github (config/workflows/issue-hygiene.yml) — do not edit in the repo.
+# Weekly: dedup detection, merged-PR linking, wontfix candidates, grouping suggestions.
+name: Issue Hygiene
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * 0"
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  hygiene:
+    uses: dryvist/ai-workflows/.github/workflows/issue-hygiene.yml@v0
+    secrets: inherit # zizmor: ignore[secrets-inherit]
