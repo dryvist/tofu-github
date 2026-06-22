@@ -1,16 +1,15 @@
-# Sync AI caller workflows + labels into opted-in dryvist repos.
+# Commit the AI caller workflows (config/workflows/*.yml) into each opted-in repo.
 #
-# Source of truth: config/ai-callers.yml (repos + per-repo params + label set) and
-# config/workflows/*.yml (caller templates with $VAR placeholders). For each repo:
-#   - apply the label set (gh label create, idempotent);
-#   - render every template with the repo's params;
-#   - commit the rendered callers + DELETE legacy callers (ci-fix.yml, ci-fail-issue.yml)
-#     onto a branch via createCommitOnBranch (App-token web-flow → GitHub-VERIFIED, so it
-#     satisfies the org required_signatures ruleset on every branch);
-#   - open a PR, and admin-merge it only when auto_merge=true.
+# This is the ONLY part of the AI rollout that isn't native Terraform: labels and
+# per-repo params are github_issue_label / github_actions_variable (labels.tf,
+# ai-variables.tf). But landing a file on a protected default branch needs a PR
+# (org_branch_protection requires one, with zero bypass actors), and the GitHub
+# provider has no github_pull_request resource — so this Action opens + merges it.
 #
-# Auth: GH_PAT_ORG_ADMIN — needed to write across repos AND to merge past the
-# org review gate (OrganizationAdmin is its only bypass actor).
+# Per opted-in repo (config/ai-callers.yml): bake ci_workflow_name into ai-ci.yml's
+# workflow_run trigger, commit the 4 callers + remove legacy callers via
+# createCommitOnBranch (web-flow signed -> verified, satisfies required_signatures
+# on the branch), open a PR, and admin-merge only when auto_merge=true.
 name: Sync AI Callers
 
 on:
@@ -42,17 +41,14 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Config to JSON
         run: yq -o=json config/ai-callers.yml > "$RUNNER_TEMP/ai.json"
 
-      - name: Apply labels + sync caller workflows
+      - name: Sync caller workflows
         uses: actions/github-script@v9
         env:
           AUTO_MERGE: ${{ inputs.auto_merge }}
@@ -62,70 +58,52 @@ jobs:
           github-token: ${{ secrets.GH_PAT_ORG_ADMIN }}
           script: |
             const fs = require('fs');
-            const path = require('path');
             const cfg = JSON.parse(fs.readFileSync(process.env.CONFIG_JSON, 'utf8'));
             const owner = context.repo.owner;
             const autoMerge = process.env.AUTO_MERGE === 'true';
             const onlyRepo = process.env.ONLY_REPO || '';
+            const srcDir = 'config/workflows';
+            const files = fs.readdirSync(srcDir).filter((f) => f.endsWith('.yml'));
             const legacy = ['.github/workflows/ci-fix.yml', '.github/workflows/ci-fail-issue.yml'];
-            const templates = fs.readdirSync('config/workflows').filter((f) => f.endsWith('.yml'));
+            const branch = 'chore/sync-ai-callers';
 
-            const render = (body, params) => {
-              for (const [k, v] of Object.entries(params)) {
-                body = body.split('$' + k.toUpperCase()).join(v ?? '');
-              }
-              return body;
-            };
+            // ai-ci.yml is the only file with a per-repo literal: workflow_run can't
+            // read repo variables, so the CI workflow name is baked in here. Every
+            // other param reaches the callers as repo Actions variables (AI_*).
+            const render = (name, body, repoCfg) =>
+              name === 'ai-ci.yml' ? body.split('$CI_WORKFLOW_NAME').join(repoCfg.ci_workflow_name) : body;
 
-            for (const [repo, p] of Object.entries(cfg.repos)) {
+            for (const [repo, repoCfg] of Object.entries(cfg.repos)) {
               if (onlyRepo && repo !== onlyRepo) continue;
               core.startGroup(`${owner}/${repo}`);
 
-              // 1. Labels (idempotent create-or-update)
-              for (const [name, l] of Object.entries(cfg.labels)) {
-                try {
-                  await github.rest.issues.createLabel({ owner, repo, name, color: l.color, description: l.description || '' });
-                } catch (e) {
-                  if (e.status === 422) {
-                    await github.rest.issues.updateLabel({ owner, repo, name, color: l.color, description: l.description || '' });
-                  } else { core.warning(`label ${name}: ${e.message}`); }
-                }
-              }
-
-              // 2. Build rendered caller files
-              const params = {
-                ci_workflow_name: p.ci_workflow_name,
-                repo_context: p.repo_context,
-                ci_structure: p.ci_structure,
-                extra_tools: p.extra_tools || '',
-              };
-              const additions = templates.map((f) => ({
+              const desired = files.map((f) => ({
                 path: `.github/workflows/${f}`,
-                contents: Buffer.from(render(fs.readFileSync(path.join('config/workflows', f), 'utf8'), params)).toString('base64'),
+                contents: Buffer.from(render(f, fs.readFileSync(`${srcDir}/${f}`, 'utf8'), repoCfg)).toString('base64'),
               }));
 
-              // 3. Determine which legacy files actually exist (only those can be deleted)
-              const { data: defaultBranch } = await github.rest.repos.get({ owner, repo }).then((r) => ({ data: r.data.default_branch }));
+              const base = (await github.rest.repos.get({ owner, repo })).data.default_branch;
+
+              // Only commit files that actually differ — avoids empty PRs.
+              const additions = [];
+              for (const a of desired) {
+                let current = null;
+                try {
+                  current = (await github.rest.repos.getContent({ owner, repo, path: a.path, ref: base })).data.content.replace(/\n/g, '');
+                } catch { /* new file */ }
+                if (current !== a.contents) additions.push(a);
+              }
               const deletions = [];
               for (const lf of legacy) {
-                try { await github.rest.repos.getContent({ owner, repo, path: lf, ref: defaultBranch }); deletions.push({ path: lf }); }
-                catch (e) { /* not present */ }
+                try { await github.rest.repos.getContent({ owner, repo, path: lf, ref: base }); deletions.push({ path: lf }); }
+                catch { /* absent */ }
               }
+              if (additions.length === 0 && deletions.length === 0) { core.info('up to date'); core.endGroup(); continue; }
 
-              // 4. Skip if nothing would change (compare each addition to current content)
-              let changed = deletions.length > 0;
-              for (const a of additions) {
-                try {
-                  const { data } = await github.rest.repos.getContent({ owner, repo, path: a.path, ref: defaultBranch });
-                  if (data.content.replace(/\n/g, '') !== a.contents) changed = true;
-                } catch (e) { changed = true; } // new file
-              }
-              if (!changed) { core.info('up to date'); core.endGroup(); continue; }
-
-              // 5. Branch + VERIFIED commit (createCommitOnBranch) + PR
-              const { data: ref } = await github.rest.git.getRef({ owner, repo, ref: `heads/${defaultBranch}` });
-              const headOid = ref.object.sha;
-              const branch = `chore/sync-ai-callers`;
+              // Reset the sync branch to the current default head, then make one
+              // verified commit on it (createCommitOnBranch is web-flow signed, so
+              // required_signatures — which covers all branches — is satisfied).
+              const headOid = (await github.rest.git.getRef({ owner, repo, ref: `heads/${base}` })).data.object.sha;
               try { await github.rest.git.createRef({ owner, repo, ref: `refs/heads/${branch}`, sha: headOid }); }
               catch (e) { if (e.status !== 422) throw e; await github.rest.git.updateRef({ owner, repo, ref: `heads/${branch}`, sha: headOid, force: true }); }
 
@@ -141,9 +119,9 @@ jobs:
 
               let pr = (await github.rest.pulls.list({ owner, repo, state: 'open', head: `${owner}:${branch}` })).data[0];
               if (!pr) {
-                pr = (await github.rest.pulls.create({ owner, repo, base: defaultBranch, head: branch,
+                pr = (await github.rest.pulls.create({ owner, repo, base, head: branch,
                   title: 'chore: sync AI caller workflows',
-                  body: 'Managed by dryvist/tofu-github (config/ai-callers.yml + config/workflows). Renders the canonical AI caller chain and removes superseded legacy callers.' })).data;
+                  body: 'Managed by [dryvist/tofu-github](https://github.com/dryvist/tofu-github) (config/ai-callers.yml + config/workflows). Updates the AI caller chain and removes superseded legacy callers.' })).data;
               }
               core.info(`PR #${pr.number}: ${pr.html_url}`);
               if (autoMerge) {

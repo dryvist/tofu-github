@@ -1,10 +1,12 @@
-# Single source of truth for the AI caller-workflow rollout (sync-ai-callers.yml).
-#
-# Each repo under `repos:` is OPTED IN to the AI caller chain — the sync Action
-# renders config/workflows/*.yml per repo with these params and opens an
-# admin-merged PR into the repo (and removes superseded legacy callers). Repos
-# NOT listed here are never touched. `labels:` are applied (gh label create
-# --force, idempotent) to every repo listed here.
+# Single source of truth for the AI caller-workflow rollout. Each repo under
+# `repos:` is OPTED IN to the AI chain; repos NOT listed here are never touched.
+# Three consumers read this one file:
+#   - labels.tf        -> github_issue_label  (applies `labels:` to every repo)
+#   - ai-variables.tf  -> github_actions_variable (per-repo AI_* vars from params)
+#   - sync-ai-callers.yml -> commits config/workflows/*.yml into each repo (the
+#       only step Terraform can't do, since landing a file on a protected default
+#       branch needs a PR). It bakes ci_workflow_name into ai-ci.yml's
+#       workflow_run trigger; all other params reach the callers as ${{ vars.* }}.
 #
 # Per-repo params:
 #   ci_workflow_name: the EXACT display name of the repo's CI workflow. The

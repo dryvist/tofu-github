@@ -24,8 +24,8 @@ jobs:
   ci-suite:
     uses: dryvist/ai-workflows/.github/workflows/suite-ci.yml@v0
     with:
-      repo_context: "$REPO_CONTEXT"
-      ci_structure: "$CI_STRUCTURE"
-      workflow_name: "$CI_WORKFLOW_NAME"
-      extra_tools: "$EXTRA_TOOLS"
+      repo_context: ${{ vars.AI_REPO_CONTEXT }}
+      ci_structure: ${{ vars.AI_CI_STRUCTURE }}
+      workflow_name: ${{ vars.AI_CI_WORKFLOW_NAME }}
+      extra_tools: ${{ vars.AI_EXTRA_TOOLS }}
     secrets: inherit
