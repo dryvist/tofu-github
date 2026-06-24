@@ -1,17 +1,12 @@
 # Single source of truth for the AI caller-workflow rollout. Each repo under
 # `repos:` is OPTED IN to the AI chain; repos NOT listed here are never touched.
-# Three consumers read this one file:
+# Two consumers read this one file:
 #   - labels.tf        -> github_issue_label  (applies `labels:` to every repo)
 #   - ai-variables.tf  -> github_actions_variable (per-repo AI_* vars from params)
-#   - sync-ai-callers.yml -> commits config/workflows/*.yml into each repo (the
-#       only step Terraform can't do, since landing a file on a protected default
-#       branch needs a PR). It bakes ci_workflow_name into ai-ci.yml's
-#       workflow_run trigger; all other params reach the callers as ${{ vars.* }}.
 #
 # Per-repo params:
-#   ci_workflow_name: the EXACT display name of the repo's CI workflow. The
-#       ai-ci caller's `workflow_run` trigger watches this — if it is wrong, CI
-#       auto-fix silently never fires. Verify with:
+#   ci_workflow_name: the EXACT display name of the repo's CI workflow.
+#       Verify with:
 #         gh api repos/dryvist/<repo>/actions/workflows --jq '.workflows[].name'
 #   repo_context:     one-line description fed to Claude (usually the repo description).
 #   ci_structure:     one line on what CI runs (for the ci-fix prompt).

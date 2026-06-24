@@ -2,8 +2,7 @@
 # these in repo variables (read as ${{ vars.AI_* }} at runtime) is what lets the
 # caller .yml files stay (near-)identical across repos instead of being rendered
 # per repo. Sourced from config/ai-callers.yml — the same single source of truth
-# as labels.tf. (ci_workflow_name is also baked into ai-ci.yml's workflow_run
-# trigger by sync-ai-callers.yml, since ${{ }} is not evaluated in `on:`.)
+# as labels.tf.
 locals {
   # Actions variable name -> key in each repo's ai-callers.yml block.
   ai_variable_keys = {
