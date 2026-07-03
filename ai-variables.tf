@@ -34,3 +34,13 @@ resource "github_actions_variable" "ai" {
   variable_name = each.value.name
   value         = each.value.value
 }
+
+# Org-wide repo list consumed by ai-workflows' hourly review-thread-resolver
+# sweep (dogfood-review-thread-sweep.yml). Derived from the same
+# config/ai-callers.yml inventory as everything else in this file, plus the
+# hub repo itself, so opting a repo in or out of the sweep is one YAML line.
+resource "github_actions_organization_variable" "ai_sweep_repos" {
+  variable_name = "AI_SWEEP_REPOS"
+  value         = join(",", sort(concat(keys(local.ai.repos), ["ai-workflows"])))
+  visibility    = "all"
+}
