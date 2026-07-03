@@ -16,4 +16,8 @@ locals {
   # shared label taxonomy. Consumed by labels.tf and ai-variables.tf. Single source of
   # truth for which repos are in the AI chain.
   ai = yamldecode(file("${path.module}/config/ai-callers.yml"))
+
+  # IaC drift-detection opt-in: repos flagged enabled get IAC_DRIFT_ENABLED=true.
+  # Consumed by iac-drift.tf. See config/iac-drift.yml.
+  iac_drift = yamldecode(file("${path.module}/config/iac-drift.yml"))
 }
