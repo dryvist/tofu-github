@@ -86,8 +86,10 @@ upstream via `data "http"`, not committed as a local template.
   not-24/7 — power its node on for off-hours work.
 
 - **One-time login per machine** (no keychain, no stored passwords). The
-  Terrakube API FQDN is supplied by the environment (`TF_CLOUD_HOSTNAME`,
-  Doppler/sops-sourced) so no internal hostname is committed:
+  `TF_CLOUD_*` coordinates (`TF_CLOUD_HOSTNAME`, `TF_CLOUD_ORGANIZATION`,
+  `TF_WORKSPACE`) are decrypted from the committed, encrypted
+  `secrets/terrakube.sops.env` and exported by `.envrc` at `direnv allow`
+  (fleet age key) — so no internal hostname is committed in plaintext:
 
   ```bash
   tofu login "$TF_CLOUD_HOSTNAME"
