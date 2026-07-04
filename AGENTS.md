@@ -74,7 +74,10 @@ Authentication (zero keychain, zero stored passwords):
 `tofu login "$TF_CLOUD_HOSTNAME"` once per machine (the Terrakube API FQDN
 comes from the environment — see `versions.tf`; browser → GitHub via dex;
 requires membership in the org's `terrakube-admins` team). Token lands in
-`~/.terraform.d/credentials.tfrc.json`.
+`~/.terraform.d/credentials.tfrc.json`. The `TF_CLOUD_*` coordinates
+(hostname, org, workspace) are decrypted from the committed, encrypted
+`secrets/terrakube.sops.env` and exported by `.envrc` at direnv load (fleet
+age key) — no manual exports, no plaintext hostname in the repo.
 
 **Approval gate (testing phase)**: `tofu apply` confirms interactively;
 UI-triggered runs use Terrakube's native approval-step template. This gate is
