@@ -42,7 +42,7 @@ uncomment + bump the provider version when that PR ships.
 ## Layout
 
 ```text
-versions.tf       # terraform + provider pins, S3 backend (partial)
+versions.tf       # tofu + provider pins, Terrakube cloud backend
 providers.tf      # github provider, GITHUB_TOKEN auth
 variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
@@ -70,52 +70,49 @@ upstream via `data "http"`, not committed as a local template.
 
 ## Installation
 
-- **OpenTofu** (>= 1.10 for S3 native locking) and the
+- **OpenTofu** (>= 1.10; local pin in `.opentofu-version`) and the
   `integrations/github` provider, pinned in `versions.tf`. Dev shell via
   direnv:
 
   ```bash
   git clone git@github.com:dryvist/tofu-github.git
-  cd tofu-github && direnv allow   # provides tofu, terraform, terragrunt, aws-vault
+  cd tofu-github && direnv allow   # provides tofu, sops, linters
   ```
 
-- **AWS state backend bootstrapped.** The dedicated state bucket
-  (`tfstate-github-<account-id>`) and scoped IAM role (`tf-github`) must
-  exist. First-time setup runs once with elevated AWS admin creds —
-  see [`bootstrap/README.md`](bootstrap/README.md). After bootstrap, all
-  ongoing operations use the scoped role via `aws-vault`.
+- **A reachable Terrakube workspace.** State, locking, and remote
+  execution come from the homelab Terrakube instance; the `tofu-github`
+  workspace (and its sensitive org-admin `GITHUB_TOKEN` variable) is
+  defined as code in the platform repo. The platform is deliberately
+  not-24/7 — power its node on for off-hours work.
 
-- **`aws-vault` profile `tf-github`** in `~/.aws/config`. Profile shape
-  is documented in `bootstrap/README.md` → "Hand off to the operator".
-  Verify with `aws-vault exec tf-github -- aws sts get-caller-identity`
-  before running terragrunt.
+- **One-time login per machine** (no keychain, no stored passwords). The
+  Terrakube API FQDN is supplied by the environment (`TF_CLOUD_HOSTNAME`,
+  Doppler/sops-sourced) so no internal hostname is committed:
 
-- **`GITHUB_TOKEN` with `admin:org`** (the ORG_ADMIN token tier,
-  `gh-claude-org-admin`) for apply. The github provider reads it from
-  the environment; the default `DRYVIST` tier is read-only on org
-  rulesets and will `403` on apply.
+  ```bash
+  tofu login "$TF_CLOUD_HOSTNAME"
+  ```
+
+  Requires membership in the org's `terrakube-admins` team.
+
+No AWS account, no aws-vault, no local `GITHUB_TOKEN`: the github
+provider's org-admin credential is injected by Terrakube at run time.
 
 ## Usage
 
-Daily flow (after bootstrap):
+Daily flow:
 
 ```bash
-aws-vault exec tf-github -- terragrunt init    # one-time per worktree
-aws-vault exec tf-github -- terragrunt plan
-aws-vault exec tf-github -- terragrunt apply
+tofu init     # one-time per worktree
+tofu plan     # executes remotely; output streams back
+tofu apply    # remote apply, gated on plan confirmation
 ```
-
-`terragrunt.hcl` resolves the state bucket name from
-`get_aws_account_id()` at runtime, so no account identifier is committed.
 
 Validation only (no backend, no credentials):
 
 ```bash
 tofu init -backend=false && tofu validate
 ```
-
-First-time setup (one-time, elevated AWS creds): see
-[`bootstrap/README.md`](bootstrap/README.md).
 
 **Rolling out a rule safely.** Org-wide enforcement can block merges everywhere
 at once. For `markdown_lint_enforcement` (legacy default `evaluate`), use the
