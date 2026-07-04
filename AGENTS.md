@@ -63,9 +63,31 @@ tooling, not its Proxmox domain content.
 
 ## Applying
 
-Org ruleset changes require the **ORG_ADMIN** token tier
-(`gh-claude-org-admin`) — the provider needs `admin:org`. The default `DRYVIST`
-tier is read-only on org rulesets and will `403` on apply.
+Plans and applies execute **remotely on the homelab Terrakube**
+([dryvist/iac-platform](https://github.com/dryvist/iac-platform)) via the
+`cloud` block in `versions.tf` — run plain `tofu plan` / `tofu apply` and the
+output streams back. The org-admin `GITHUB_TOKEN` the provider needs
+(`admin:org`) is a **sensitive workspace variable in Terrakube**: it never
+exists on dev machines, in CI config, or in any keychain.
+
+Authentication (zero keychain, zero stored passwords):
+`tofu login "$TF_CLOUD_HOSTNAME"` once per machine (the Terrakube API FQDN
+comes from the environment — see `versions.tf`; browser → GitHub via dex;
+requires membership in the org's `terrakube-admins` team). Token lands in
+`~/.terraform.d/credentials.tfrc.json`.
+
+**Approval gate (testing phase)**: `tofu apply` confirms interactively;
+UI-triggered runs use Terrakube's native approval-step template. This gate is
+the TESTING-phase contract only — the end state is **full automation**, also
+native: flip the workspace to auto-apply (approval step removed from its
+template) and drive autonomous runs with Terrakube's scheduler. There is
+deliberately NO CI plan/apply workflow — the platform's native flows cover
+both phases (ci-gate.yml still validates offline).
+
+**Availability window**: the platform is deliberately not-24/7 (its node
+powers off nightly). If `tofu` can't reach the hostname, power the node on;
+never start an apply near the nightly shutdown. Operations details:
+iac-platform's `docs/runbook.md`.
 
 **New rulesets default to `active`.** Rules added going forward — push
 protection, branch protection, commit format, etc. — set their
@@ -84,55 +106,31 @@ tofu apply -var markdown_lint_enforcement=active
 
 ## State backend
 
-State for the org-rulesets stack lives in **its own dedicated S3 bucket
-and is gated by its own scoped IAM role.** Cross-stack state-bucket
-sharing is not used; every Terraform stack in this account gets its own
-bucket via the `terraform-aws-template` module, on the principle that
-"a misapply against this repo cannot reach another stack's state and
-its IAM grants don't widen as new stacks come online."
+State lives in the homelab **Terrakube** instance (TFC-compatible remote
+backend; workspace `tofu-github`), which stores state objects in the
+homelab object store and holds the run lock itself. Locking is inherent:
+concurrent runs against the workspace queue behind the active one.
 
 | Component | Value |
 | --- | --- |
-| State bucket | `tfstate-github-<account-id>` (us-east-2) |
-| State key | `github/terraform.tfstate` |
-| Bootstrap state key | `_bootstrap/terraform.tfstate` (same bucket) |
-| Lock | S3 native (`use_lockfile = true` — no DynamoDB) |
-| Encryption | AES256 / SSE-S3 (no KMS) |
-| IAM role | `tf-github` — scoped to that one bucket only |
+| Backend | empty `cloud {}` block; host/org/workspace from `TF_CLOUD_*` env |
+| Workspace | `tofu-github` (engine: tofu, version pinned platform-side) |
+| Execution | Remote, on the platform's executor |
+| Provider credential | `GITHUB_TOKEN` = sensitive Terrakube workspace variable |
+| Workspace definition | Code, in iac-platform `tofu/terrakube/workspaces.tf` |
 
-Identity flow:
+There is **no AWS involvement**: the previous S3 + `tf-github` IAM design
+(bootstrap/, terragrunt.hcl, aws-vault, MFA) was retired without ever being
+applied — this stack's first-ever state was created in Terrakube. History:
+the AWS design is preserved in git before this migration; do not resurrect
+it. Fleet siblings still on S3 migrate via `tofu init` state migration,
+NOT by re-bootstrapping AWS.
 
-1. Operator's underlying IAM user (e.g. `terraform`) sits in `~/.aws/config`
-   as a `source_profile`. MFA is required on this user — the role's
-   trust policy denies sessions without `aws:MultiFactorAuthPresent`.
-2. `aws-vault exec tf-github -- <cmd>` calls AWS STS to assume
-   `tf-github`. aws-vault prompts for MFA once per session and caches
-   the STS credentials.
-3. The STS credentials reach `tofu` / `terragrunt` via environment
-   variables. The `aws` provider in the github provider's wire-up
-   has no work — the github provider uses `GITHUB_TOKEN`, not AWS — but
-   the backend's S3 access does, and it's scoped to the one bucket.
-
-The aws-vault profile name (`tf-github`) **matches the role name** by
-convention. Sibling stacks bootstrapped via `terraform-aws-template`
-follow the same pattern: profile name = `tf-<project>` = role name.
-
-Future CI uses GitHub OIDC instead of MFA AssumeRole. The role's trust
-policy already accepts `repo:<github_org>/<github_repo>` on push to
-the default branch and on pull_request events — no operator user
-involvement. `.github/workflows/terragrunt.yml` is not in this repo
-yet; when added, it uses `aws-actions/configure-aws-credentials@v4`
-with `role-to-assume = arn:aws:iam::<account>:role/tf-github`.
-
-**Never** run this stack with the elevated bootstrap credentials
-(`iam-user` or any admin identity). Those are only for one-time
-`bootstrap/` applies. All ongoing operations — `terragrunt init`,
-`plan`, `apply` — go through `aws-vault exec tf-github`.
-
-First-time setup walkthrough lives in
-[`bootstrap/README.md`](bootstrap/README.md). Re-run only when the
-template's pinned ref bumps or the role / bucket configuration
-intentionally changes.
+Import-adoption of the live org rulesets (created out-of-band before this
+repo was ever applied) happens via the committed `import` blocks in
+`rulesets.tf` with GitHub-assigned IDs in `config/rulesets-defaults.yml` —
+the first plan must show those resources as imports / no-op updates, never
+as create-or-destroy.
 
 ## Cost policy
 
