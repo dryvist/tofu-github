@@ -15,12 +15,13 @@ terraform {
   #
   # The block is intentionally empty so no internal hostname, org login, or
   # workspace name is committed to this public repo. All three come from the
-  # environment at run time (Doppler / sops-sourced):
+  # environment at run time (pulled from OpenBao by .envrc):
   #   TF_CLOUD_HOSTNAME       the Terrakube API FQDN
   #   TF_CLOUD_ORGANIZATION   the managing org login
   #   TF_WORKSPACE            the workspace name (tofu-github)
-  # Humans authenticate once per machine with `tofu login "$TF_CLOUD_HOSTNAME"`;
-  # CI presents a team token via the matching TF_TOKEN_<host> variable.
+  # Operators authenticate once per machine with `tofu login "$TF_CLOUD_HOSTNAME"`
+  # (Terrakube's native flow; no team token — consumers use the platform's own
+  # run flows, not a stored CI credential).
   #
   # The platform is deliberately not-24/7 (control-plane doctrine) — if
   # init/plan can't reach the host, power the node on first. Use
