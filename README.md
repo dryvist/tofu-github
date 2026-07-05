@@ -87,9 +87,11 @@ upstream via `data "http"`, not committed as a local template.
 
 - **One-time login per machine** (no keychain, no stored passwords). The
   `TF_CLOUD_*` coordinates (`TF_CLOUD_HOSTNAME`, `TF_CLOUD_ORGANIZATION`,
-  `TF_WORKSPACE`) are decrypted from the committed, encrypted
-  `secrets/terrakube.sops.env` and exported by `.envrc` at `direnv allow`
-  (fleet age key) — so no internal hostname is committed in plaintext:
+  `TF_WORKSPACE`) are a fleet-wide fact owned by the platform, stored once in
+  OpenBao (`secret/platform/terrakube/main`). `.envrc` pulls them at
+  `direnv allow` via the platform AppRole (`BAO_ADDR` + role/secret ID from the
+  operator's environment) — so nothing sensitive, not even the internal
+  endpoint, is committed in this repo:
 
   ```bash
   tofu login "$TF_CLOUD_HOSTNAME"

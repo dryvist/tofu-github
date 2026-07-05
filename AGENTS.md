@@ -75,9 +75,10 @@ Authentication (zero keychain, zero stored passwords):
 comes from the environment — see `versions.tf`; browser → GitHub via dex;
 requires membership in the org's `terrakube-admins` team). Token lands in
 `~/.terraform.d/credentials.tfrc.json`. The `TF_CLOUD_*` coordinates
-(hostname, org, workspace) are decrypted from the committed, encrypted
-`secrets/terrakube.sops.env` and exported by `.envrc` at direnv load (fleet
-age key) — no manual exports, no plaintext hostname in the repo.
+(hostname, org, workspace) are a fleet-wide fact owned by the platform, stored
+once in OpenBao (`secret/platform/terrakube/main`) and pulled by `.envrc` at
+direnv load via the platform AppRole (`BAO_ADDR` + role/secret ID from the
+operator's environment) — no manual exports, nothing sensitive committed.
 
 **Approval gate (testing phase)**: `tofu apply` confirms interactively;
 UI-triggered runs use Terrakube's native approval-step template. This gate is
