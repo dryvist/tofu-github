@@ -64,10 +64,15 @@ variable "org_review_gate_enforcement" {
     external review. Non-admin actors (bots, external contributors) must
     obtain the review.
 
-    One of: disabled, evaluate, active. Defaults to "active".
+    Defaults to "disabled": this is a single-operator org today, so required
+    reviews only get in the way. The ruleset stays DEFINED as the documented
+    future-state placeholder — flip to "active" with `-var` (or change this
+    default) once AI bots merge as separate non-admin users that must be gated.
+
+    One of: disabled, evaluate, active.
   EOT
   type        = string
-  default     = "active"
+  default     = "disabled"
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_review_gate_enforcement)
