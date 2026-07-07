@@ -20,6 +20,7 @@ defined **once** here and applied to **every** repo automatically.
 | `github_organization_ruleset.org_branch_protection` | Quality gate on every default branch: required signatures, linear history, branch name pattern, strict Conventional Commits regex, PR thread resolution. **No bypass** — applies to everyone including org admins. |
 | `github_organization_ruleset.required_signatures` | Extends required signatures to every branch. Imported from the live org ruleset without narrowing its all-branch coverage. |
 | `github_organization_ruleset.org_review_gate` | Review gate on every default branch: 1 approving review + CODEOWNER review on PRs. **OrganizationAdmin bypass in `pull_request` mode** so admins can merge their own PRs; bots and other contributors must obtain the review. |
+| `github_organization_ruleset.docs_review_gate` | Review gate for docs + docs-starlight default branches: 1 approving review + last-push approval. Blocks autonomous bots from self-merging doc PRs. **OrganizationAdmin bypass** on merge. |
 | `github_organization_ruleset.markdown_lint` | Requires the markdownlint workflow in the org's `.github` repo to pass on every ref of every repo. Single source of truth: the workflow + `.markdownlint-cli2.yaml` both live in `.github`. `do_not_enforce_on_create` so brand-new repos don't fail before their default branch exists. |
 
 Imports needed on first apply (declared in `rulesets.tf` via `import`

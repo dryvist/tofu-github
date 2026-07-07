@@ -213,3 +213,42 @@ resource "github_organization_ruleset" "markdown_lint" {
     }
   }
 }
+
+# Org-wide review gate for docs + docs-starlight — requires 1 human review.
+#
+# This ruleset blocks autonomous apps (like hermes-docs-bot) from self-merging
+# to the documentation repositories. It enforces 1 approving review + last push
+# approval on docs and docs-starlight. OrganizationAdmins can bypass on merge.
+resource "github_organization_ruleset" "docs_review_gate" {
+  name        = "docs-review-gate"
+  target      = "branch"
+  enforcement = var.docs_review_gate_enforcement
+
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH"]
+      exclude = []
+    }
+    repository_name {
+      include = ["docs", "docs-starlight"]
+      exclude = []
+    }
+  }
+
+  rules {
+    pull_request {
+      required_approving_review_count   = 1
+      dismiss_stale_reviews_on_push     = true
+      require_code_owner_review         = false
+      require_last_push_approval        = true
+      required_review_thread_resolution = true
+      allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
+    }
+  }
+
+  bypass_actors {
+    actor_id    = 1
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
+}

@@ -93,3 +93,20 @@ variable "org_push_protection_enforcement" {
     error_message = "org_push_protection_enforcement must be one of: disabled, evaluate, active."
   }
 }
+
+variable "docs_review_gate_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the docs-review-gate ruleset on docs + docs-starlight.
+    Requires 1 approving review + last-push approval to block autonomous bots
+    from self-merging documentation PRs. OrganizationAdmin bypass.
+
+    One of: disabled, evaluate, active. Defaults to "active".
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.docs_review_gate_enforcement)
+    error_message = "docs_review_gate_enforcement must be one of: disabled, evaluate, active."
+  }
+}
