@@ -1,6 +1,10 @@
 # Terraform / OpenTofu
 .terraform/
+# Commit the root module's provider lock (a dependency lock, not state) so
+# provider versions are deterministic across machines and CI. Child-module
+# (modules/**) locks stay ignored.
 .terraform.lock.hcl
+!/.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 *.tfstate.backup
