@@ -20,6 +20,9 @@ module "repo_settings" {
   description = each.value.description
   topics      = each.value.topics
   visibility  = each.value.visibility
+  # Optional — most repos.yml entries omit it, which yamldecode simply drops
+  # from the map, so try() falls back to the module's own `false` default.
+  archived = try(each.value.archived, false)
 }
 
 # Import-on-first-apply: adopt every managed repo (and its two Dependabot

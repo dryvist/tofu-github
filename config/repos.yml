@@ -17,6 +17,11 @@
 #                a repo — never assume "public".
 #   description: GitHub repo description (1-line, shown on GitHub).
 #   topics:      List of GitHub topic tags.
+#   archived:    Optional, defaults to false. Set true only for a repo that is
+#                permanently frozen — record why (ADR, README banner) and
+#                reference it here. One-way: the GitHub API doesn't support
+#                unarchiving. See modules/repo-settings/variables.tf for the
+#                "most other settings become read-only" caveat.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
 # rulesets.tf already enforce signed commits, linear history, and Conventional
@@ -116,7 +121,11 @@ repos:
     description: "NixOS-on-Pi netboot.xyz + Proxmox auto-installer for unattended bare-metal install"
     topics: []
 
+  # Archived: superseded by nixos-ai, which salvaged the generic modules
+  # (PR #7) ahead of this repo's archival. See nixos-ai's
+  # docs/adr/0001-consolidate-on-nixos-ai.md for the decision.
   nix-ai-server:
     visibility: public
-    description: "NixOS bare-metal config for the dryvist AI host (server A, standalone)"
+    description: "NixOS bare-metal config for the dryvist AI host (server A, standalone) — archived, see nixos-ai"
     topics: []
+    archived: true

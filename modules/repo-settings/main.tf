@@ -26,6 +26,7 @@ resource "github_repository" "this" {
   topics      = var.topics
 
   visibility = var.visibility
+  archived   = var.archived
 
   has_issues      = true
   has_wiki        = false
