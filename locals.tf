@@ -7,6 +7,7 @@ locals {
   ruleset_imports            = local.rulesets_defaults.imports
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection
+  gitflow_defaults           = local.rulesets_defaults.gitflow
 
   # Org-level Actions variables, decoded from config/actions-variables.yml so
   # org_settings.tf carries no inline values.

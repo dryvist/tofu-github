@@ -52,3 +52,23 @@ branch_protection:
   allowed_merge_methods:
     - squash
     - rebase
+
+# Consumed by the git-flow pilot rulesets (org-gitflow-main / org-gitflow-develop
+# in rulesets.tf) for repos opted in via `gitflow: true` in config/repos.yml.
+# These repos run the git-flow model: develop is the integration default branch
+# (feature PRs squash-merge in, direct pushes allowed, back-merges land merge
+# commits) and main is the release branch (merge-commit-only PRs, no direct
+# pushes) so release/hotfix merges preserve full history.
+gitflow:
+  # Merge methods allowed on PRs into main. Merge-commit ONLY: a release or
+  # hotfix PR into main keeps the branch's commit history instead of squashing
+  # or rebasing it away. squash and rebase are removed from the main UI dropdown.
+  main_allowed_merge_methods:
+    - merge
+
+  # Conventional Commits OR a git-flow merge commit. Back-merges and release
+  # merges land "Merge branch ..." / "Merge pull request ..." subjects that the
+  # strict Conventional-Commits pattern above (commit_message_pattern) rejects,
+  # so the git-flow variant adds a leading "Merge " alternation. Everything else
+  # is the same v1.0.0 type set with an optional lowercase scope and `!`.
+  commit_message_pattern: '^(Merge .+|(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9\-]+\))?(!)?: .+)$'

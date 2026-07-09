@@ -20,9 +20,10 @@ module "repo_settings" {
   description = each.value.description
   topics      = each.value.topics
   visibility  = each.value.visibility
-  # Optional — most repos.yml entries omit it, which yamldecode simply drops
-  # from the map, so try() falls back to the module's own `false` default.
+  # Optional — most repos.yml entries omit these, which yamldecode simply drops
+  # from the map, so try() falls back to each module default (`false`).
   archived = try(each.value.archived, false)
+  gitflow  = try(each.value.gitflow, false)
 }
 
 # Import-on-first-apply: adopt every managed repo (and its two Dependabot
@@ -42,14 +43,18 @@ import {
   id       = each.key
 }
 
+# The two Dependabot sub-resources are count-gated to 0 on archived repos (they
+# can't be managed there), so their import targets are the [0] instance and the
+# archived repos are filtered out — importing to a count=0 instance would be an
+# invalid target.
 import {
-  for_each = local.repos
-  to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this
+  for_each = { for name, cfg in local.repos : name => cfg if !try(cfg.archived, false) }
+  to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this[0]
   id       = each.key
 }
 
 import {
-  for_each = local.repos
-  to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this
+  for_each = { for name, cfg in local.repos : name => cfg if !try(cfg.archived, false) }
+  to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this[0]
   id       = each.key
 }
