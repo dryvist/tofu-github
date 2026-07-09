@@ -1,7 +1,8 @@
 # Per-repo settings — the repository-settings half of the retired
 # `.github-tofu` nix-repo module. Baseline established on the nix-* family:
 # squash + rebase merges only (no merge commit), auto-merge on, branch deleted
-# on merge, web commit signoff required, wiki off.
+# on merge, web commit signoff required, wiki off. Git-flow repos (var.gitflow)
+# additionally allow merge commits — see allow_merge_commit below.
 #
 # Per-repo rulesets are intentionally NOT ported: the org-level rulesets in
 # ../../rulesets.tf already enforce signed commits, linear history, and
@@ -33,8 +34,11 @@ resource "github_repository" "this" {
   has_projects    = true
   has_discussions = false
 
-  allow_squash_merge          = true
-  allow_merge_commit          = false
+  allow_squash_merge = true
+  # Merge commits are off by default (linear history) but ON for git-flow repos,
+  # where release/hotfix PRs into main and back-merges into develop must land as
+  # merge commits to preserve branch history.
+  allow_merge_commit          = var.gitflow
   allow_rebase_merge          = true
   allow_auto_merge            = true
   delete_branch_on_merge      = true

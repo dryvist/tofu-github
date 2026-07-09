@@ -22,6 +22,13 @@
 #                reference it here. One-way: the GitHub API doesn't support
 #                unarchiving. See modules/repo-settings/variables.tf for the
 #                "most other settings become read-only" caveat.
+#   gitflow:     Optional, defaults to false. Set true to opt the repo into the
+#                git-flow model: the module additionally allows merge commits
+#                (kept off elsewhere), gitflow.tf creates a `develop` branch and
+#                makes it the default, and rulesets.tf binds the git-flow main /
+#                develop rulesets to it while excluding it from the linear-history
+#                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
+#                the opted-in set from this flag — set it here, nowhere else.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
 # rulesets.tf already enforce signed commits, linear history, and Conventional
@@ -29,13 +36,15 @@
 # (merge methods, auto-merge, branch deletion, wiki, web-commit signoff,
 # Dependabot, and the public-only secret-scanning block).
 #
-# This is the first increment — the nix-* family ported from the retired
-# `.github-tofu` scaffold. Expanding to every non-archived org repo is a
-# follow-up (see the tracking issue).
+# Seeded with the nix-* family ported from the retired `.github-tofu` scaffold,
+# then extended with the git-flow pilot repos (terraform-proxmox,
+# ansible-proxmox-apps, ai-assistant-instructions). Expanding to every
+# non-archived org repo is a follow-up (see the tracking issue).
 
 repos:
   nix-ai:
     visibility: public
+    gitflow: true
     description: "Your AI coding toolkit, declared in Nix — Claude, Gemini, Copilot, 15+ MCP servers, one flake"
     topics:
       - ai
@@ -52,6 +61,7 @@ repos:
 
   nix-darwin:
     visibility: public
+    gitflow: true
     description: "Flakes-based nix-darwin config for macOS — system packages, networking, security, and home-manager orchestration via Nix"
     topics:
       - darwin
@@ -120,6 +130,68 @@ repos:
     visibility: public
     description: "NixOS-on-Pi netboot.xyz + Proxmox auto-installer for unattended bare-metal install"
     topics: []
+
+  # Git-flow pilot repos beyond the nix-* family. Descriptions and topics are
+  # seeded from each repo's current live values so the first apply reconciles
+  # only the managed settings (merge methods, signoff, secret scanning, git-flow
+  # default branch) rather than churning metadata.
+  terraform-proxmox:
+    visibility: public
+    gitflow: true
+    description: "Infrastructure-as-Code automating Proxmox VE provisioning with Terraform/Terragrunt. Declarative management of VMs, LXC containers, networking, firewall rules. Includes cloud-init, Packer image building for Splunk, and AWS S3/DynamoDB state management for safe concurrent operations."
+    topics:
+      - automation
+      - aws-s3
+      - cloud-init
+      - devops
+      - docker
+      - homelab
+      - hypervisor
+      - iac
+      - infrastructure-as-code
+      - k3s
+      - lxc-containers
+      - packer
+      - proxmox
+      - splunk
+      - state-management
+      - terraform
+      - terragrunt
+      - virtualization
+
+  ansible-proxmox-apps:
+    visibility: public
+    gitflow: true
+    description: "Ansible roles for configuring applications on Proxmox VMs and LXC containers - includes Cribl Edge, Cribl Stream, HAProxy syslog load balancer, and common application patterns"
+    topics:
+      - ansible
+      - automation
+      - cribl
+      - devops
+      - haproxy
+      - infrastructure-as-code
+      - log-management
+      - lxc
+      - observability
+      - proxmox
+      - syslog
+      - virtualization
+
+  ai-assistant-instructions:
+    visibility: public
+    gitflow: true
+    description: "A comprehensive, vendor-agnostic framework for consistent AI-assisted development workflows - standardized instructions and commands that work seamlessly across Claude, Gemini, Copilot, and local AI models. See also: https://github.com/JacobPEvans/claude-code-plugins"
+    topics:
+      - agent-framework
+      - ai
+      - ai-orchestration
+      - claude-code
+      - claude-marketplace
+      - claude-skills
+      - development-tools
+      - gemini
+      - slash-commands
+      - workflow-automation
 
   # Archived: superseded by nixos-ai, which salvaged the generic modules
   # (PR #7) ahead of this repo's archival. See nixos-ai's
