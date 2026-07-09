@@ -50,8 +50,13 @@ resource "github_repository" "this" {
   # silently enable a paid feature on a private repo. The source module
   # hardcoded visibility = "public" and enabled these unconditionally — that
   # would charge GHAS the moment a private repo entered the inventory.
+  #
+  # Also skipped for archived repos: GitHub reports these settings read-only on an
+  # archived repo and rejects any change (an archived repo can sit with push
+  # protection disabled), so managing the block would make every plan error with
+  # "repository is archived, please remove the resource from your configuration".
   dynamic "security_and_analysis" {
-    for_each = var.visibility == "public" ? [1] : []
+    for_each = var.visibility == "public" && !var.archived ? [1] : []
 
     content {
       secret_scanning {
@@ -79,13 +84,32 @@ resource "github_repository" "this" {
 
 # Dependabot alerts — notifications when CVEs are detected in dependencies.
 # Free on public and private repos (dependency graph + Dependabot is not GHAS).
+#
+# Skipped (count = 0) on archived repos: the GitHub API rejects enabling or
+# disabling Dependabot on an archived repo, so a managed resource errors every
+# plan with "repository is archived, please remove the resource from your
+# configuration". The moved block migrates the ~unarchived repos from the
+# pre-count address (.this) to .this[0] without recreating anything.
 resource "github_repository_vulnerability_alerts" "this" {
+  count      = var.archived ? 0 : 1
   repository = github_repository.this.name
 }
 
-# Dependabot automatic security update PRs. Also free on public and private.
+moved {
+  from = github_repository_vulnerability_alerts.this
+  to   = github_repository_vulnerability_alerts.this[0]
+}
+
+# Dependabot automatic security update PRs. Also free on public and private,
+# and likewise unmanageable on archived repos (see above).
 resource "github_repository_dependabot_security_updates" "this" {
+  count      = var.archived ? 0 : 1
   repository = github_repository.this.name
   enabled    = true
   depends_on = [github_repository_vulnerability_alerts.this]
+}
+
+moved {
+  from = github_repository_dependabot_security_updates.this
+  to   = github_repository_dependabot_security_updates.this[0]
 }

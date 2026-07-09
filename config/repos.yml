@@ -195,9 +195,12 @@ repos:
 
   # Archived: superseded by nixos-ai, which salvaged the generic modules
   # (PR #7) ahead of this repo's archival. See nixos-ai's
-  # docs/adr/0001-consolidate-on-nixos-ai.md for the decision.
+  # docs/adr/0001-consolidate-on-nixos-ai.md for the decision. The description
+  # below must match the live value exactly — an archived repo's description is
+  # read-only via the GitHub API, so the archival pointer lives in this comment,
+  # not in the description string.
   nix-ai-server:
     visibility: public
-    description: "NixOS bare-metal config for the dryvist AI host (server A, standalone) — archived, see nixos-ai"
+    description: "NixOS bare-metal config for the dryvist AI host (server A, standalone)"
     topics: []
     archived: true

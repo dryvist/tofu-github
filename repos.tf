@@ -43,14 +43,18 @@ import {
   id       = each.key
 }
 
+# The two Dependabot sub-resources are count-gated to 0 on archived repos (they
+# can't be managed there), so their import targets are the [0] instance and the
+# archived repos are filtered out — importing to a count=0 instance would be an
+# invalid target.
 import {
-  for_each = local.repos
-  to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this
+  for_each = { for name, cfg in local.repos : name => cfg if !try(cfg.archived, false) }
+  to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this[0]
   id       = each.key
 }
 
 import {
-  for_each = local.repos
-  to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this
+  for_each = { for name, cfg in local.repos : name => cfg if !try(cfg.archived, false) }
+  to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this[0]
   id       = each.key
 }
