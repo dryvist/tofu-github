@@ -83,7 +83,7 @@ jobs:
       - name: OpenTofu Validate
         run: tofu validate -no-color
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@6e1e0642c0289bd619021bf6b34e3c08ed1e005a # v6
       - name: TFLint
         run: tflint --init && tflint -f compact
 
