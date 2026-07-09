@@ -80,6 +80,51 @@ variable "org_review_gate_enforcement" {
   }
 }
 
+variable "org_gitflow_main_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the git-flow `main` ruleset. Binds only the repos
+    opted into git-flow (local.gitflow_repos) on refs/heads/main: PRs required
+    (no direct pushes), merge-commit the only allowed merge method, PR thread
+    resolution, and a Conventional-Commits-or-merge message pattern. Linear
+    history is deliberately NOT required here — release/hotfix merges land as
+    merge commits. Signatures still come from the org-wide required_signatures
+    ruleset.
+
+    One of: disabled, evaluate, active. Defaults to "active" — new rulesets
+    apply enabled per the convention; the variable exists so a misbehaving rule
+    can be disabled with `-var` without a code change.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_gitflow_main_enforcement)
+    error_message = "org_gitflow_main_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
+variable "org_gitflow_develop_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the git-flow `develop` ruleset. Binds only the repos
+    opted into git-flow (local.gitflow_repos) on refs/heads/develop. develop is
+    the permissive integration branch: direct pushes ALLOWED (no PR requirement),
+    no linear-history requirement, and merge methods governed by repo settings.
+    The only rule is the Conventional-Commits-or-merge message pattern, so back-
+    merges from main land cleanly while feature-squash subjects stay conventional.
+    Signatures still come from the org-wide required_signatures ruleset.
+
+    One of: disabled, evaluate, active. Defaults to "active"; disable with `-var`
+    if it gets in the way during the pilot.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_gitflow_develop_enforcement)
+    error_message = "org_gitflow_develop_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_push_protection_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide push-protection ruleset (native

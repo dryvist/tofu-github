@@ -59,7 +59,10 @@ resource "github_organization_ruleset" "org_branch_protection" {
     }
     repository_name {
       include = ["~ALL"]
-      exclude = []
+      # Git-flow repos are excluded: their default branch is develop, where
+      # linear history and squash/rebase-only merges are wrong. Their main and
+      # develop protection comes from the org-gitflow-* rulesets below instead.
+      exclude = local.gitflow_repos
     }
   }
 
@@ -148,7 +151,11 @@ resource "github_organization_ruleset" "org_review_gate" {
     }
     repository_name {
       include = ["~ALL"]
-      exclude = []
+      # Git-flow repos are excluded so the review gate never binds develop (their
+      # default branch), where direct pushes and back-merges must flow freely.
+      # A gated main on a git-flow repo would be re-added by an org-gitflow-main
+      # variant if/when this ruleset is enabled — today it is disabled by default.
+      exclude = local.gitflow_repos
     }
   }
 
@@ -210,6 +217,91 @@ resource "github_organization_ruleset" "markdown_lint" {
         path          = ".github/workflows/markdownlint.yml"
         ref           = "refs/heads/main"
       }
+    }
+  }
+}
+
+# Git-flow `main` protection — the release branch on opted-in repos.
+#
+# Binds only local.gitflow_repos (derived from `gitflow: true` in
+# config/repos.yml) on the literal refs/heads/main — NOT ~DEFAULT_BRANCH, which
+# now points at develop on these repos. main is release-only: PRs required (no
+# direct pushes), merge-commit the sole merge method so release/hotfix history is
+# preserved, PR threads must resolve, and commit messages match the
+# Conventional-Commits-or-merge pattern. Deliberately no required_linear_history
+# (merge commits must land) and no required_signatures rule here — the org-wide
+# required_signatures ruleset already covers every branch, git-flow repos
+# included. These repos are excluded from org_branch_protection above, so this is
+# their main-branch policy in full.
+resource "github_organization_ruleset" "org_gitflow_main" {
+  name        = "org-gitflow-main"
+  target      = "branch"
+  enforcement = var.org_gitflow_main_enforcement
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/main"]
+      exclude = []
+    }
+    repository_name {
+      include = local.gitflow_repos
+      exclude = []
+    }
+  }
+
+  rules {
+    commit_message_pattern {
+      name     = "conventional-commits-or-merge"
+      operator = "regex"
+      pattern  = local.gitflow_defaults.commit_message_pattern
+      negate   = false
+    }
+
+    pull_request {
+      required_approving_review_count   = 0
+      dismiss_stale_reviews_on_push     = false
+      require_code_owner_review         = false
+      require_last_push_approval        = false
+      required_review_thread_resolution = true
+      allowed_merge_methods             = local.gitflow_defaults.main_allowed_merge_methods
+    }
+  }
+}
+
+# Git-flow `develop` protection — the integration branch on opted-in repos.
+#
+# Binds only local.gitflow_repos on the literal refs/heads/develop. develop is
+# intentionally permissive: NO pull_request rule (direct pushes allowed for
+# back-merges and integration work) and NO required_linear_history (back-merges
+# from main land as merge commits). The single rule is the
+# Conventional-Commits-or-merge message pattern, keeping subject quality without
+# rejecting "Merge branch ..." commits. Merge methods on develop are governed by
+# the repo settings (squash + rebase + merge all enabled for git-flow repos),
+# not restricted here — restricting them would require a pull_request rule, which
+# would wrongly force PRs. Signatures come from the org-wide required_signatures
+# ruleset.
+resource "github_organization_ruleset" "org_gitflow_develop" {
+  name        = "org-gitflow-develop"
+  target      = "branch"
+  enforcement = var.org_gitflow_develop_enforcement
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/develop"]
+      exclude = []
+    }
+    repository_name {
+      include = local.gitflow_repos
+      exclude = []
+    }
+  }
+
+  rules {
+    commit_message_pattern {
+      name     = "conventional-commits-or-merge"
+      operator = "regex"
+      pattern  = local.gitflow_defaults.commit_message_pattern
+      negate   = false
     }
   }
 }
