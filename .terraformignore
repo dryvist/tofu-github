@@ -1,0 +1,14 @@
+# Paths the remote backend (Terrakube) must not package when uploading the
+# config for a remote plan/apply. tofu honors this file when bundling.
+#
+# Without it, the Nix dev shell's .direnv/ (which contains symlinks into the
+# Nix store) breaks the upload the moment the store path is garbage-collected:
+#   Error: Failed to upload configuration files: ... lstat .../.direnv/...: no
+#   such file or directory
+# .git/ and .terraform/ are excluded by tofu's defaults; .direnv/ is not.
+.direnv/
+.terraform/
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
