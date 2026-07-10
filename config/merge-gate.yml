@@ -1,0 +1,60 @@
+# Merge Gate required-check inventory — every public, non-archived repo.
+#
+# required_status_checks rules match check-run context strings EXACTLY, and
+# repos emit different contexts for the same logical gate depending on their
+# caller shape:
+#
+#   gate:  `gate / Merge Gate` — the canonical thin caller (`jobs: gate:`
+#          calling dryvist/.github `_ci-gate.yml`). All new adopters land here.
+#   bare:  `Merge Gate` — the older inline ci-gate.yml pattern, where the
+#          alls-green summary job is a top-level job. These repos migrate to
+#          the thin caller over time; move each to `gate` when it does.
+#   ci:    `ci / Merge Gate` — caller job id `ci` (_ansible-ci.yml consumer).
+#
+# Adding a repo to a list REQUIRES its gate context to be live on main first —
+# a required check that never reports blocks every PR in the repo. Verify with
+# a recent PR's check-run names before editing. Private repos are out of scope
+# (org rulesets are a paid feature there); develop branches are out of scope
+# by design (required checks block direct pushes, which develop must allow).
+merge_gate:
+  contexts:
+    gate:
+      context: "gate / Merge Gate"
+      repos:
+        - .github
+        - ai-workflows
+        - cc-edge-claude-code-io
+        - cc-edge-pack-template
+        - cc-edge-the-mac-pack-io
+        - claude-code-best-practice
+        - claude-code-plugins
+        - claude-code-routines
+        - docs
+        - homelab-contracts
+        - iac-platform
+        - nix-ai-open-harness
+        - nix-claude-code
+        - nix-devenv
+        - nix-pxe-bootstrap
+        - nixos-ai
+        - python-template
+        - raycast-smart-issue
+        - tf-splunk-aws
+        - tofu-aws-templates
+    bare:
+      context: "Merge Gate"
+      repos:
+        - ai-assistant-instructions
+        - ansible-proxmox-apps
+        - ansible-splunk
+        - mlx-benchmarks
+        - nix-ai
+        - nix-darwin
+        - nix-home
+        - terraform-proxmox
+        - terraform-runs-on
+        - tofu-github
+    ci:
+      context: "ci / Merge Gate"
+      repos:
+        - ansible-proxmox
