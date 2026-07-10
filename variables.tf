@@ -143,3 +143,22 @@ variable "org_push_protection_enforcement" {
     error_message = "org_push_protection_enforcement must be one of: disabled, evaluate, active."
   }
 }
+
+variable "org_merge_gate_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-merge-gate-* required-check rulesets
+    (merge-gate.tf). "active" blocks merging into main until the repo's
+    Merge Gate check succeeds. Every repo listed in config/merge-gate.yml
+    must have its gate context live on main BEFORE this is active — a
+    required check that never reports freezes the repo's PRs.
+
+    One of: disabled, evaluate, active.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_merge_gate_enforcement)
+    error_message = "org_merge_gate_enforcement must be one of: disabled, evaluate, active."
+  }
+}
