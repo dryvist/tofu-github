@@ -77,6 +77,7 @@ repos:
 
   nix-home:
     visibility: public
+    gitflow: true
     description: "Cross-platform dev environment in Nix — git, zsh, VS Code, tmux, declared once, reproduced everywhere"
     topics:
       - cross-platform
@@ -92,6 +93,7 @@ repos:
 
   nix-devenv:
     visibility: public
+    gitflow: true
     description: "Reusable dev shells in Nix — Terraform, Ansible, Kubernetes, AI/ML, and more, one nix develop away"
     topics:
       - declarative
@@ -107,6 +109,7 @@ repos:
 
   nix-claude-code:
     visibility: public
+    gitflow: true
     description: "Declarative Claude Code in Nix — plugins, marketplaces, skills, hooks, MCP, and permissions as composable home-manager modules. Reproducible on macOS and Linux."
     topics:
       - agents
@@ -128,6 +131,7 @@ repos:
 
   nix-pxe-bootstrap:
     visibility: public
+    gitflow: true
     description: "NixOS-on-Pi netboot.xyz + Proxmox auto-installer for unattended bare-metal install"
     topics: []
 
