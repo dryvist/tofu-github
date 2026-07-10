@@ -1,4 +1,5 @@
-# Merge Gate required-check inventory — every public, non-archived repo.
+# Required-check inventory — the org Merge Gate on every public, non-archived
+# repo, plus any repo's own bespoke required check.
 #
 # required_status_checks rules match check-run context strings EXACTLY, and
 # repos emit different contexts for the same logical gate depending on their
@@ -11,11 +12,22 @@
 #          the thin caller over time; move each to `gate` when it does.
 #   ci:    `ci / Merge Gate` — caller job id `ci` (_ansible-ci.yml consumer).
 #
-# Adding a repo to a list REQUIRES its gate context to be live on main first —
+# A repo whose required check is NOT the org Merge Gate gets its own bucket:
+#
+#   astro-build: `Build & deploy` — docs-starlight's bespoke Astro build
+#                (ci.yml `build` job). It is a top-level job, so it reports a
+#                bare job-name context with no workflow prefix — same shape as
+#                `bare` above, NOT `CI / Build & deploy` (that prefix form only
+#                appears when a job CALLS a reusable workflow). Required so a
+#                red build can no longer auto-merge (incident: #130).
+#
+# Adding a repo to a list REQUIRES its check context to be live on main first —
 # a required check that never reports blocks every PR in the repo. Verify with
-# a recent PR's check-run names before editing. Private repos are out of scope
-# (org rulesets are a paid feature there); develop branches are out of scope
-# by design (required checks block direct pushes, which develop must allow).
+# a recent PR's check-run names before editing. Org rulesets apply to dryvist
+# private repos too — docs-starlight is the first private entry (astro-build);
+# the paid-feature gate is on secret scanning / push protection, not on
+# required-check rulesets. develop branches are out of scope by design
+# (required checks block direct pushes, which develop must allow).
 merge_gate:
   contexts:
     gate:
@@ -58,3 +70,7 @@ merge_gate:
       context: "ci / Merge Gate"
       repos:
         - ansible-proxmox
+    astro-build:
+      context: "Build & deploy"
+      repos:
+        - docs-starlight
