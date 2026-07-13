@@ -12,10 +12,10 @@ terraform {
     }
   }
 
+  # hostname and organization are intentionally omitted so no internal FQDN
+  # or org login is committed to this public repo. OpenTofu reads them from
+  # TF_CLOUD_HOSTNAME / TF_CLOUD_ORGANIZATION at run time.
   cloud {
-    hostname     = "terrakube-api.jacobpevans.com"
-    organization = "dryvist"
-
     workspaces {
       name = "tofu-github"
     }
