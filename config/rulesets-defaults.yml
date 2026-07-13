@@ -46,10 +46,10 @@ branch_protection:
   # `!` indicates a breaking change. Anything else fails.
   commit_message_pattern: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9\-]+\))?(!)?: .+$'
 
-  # Merge methods allowed on PRs. Merge commits explicitly disallowed —
-  # required_linear_history would reject them anyway, this just removes
-  # them from the GitHub UI dropdown so contributors can't try.
+  # Merge methods allowed on PRs. All merge methods are enabled
+  # so contributors can choose the appropriate one for their change.
   allowed_merge_methods:
+    - merge
     - squash
     - rebase
 
@@ -57,14 +57,20 @@ branch_protection:
 # in rulesets.tf) for repos opted in via `gitflow: true` in config/repos.yml.
 # These repos run the git-flow model: develop is the integration default branch
 # (feature PRs squash-merge in, direct pushes allowed, back-merges land merge
-# commits) and main is the release branch (merge-commit-only PRs, no direct
-# pushes) so release/hotfix merges preserve full history.
+# commits) and main is the release branch (no direct pushes). All merge methods
+# are enabled for both branches so release/hotfix merges preserve full history.
 gitflow:
-  # Merge methods allowed on PRs into main. Merge-commit ONLY: a release or
-  # hotfix PR into main keeps the branch's commit history instead of squashing
-  # or rebasing it away. squash and rebase are removed from the main UI dropdown.
+  # Merge methods allowed on PRs into main. Git-flow strictly requires preserving
+  # history on the release branch, so only merge commits are allowed.
   main_allowed_merge_methods:
     - merge
+
+  # Merge methods allowed on PRs into develop. All merge methods are enabled,
+  # allowing feature PRs to squash or rebase into the integration branch.
+  develop_allowed_merge_methods:
+    - merge
+    - squash
+    - rebase
 
   # Conventional Commits OR a git-flow merge commit. Back-merges and release
   # merges land "Merge branch ..." / "Merge pull request ..." subjects that the

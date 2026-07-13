@@ -48,13 +48,10 @@ variable "archived" {
 
 variable "gitflow" {
   description = <<-EOT
-    Opt the repo into the git-flow model. Defaults to false. When true, the
-    module additionally allows merge commits so release/hotfix PRs into main
-    (and back-merges into develop) can preserve history; squash and rebase
-    stay enabled. The rest of the git-flow wiring — the develop branch, the
-    default-branch switch, and the git-flow rulesets — lives at the root
-    (gitflow.tf, rulesets.tf), driven by the same `gitflow: true` flag in
-    config/repos.yml. Only this merge-method setting is per-repo module state.
+    Opt the repo into the git-flow model. Defaults to false. The git-flow wiring
+    — the develop branch, the default-branch switch, and the git-flow rulesets —
+    lives at the root (gitflow.tf, rulesets.tf), driven by the same `gitflow: true`
+    flag in config/repos.yml. This flag is kept here for module compatibility.
   EOT
   type        = bool
   default     = false

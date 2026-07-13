@@ -151,7 +151,7 @@ re-verify on every pricing change announcement.
 - Org and repo **rulesets** — branch protection, push protection rules
   (`max_file_size`, `file_extension_restriction`, `file_path_restriction`,
   `max_file_path_length`), required workflows, commit message pattern,
-  branch name pattern, required signatures, linear history
+  branch name pattern, required signatures
 - Classic branch protection (legacy)
 - **Dependabot** version updates + security updates + dependency graph
 - Org-level secrets, variables, custom repository roles

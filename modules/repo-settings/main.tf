@@ -1,11 +1,10 @@
 # Per-repo settings — the repository-settings half of the retired
 # `.github-tofu` nix-repo module. Baseline established on the nix-* family:
-# squash + rebase merges only (no merge commit), auto-merge on, branch deleted
-# on merge, web commit signoff required, wiki off. Git-flow repos (var.gitflow)
-# additionally allow merge commits — see allow_merge_commit below.
+# all merge methods enabled, auto-merge on, branch deleted
+# on merge, web commit signoff required, wiki off.
 #
 # Per-repo rulesets are intentionally NOT ported: the org-level rulesets in
-# ../../rulesets.tf already enforce signed commits, linear history, and
+# ../../rulesets.tf already enforce signed commits and
 # Conventional Commits on every repo. Porting the source module's per-repo
 # `all` ruleset would duplicate that org-level coverage.
 #
@@ -19,7 +18,7 @@ resource "github_repository" "this" {
   # visibility variable is validated and per-repo in config/repos.yml.
   # checkov:skip=CKV2_GIT_1: Branch protection is associated at the ORG level via
   # the github_organization_ruleset resources in ../../rulesets.tf (signed
-  # commits, linear history, Conventional Commits on every repo's default
+  # commits, Conventional Commits on every repo's default
   # branch). Checkov only detects per-repo branch_protection resources, not the
   # org rulesets that cover these repos — so this is a false negative for it.
   name        = var.name
@@ -34,11 +33,9 @@ resource "github_repository" "this" {
   has_projects    = true
   has_discussions = false
 
-  allow_squash_merge = true
-  # Merge commits are off by default (linear history) but ON for git-flow repos,
-  # where release/hotfix PRs into main and back-merges into develop must land as
-  # merge commits to preserve branch history.
-  allow_merge_commit          = var.gitflow
+  # All merge methods are enabled by default for all repositories.
+  allow_merge_commit          = true
+  allow_squash_merge          = true
   allow_rebase_merge          = true
   allow_auto_merge            = true
   delete_branch_on_merge      = true

@@ -34,7 +34,7 @@ resource "github_organization_ruleset" "org_push_protection" {
 # Reverse-engineered from the pre-Terraform "main" org ruleset plus new
 # directives: Conventional Commits enforcement and PR
 # thread resolution. No bypass actors: rules apply to everyone including
-# org admins, so an admin's own commits are still signed, linear, and
+# org admins, so an admin's own commits are still signed and
 # Conventional-format. A separate imported ruleset below extends signature
 # enforcement to every branch. Review-count enforcement lives in a separate
 # ruleset (org_review_gate) so admin bypass on review doesn't accidentally
@@ -57,18 +57,19 @@ resource "github_organization_ruleset" "org_branch_protection" {
       include = ["~DEFAULT_BRANCH"]
       exclude = []
     }
-    repository_name {
-      include = ["~ALL"]
-      # Git-flow repos are excluded: their default branch is develop, where
-      # linear history and squash/rebase-only merges are wrong. Their main and
-      # develop protection comes from the org-gitflow-* rulesets below instead.
-      exclude = local.gitflow_repos
+    # Git-flow repos are excluded: their default branch is develop. Their main and
+    # develop protection comes from the org-gitflow-* rulesets below instead.
+    repository_property {
+      exclude = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
   rules {
-    required_linear_history = true
-    required_signatures     = true
+    required_signatures = true
 
     branch_name_pattern {
       operator = local.branch_protection_defaults.branch_name_operator
@@ -130,13 +131,13 @@ resource "github_organization_ruleset" "required_signatures" {
 #
 # Separate ruleset (rather than rolled into org_branch_protection) so the
 # OrganizationAdmin bypass below applies ONLY to review enforcement, not
-# to signed commits, linear history, or commit format. Any OrganizationAdmin
+# to signed commits or commit format. Any OrganizationAdmin
 # can merge their own PRs without external review; non-admin actors (bots,
 # external contributors) must obtain the review and, on critical files,
 # a CODEOWNER review.
 #
 # bypass_mode = "pull_request": admins bypass on merge only, not on push.
-# Pushes still satisfy every other rule (signed, linear, conventional).
+# Pushes still satisfy every other rule (signed, conventional).
 # Granting an additional account the OrganizationAdmin role extends this
 # bypass to them — review the role assignments before adding admins.
 resource "github_organization_ruleset" "org_review_gate" {
@@ -149,13 +150,16 @@ resource "github_organization_ruleset" "org_review_gate" {
       include = ["~DEFAULT_BRANCH"]
       exclude = []
     }
-    repository_name {
-      include = ["~ALL"]
-      # Git-flow repos are excluded so the review gate never binds develop (their
-      # default branch), where direct pushes and back-merges must flow freely.
-      # A gated main on a git-flow repo would be re-added by an org-gitflow-main
-      # variant if/when this ruleset is enabled — today it is disabled by default.
-      exclude = local.gitflow_repos
+    # Git-flow repos are excluded so the review gate never binds develop (their
+    # default branch), where direct pushes and back-merges must flow freely.
+    # A gated main on a git-flow repo would be re-added by an org-gitflow-main
+    # variant if/when this ruleset is enabled — today it is disabled by default.
+    repository_property {
+      exclude = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -221,6 +225,35 @@ resource "github_organization_ruleset" "markdown_lint" {
   }
 }
 
+# Git-flow `base` protection — common rules for main and develop.
+#
+# Binds local.gitflow_repos on both refs/heads/main and refs/heads/develop.
+# Enforces required signatures on both branches in a single ruleset, as
+# requested.
+resource "github_organization_ruleset" "org_gitflow_base" {
+  name        = "org-gitflow-base"
+  target      = "branch"
+  enforcement = var.org_gitflow_base_enforcement
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/main", "refs/heads/develop"]
+      exclude = []
+    }
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
+    }
+  }
+
+  rules {
+    required_signatures = true
+  }
+}
+
 # Git-flow `main` protection — the release branch on opted-in repos.
 #
 # Binds only local.gitflow_repos (derived from `gitflow: true` in
@@ -228,11 +261,10 @@ resource "github_organization_ruleset" "markdown_lint" {
 # now points at develop on these repos. main is release-only: PRs required (no
 # direct pushes), merge-commit the sole merge method so release/hotfix history is
 # preserved, PR threads must resolve, and commit messages match the
-# Conventional-Commits-or-merge pattern. Deliberately no required_linear_history
-# (merge commits must land) and no required_signatures rule here — the org-wide
-# required_signatures ruleset already covers every branch, git-flow repos
-# included. These repos are excluded from org_branch_protection above, so this is
-# their main-branch policy in full.
+# Conventional-Commits-or-merge pattern. Signatures are enforced by
+# org_gitflow_base (and the org-wide all-branch ruleset).
+# These repos are excluded from org_branch_protection
+# above, so this is their main-branch policy in full.
 resource "github_organization_ruleset" "org_gitflow_main" {
   name        = "org-gitflow-main"
   target      = "branch"
@@ -243,9 +275,12 @@ resource "github_organization_ruleset" "org_gitflow_main" {
       include = ["refs/heads/main"]
       exclude = []
     }
-    repository_name {
-      include = local.gitflow_repos
-      exclude = []
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -271,14 +306,10 @@ resource "github_organization_ruleset" "org_gitflow_main" {
 # Git-flow `develop` protection — the integration branch on opted-in repos.
 #
 # Binds only local.gitflow_repos on the literal refs/heads/develop. develop is
-# intentionally permissive: NO pull_request rule (direct pushes allowed for
-# back-merges and integration work) and NO required_linear_history (back-merges
-# from main land as merge commits). The single rule is the
+# the integration branch: PRs required to enforce merge methods (squash, merge,
+# rebase). The single commit rule is the
 # Conventional-Commits-or-merge message pattern, keeping subject quality without
-# rejecting "Merge branch ..." commits. Merge methods on develop are governed by
-# the repo settings (squash + rebase + merge all enabled for git-flow repos),
-# not restricted here — restricting them would require a pull_request rule, which
-# would wrongly force PRs. Signatures come from the org-wide required_signatures
+# rejecting "Merge branch ..." commits. Signatures come from the org-gitflow-base
 # ruleset.
 resource "github_organization_ruleset" "org_gitflow_develop" {
   name        = "org-gitflow-develop"
@@ -290,9 +321,12 @@ resource "github_organization_ruleset" "org_gitflow_develop" {
       include = ["refs/heads/develop"]
       exclude = []
     }
-    repository_name {
-      include = local.gitflow_repos
-      exclude = []
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -302,6 +336,15 @@ resource "github_organization_ruleset" "org_gitflow_develop" {
       operator = "regex"
       pattern  = local.gitflow_defaults.commit_message_pattern
       negate   = false
+    }
+
+    pull_request {
+      required_approving_review_count   = 0
+      dismiss_stale_reviews_on_push     = false
+      require_code_owner_review         = false
+      require_last_push_approval        = false
+      required_review_thread_resolution = true
+      allowed_merge_methods             = local.gitflow_defaults.develop_allowed_merge_methods
     }
   }
 }

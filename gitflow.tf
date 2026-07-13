@@ -2,12 +2,27 @@
 #
 # A repo opts into the git-flow model with `gitflow: true` in config/repos.yml.
 # local.gitflow_repos derives that opted-in set once, and everything git-flow
-# reads from it: the repo-settings module's merge-commit toggle (repos.tf), the
-# develop branch + default-branch switch below, and the git-flow rulesets in
-# rulesets.tf. Adding or removing a repo from the pilot is a one-line edit to
-# config/repos.yml — never a second list to keep in sync.
+# reads from it: the develop branch + default-branch switch below, and the
+# git-flow rulesets in rulesets.tf. Adding or removing a repo from the pilot is
+# a one-line edit to config/repos.yml — never a second list to keep in sync.
 locals {
   gitflow_repos = [for name, cfg in local.repos : name if try(cfg.gitflow, false)]
+}
+
+# Define the custom property at the org level to tag git-flow enabled repositories
+resource "github_organization_custom_properties" "gitflow" {
+  property_name = "gitflow"
+  value_type    = "true_false"
+}
+
+# Attach the custom property to all gitflow repos
+resource "github_repository_custom_property" "gitflow" {
+  for_each = toset(local.gitflow_repos)
+
+  repository     = each.value
+  property_name  = github_organization_custom_properties.gitflow.property_name
+  property_type  = "true_false"
+  property_value = ["true"]
 }
 
 # develop branch, cut from main for each git-flow repo. github_branch only
@@ -28,7 +43,7 @@ resource "github_branch" "develop" {
 # reference to github_branch.develop makes this depend on the branch existing
 # first. Switching the default is what makes the org ~DEFAULT_BRANCH rulesets
 # follow develop — which is exactly why rulesets.tf excludes git-flow repos from
-# the linear-history default-branch rulesets and binds develop-specific rules by
+# the standard default-branch rulesets and binds develop-specific rules by
 # literal ref instead.
 resource "github_branch_default" "develop" {
   for_each = toset(local.gitflow_repos)
