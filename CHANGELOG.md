@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.1.1](https://github.com/dryvist/tofu-github/compare/v1.1.0...v1.1.1) (2026-07-13)
+
+
+### Bug Fixes
+
+* describe native Terrakube IaC ([#50](https://github.com/dryvist/tofu-github/issues/50)) ([48de270](https://github.com/dryvist/tofu-github/commit/48de2707cf807f136074d32ef4216d3984394648))
+
 ## [1.1.0](https://github.com/dryvist/tofu-github/compare/v1.0.0...v1.1.0) (2026-07-13)
 
 
