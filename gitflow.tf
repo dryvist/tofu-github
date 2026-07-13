@@ -9,6 +9,22 @@ locals {
   gitflow_repos = [for name, cfg in local.repos : name if try(cfg.gitflow, false)]
 }
 
+# Define the custom property at the org level to tag git-flow enabled repositories
+resource "github_organization_custom_properties" "gitflow" {
+  property_name = "gitflow"
+  value_type    = "true_false"
+}
+
+# Attach the custom property to all gitflow repos
+resource "github_repository_custom_property" "gitflow" {
+  for_each = toset(local.gitflow_repos)
+
+  repository     = each.value
+  property_name  = github_organization_custom_properties.gitflow.property_name
+  property_type  = "true_false"
+  property_value = ["true"]
+}
+
 # develop branch, cut from main for each git-flow repo. github_branch only
 # CREATES the branch — it does not reconcile later divergence — so once develop
 # exists and moves ahead of main through normal git-flow work, Terraform leaves

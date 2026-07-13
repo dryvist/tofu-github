@@ -57,11 +57,14 @@ resource "github_organization_ruleset" "org_branch_protection" {
       include = ["~DEFAULT_BRANCH"]
       exclude = []
     }
-    repository_name {
-      include = ["~ALL"]
-      # Git-flow repos are excluded: their default branch is develop. Their main and
-      # develop protection comes from the org-gitflow-* rulesets below instead.
-      exclude = local.gitflow_repos
+    # Git-flow repos are excluded: their default branch is develop. Their main and
+    # develop protection comes from the org-gitflow-* rulesets below instead.
+    repository_property {
+      exclude = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -147,13 +150,16 @@ resource "github_organization_ruleset" "org_review_gate" {
       include = ["~DEFAULT_BRANCH"]
       exclude = []
     }
-    repository_name {
-      include = ["~ALL"]
-      # Git-flow repos are excluded so the review gate never binds develop (their
-      # default branch), where direct pushes and back-merges must flow freely.
-      # A gated main on a git-flow repo would be re-added by an org-gitflow-main
-      # variant if/when this ruleset is enabled — today it is disabled by default.
-      exclude = local.gitflow_repos
+    # Git-flow repos are excluded so the review gate never binds develop (their
+    # default branch), where direct pushes and back-merges must flow freely.
+    # A gated main on a git-flow repo would be re-added by an org-gitflow-main
+    # variant if/when this ruleset is enabled — today it is disabled by default.
+    repository_property {
+      exclude = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -234,9 +240,12 @@ resource "github_organization_ruleset" "org_gitflow_base" {
       include = ["refs/heads/main", "refs/heads/develop"]
       exclude = []
     }
-    repository_name {
-      include = local.gitflow_repos
-      exclude = []
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -266,9 +275,12 @@ resource "github_organization_ruleset" "org_gitflow_main" {
       include = ["refs/heads/main"]
       exclude = []
     }
-    repository_name {
-      include = local.gitflow_repos
-      exclude = []
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
@@ -309,9 +321,12 @@ resource "github_organization_ruleset" "org_gitflow_develop" {
       include = ["refs/heads/develop"]
       exclude = []
     }
-    repository_name {
-      include = local.gitflow_repos
-      exclude = []
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 
