@@ -80,13 +80,31 @@ variable "org_review_gate_enforcement" {
   }
 }
 
+variable "org_gitflow_base_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the git-flow `base` ruleset. Binds the repos opted into
+    git-flow (local.gitflow_repos) on refs/heads/main and refs/heads/develop.
+    Enforces required signatures for both branches in a single ruleset.
+
+    One of: disabled, evaluate, active. Defaults to "active" — new rulesets
+    enforce directly.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_gitflow_base_enforcement)
+    error_message = "Enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_gitflow_main_enforcement" {
   description = <<-EOT
     Enforcement mode for the git-flow `main` ruleset. Binds only the repos
     opted into git-flow (local.gitflow_repos) on refs/heads/main: PRs required
     (no direct pushes), merge-commit the only allowed merge method, PR thread
     resolution, and a Conventional-Commits-or-merge message pattern.
-    Signatures still come from the org-wide required_signatures
+    Signatures come from the org-gitflow-base ruleset (and org-wide).
     ruleset.
 
     One of: disabled, evaluate, active. Defaults to "active" — new rulesets
@@ -106,11 +124,11 @@ variable "org_gitflow_develop_enforcement" {
   description = <<-EOT
     Enforcement mode for the git-flow `develop` ruleset. Binds only the repos
     opted into git-flow (local.gitflow_repos) on refs/heads/develop. develop is
-    the permissive integration branch: direct pushes ALLOWED (no PR requirement),
-    and merge methods governed by repo settings.
+    the integration branch: PRs required (no direct pushes) to enforce
+    merge methods (squash, merge, rebase).
     The only rule is the Conventional-Commits-or-merge message pattern, so back-
     merges from main land cleanly while feature-squash subjects stay conventional.
-    Signatures still come from the org-wide required_signatures ruleset.
+    Signatures come from the org-gitflow-base ruleset (and org-wide).
 
     One of: disabled, evaluate, active. Defaults to "active"; disable with `-var`
     if it gets in the way during the pilot.

@@ -219,6 +219,32 @@ resource "github_organization_ruleset" "markdown_lint" {
   }
 }
 
+# Git-flow `base` protection — common rules for main and develop.
+#
+# Binds local.gitflow_repos on both refs/heads/main and refs/heads/develop.
+# Enforces required signatures on both branches in a single ruleset, as
+# requested.
+resource "github_organization_ruleset" "org_gitflow_base" {
+  name        = "org-gitflow-base"
+  target      = "branch"
+  enforcement = var.org_gitflow_base_enforcement
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/main", "refs/heads/develop"]
+      exclude = []
+    }
+    repository_name {
+      include = local.gitflow_repos
+      exclude = []
+    }
+  }
+
+  rules {
+    required_signatures = true
+  }
+}
+
 # Git-flow `main` protection — the release branch on opted-in repos.
 #
 # Binds only local.gitflow_repos (derived from `gitflow: true` in
@@ -226,9 +252,9 @@ resource "github_organization_ruleset" "markdown_lint" {
 # now points at develop on these repos. main is release-only: PRs required (no
 # direct pushes), merge-commit the sole merge method so release/hotfix history is
 # preserved, PR threads must resolve, and commit messages match the
-# Conventional-Commits-or-merge pattern. Deliberately no required_signatures rule
-# here — the org-wide required_signatures ruleset already covers every branch,
-# git-flow repos included. These repos are excluded from org_branch_protection
+# Conventional-Commits-or-merge pattern. Signatures are enforced by
+# org_gitflow_base (and the org-wide all-branch ruleset).
+# These repos are excluded from org_branch_protection
 # above, so this is their main-branch policy in full.
 resource "github_organization_ruleset" "org_gitflow_main" {
   name        = "org-gitflow-main"
@@ -268,13 +294,10 @@ resource "github_organization_ruleset" "org_gitflow_main" {
 # Git-flow `develop` protection — the integration branch on opted-in repos.
 #
 # Binds only local.gitflow_repos on the literal refs/heads/develop. develop is
-# intentionally permissive: NO pull_request rule (direct pushes allowed for
-# back-merges and integration work). The single rule is the
+# the integration branch: PRs required to enforce merge methods (squash, merge,
+# rebase). The single commit rule is the
 # Conventional-Commits-or-merge message pattern, keeping subject quality without
-# rejecting "Merge branch ..." commits. Merge methods on develop are governed by
-# the repo settings (squash + rebase + merge all enabled for git-flow repos),
-# not restricted here — restricting them would require a pull_request rule, which
-# would wrongly force PRs. Signatures come from the org-wide required_signatures
+# rejecting "Merge branch ..." commits. Signatures come from the org-gitflow-base
 # ruleset.
 resource "github_organization_ruleset" "org_gitflow_develop" {
   name        = "org-gitflow-develop"
@@ -298,6 +321,15 @@ resource "github_organization_ruleset" "org_gitflow_develop" {
       operator = "regex"
       pattern  = local.gitflow_defaults.commit_message_pattern
       negate   = false
+    }
+
+    pull_request {
+      required_approving_review_count   = 0
+      dismiss_stale_reviews_on_push     = false
+      require_code_owner_review         = false
+      require_last_push_approval        = false
+      required_review_thread_resolution = true
+      allowed_merge_methods             = local.gitflow_defaults.develop_allowed_merge_methods
     }
   }
 }

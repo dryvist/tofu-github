@@ -60,10 +60,14 @@ branch_protection:
 # commits) and main is the release branch (no direct pushes). All merge methods
 # are enabled for both branches so release/hotfix merges preserve full history.
 gitflow:
-  # Merge methods allowed on PRs into main. All merge methods are enabled, allowing
-  # a release or hotfix PR into main to keep the branch's commit history instead
-  # of squashing or rebasing it away if a merge commit is selected.
+  # Merge methods allowed on PRs into main. Git-flow strictly requires preserving
+  # history on the release branch, so only merge commits are allowed.
   main_allowed_merge_methods:
+    - merge
+
+  # Merge methods allowed on PRs into develop. All merge methods are enabled,
+  # allowing feature PRs to squash or rebase into the integration branch.
+  develop_allowed_merge_methods:
     - merge
     - squash
     - rebase
