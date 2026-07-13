@@ -34,7 +34,7 @@ resource "github_organization_ruleset" "org_push_protection" {
 # Reverse-engineered from the pre-Terraform "main" org ruleset plus new
 # directives: Conventional Commits enforcement and PR
 # thread resolution. No bypass actors: rules apply to everyone including
-# org admins, so an admin's own commits are still signed, linear, and
+# org admins, so an admin's own commits are still signed and
 # Conventional-format. A separate imported ruleset below extends signature
 # enforcement to every branch. Review-count enforcement lives in a separate
 # ruleset (org_review_gate) so admin bypass on review doesn't accidentally
@@ -59,16 +59,14 @@ resource "github_organization_ruleset" "org_branch_protection" {
     }
     repository_name {
       include = ["~ALL"]
-      # Git-flow repos are excluded: their default branch is develop, where
-      # linear history and squash/rebase-only merges are wrong. Their main and
+      # Git-flow repos are excluded: their default branch is develop. Their main and
       # develop protection comes from the org-gitflow-* rulesets below instead.
       exclude = local.gitflow_repos
     }
   }
 
   rules {
-    required_linear_history = true
-    required_signatures     = true
+    required_signatures = true
 
     branch_name_pattern {
       operator = local.branch_protection_defaults.branch_name_operator
@@ -130,13 +128,13 @@ resource "github_organization_ruleset" "required_signatures" {
 #
 # Separate ruleset (rather than rolled into org_branch_protection) so the
 # OrganizationAdmin bypass below applies ONLY to review enforcement, not
-# to signed commits, linear history, or commit format. Any OrganizationAdmin
+# to signed commits or commit format. Any OrganizationAdmin
 # can merge their own PRs without external review; non-admin actors (bots,
 # external contributors) must obtain the review and, on critical files,
 # a CODEOWNER review.
 #
 # bypass_mode = "pull_request": admins bypass on merge only, not on push.
-# Pushes still satisfy every other rule (signed, linear, conventional).
+# Pushes still satisfy every other rule (signed, conventional).
 # Granting an additional account the OrganizationAdmin role extends this
 # bypass to them — review the role assignments before adding admins.
 resource "github_organization_ruleset" "org_review_gate" {
@@ -228,11 +226,10 @@ resource "github_organization_ruleset" "markdown_lint" {
 # now points at develop on these repos. main is release-only: PRs required (no
 # direct pushes), merge-commit the sole merge method so release/hotfix history is
 # preserved, PR threads must resolve, and commit messages match the
-# Conventional-Commits-or-merge pattern. Deliberately no required_linear_history
-# (merge commits must land) and no required_signatures rule here — the org-wide
-# required_signatures ruleset already covers every branch, git-flow repos
-# included. These repos are excluded from org_branch_protection above, so this is
-# their main-branch policy in full.
+# Conventional-Commits-or-merge pattern. Deliberately no required_signatures rule
+# here — the org-wide required_signatures ruleset already covers every branch,
+# git-flow repos included. These repos are excluded from org_branch_protection
+# above, so this is their main-branch policy in full.
 resource "github_organization_ruleset" "org_gitflow_main" {
   name        = "org-gitflow-main"
   target      = "branch"
@@ -272,8 +269,7 @@ resource "github_organization_ruleset" "org_gitflow_main" {
 #
 # Binds only local.gitflow_repos on the literal refs/heads/develop. develop is
 # intentionally permissive: NO pull_request rule (direct pushes allowed for
-# back-merges and integration work) and NO required_linear_history (back-merges
-# from main land as merge commits). The single rule is the
+# back-merges and integration work). The single rule is the
 # Conventional-Commits-or-merge message pattern, keeping subject quality without
 # rejecting "Merge branch ..." commits. Merge methods on develop are governed by
 # the repo settings (squash + rebase + merge all enabled for git-flow repos),

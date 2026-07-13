@@ -23,15 +23,14 @@
 #                unarchiving. See modules/repo-settings/variables.tf for the
 #                "most other settings become read-only" caveat.
 #   gitflow:     Optional, defaults to false. Set true to opt the repo into the
-#                git-flow model: the module additionally allows merge commits
-#                (kept off elsewhere), gitflow.tf creates a `develop` branch and
+#                git-flow model: gitflow.tf creates a `develop` branch and
 #                makes it the default, and rulesets.tf binds the git-flow main /
-#                develop rulesets to it while excluding it from the linear-history
+#                develop rulesets to it while excluding it from the standard
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
 #                the opted-in set from this flag — set it here, nowhere else.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
-# rulesets.tf already enforce signed commits, linear history, and Conventional
+# rulesets.tf already enforce signed commits and Conventional
 # Commits on every repo. This config manages only repository *settings*
 # (merge methods, auto-merge, branch deletion, wiki, web-commit signoff,
 # Dependabot, and the public-only secret-scanning block).

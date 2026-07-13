@@ -1,7 +1,7 @@
 # Per-repo settings for the repos this config governs. The repository-settings
 # half ported from the retired `.github-tofu` scaffold (its per-repo rulesets
-# are dropped — the org rulesets in rulesets.tf already cover signed commits,
-# linear history, and Conventional Commits on every repo).
+# are dropped — the org rulesets in rulesets.tf already cover signed commits and
+# Conventional Commits on every repo).
 #
 # config/repos.yml is the single source of truth for which repos are managed
 # and their per-repo metadata (visibility, description, topics). The owner is

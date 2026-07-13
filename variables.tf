@@ -21,7 +21,7 @@ variable "markdown_lint_enforcement" {
 variable "org_branch_protection_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide branch-protection ruleset on default
-    branches. Quality rules — required signatures, linear history, branch
+    branches. Quality rules — required signatures, branch
     name pattern, Conventional Commits commit messages, PR thread
     resolution. NO bypass actors: applies to everyone, so admin-authored
     commits get the same quality gates as everyone else.
@@ -85,9 +85,8 @@ variable "org_gitflow_main_enforcement" {
     Enforcement mode for the git-flow `main` ruleset. Binds only the repos
     opted into git-flow (local.gitflow_repos) on refs/heads/main: PRs required
     (no direct pushes), merge-commit the only allowed merge method, PR thread
-    resolution, and a Conventional-Commits-or-merge message pattern. Linear
-    history is deliberately NOT required here — release/hotfix merges land as
-    merge commits. Signatures still come from the org-wide required_signatures
+    resolution, and a Conventional-Commits-or-merge message pattern.
+    Signatures still come from the org-wide required_signatures
     ruleset.
 
     One of: disabled, evaluate, active. Defaults to "active" — new rulesets
@@ -108,7 +107,7 @@ variable "org_gitflow_develop_enforcement" {
     Enforcement mode for the git-flow `develop` ruleset. Binds only the repos
     opted into git-flow (local.gitflow_repos) on refs/heads/develop. develop is
     the permissive integration branch: direct pushes ALLOWED (no PR requirement),
-    no linear-history requirement, and merge methods governed by repo settings.
+    and merge methods governed by repo settings.
     The only rule is the Conventional-Commits-or-merge message pattern, so back-
     merges from main land cleanly while feature-squash subjects stay conventional.
     Signatures still come from the org-wide required_signatures ruleset.
