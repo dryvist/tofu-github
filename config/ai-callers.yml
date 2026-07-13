@@ -15,7 +15,7 @@ repos:
   nix-ai:
   nix-claude-code:
   nix-home:
-  terraform-proxmox:
+  tofu-proxmox:
   ansible-proxmox:
   ansible-proxmox-apps:
   ansible-splunk:

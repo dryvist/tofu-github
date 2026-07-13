@@ -124,7 +124,7 @@ concurrent runs against the workspace queue behind the active one.
 | Workspace definition | Code, in iac-platform `tofu/terrakube/workspaces.tf` |
 
 There is **no AWS involvement**: the previous S3 + `tf-github` IAM design
-(bootstrap/, terragrunt.hcl, aws-vault, MFA) was retired without ever being
+(the bootstrap directory, generated backend wrapper, aws-vault, and MFA path) was retired without ever being
 applied — this stack's first-ever state was created in Terrakube. History:
 the AWS design is preserved in git before this migration; do not resurrect
 it. Fleet siblings still on S3 migrate via `tofu init` state migration,

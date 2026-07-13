@@ -1,7 +1,11 @@
-# Authentication: the provider reads the GITHUB_TOKEN environment variable.
-# Managing org-level rulesets requires a token with `admin:org`. Apply with the
-# ORG_ADMIN token tier (gh-claude-org-admin); the default DRYVIST tier is
-# read-only on org rulesets and will 403 on apply.
+provider "vault" {}
+
+ephemeral "vault_kv_secret_v2" "github" {
+  mount = "secret"
+  name  = "infrastructure/github"
+}
+
 provider "github" {
   owner = "dryvist"
+  token = ephemeral.vault_kv_secret_v2.github.data.GITHUB_TOKEN
 }

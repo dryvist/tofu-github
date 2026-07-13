@@ -86,7 +86,6 @@ doppler.json
 # Terraform / OpenTofu state & tfvars are secret-bearing
 **/.terraform/*
 *.tfplan
-terragrunt-debug.tfvars.json
 !*.tfvars.example
 
 # AI assistant machine-local state (committed .claude/settings.json, rules, CLAUDE.md stay)
