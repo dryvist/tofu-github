@@ -139,13 +139,12 @@ repos:
   # seeded from each repo's current live values so the first apply reconciles
   # only the managed settings (merge methods, signoff, secret scanning, git-flow
   # default branch) rather than churning metadata.
-  terraform-proxmox:
+  tofu-proxmox:
     visibility: public
     gitflow: true
-    description: "Infrastructure-as-Code automating Proxmox VE provisioning with Terraform/Terragrunt. Declarative management of VMs, LXC containers, networking, firewall rules. Includes cloud-init, Packer image building for Splunk, and AWS S3/DynamoDB state management for safe concurrent operations."
+    description: "OpenTofu infrastructure-as-code for Proxmox VE, executed by homelab Terrakube with native OpenBao credentials and workspace locking."
     topics:
       - automation
-      - aws-s3
       - cloud-init
       - devops
       - docker
@@ -159,8 +158,10 @@ repos:
       - proxmox
       - splunk
       - state-management
+      - openbao
+      - opentofu
+      - terrakube
       - terraform
-      - terragrunt
       - virtualization
 
   ansible-proxmox-apps:
