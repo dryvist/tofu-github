@@ -332,3 +332,114 @@ import {
   to = github_branch.develop["tofu-proxmox"]
   id = "tofu-proxmox:develop"
 }
+
+# --- re-adopt the new-key AI issue labels -----------------------------------
+# github_issue_label CREATE does a plain POST and 422s ("already_exists") on a
+# label that already exists -- it does NOT upsert. The 21 labels carried across
+# the rename are live but, after the old-key forgets above, unmanaged. Import
+# adopts each under the new key instead of failing to create it.
+import {
+  to = github_issue_label.ai["tofu-proxmox/ai:created"]
+  id = "tofu-proxmox:ai:created"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/ai:ready"]
+  id = "tofu-proxmox:ai:ready"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/priority:critical"]
+  id = "tofu-proxmox:priority:critical"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/priority:high"]
+  id = "tofu-proxmox:priority:high"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/priority:low"]
+  id = "tofu-proxmox:priority:low"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/priority:medium"]
+  id = "tofu-proxmox:priority:medium"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/size:l"]
+  id = "tofu-proxmox:size:l"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/size:m"]
+  id = "tofu-proxmox:size:m"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/size:s"]
+  id = "tofu-proxmox:size:s"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/size:xl"]
+  id = "tofu-proxmox:size:xl"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/size:xs"]
+  id = "tofu-proxmox:size:xs"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:breaking"]
+  id = "tofu-proxmox:type:breaking"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:bug"]
+  id = "tofu-proxmox:type:bug"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:chore"]
+  id = "tofu-proxmox:type:chore"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:ci"]
+  id = "tofu-proxmox:type:ci"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:docs"]
+  id = "tofu-proxmox:type:docs"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:feature"]
+  id = "tofu-proxmox:type:feature"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:perf"]
+  id = "tofu-proxmox:type:perf"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:refactor"]
+  id = "tofu-proxmox:type:refactor"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:security"]
+  id = "tofu-proxmox:type:security"
+}
+
+import {
+  to = github_issue_label.ai["tofu-proxmox/type:test"]
+  id = "tofu-proxmox:type:test"
+}
+
