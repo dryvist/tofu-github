@@ -43,6 +43,32 @@ removed {
   }
 }
 
+# The module also has two count-gated sub-resources (vulnerability_alerts,
+# dependabot_security_updates) that live in state under the old key; forget them
+# too, or the orphaned module instance keeps them and they plan to destroy. The
+# new-key equivalents are re-adopted by the import blocks in repos.tf.
+moved {
+  from = module.repo_settings["terraform-proxmox"].github_repository_vulnerability_alerts.this[0]
+  to   = github_repository_vulnerability_alerts.rename_orphan
+}
+removed {
+  from = github_repository_vulnerability_alerts.rename_orphan
+  lifecycle {
+    destroy = false
+  }
+}
+
+moved {
+  from = module.repo_settings["terraform-proxmox"].github_repository_dependabot_security_updates.this[0]
+  to   = github_repository_dependabot_security_updates.rename_orphan
+}
+removed {
+  from = github_repository_dependabot_security_updates.rename_orphan
+  lifecycle {
+    destroy = false
+  }
+}
+
 # --- develop branch + default ----------------------------------------------
 moved {
   from = github_branch.develop["terraform-proxmox"]
