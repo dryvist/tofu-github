@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.1.2](https://github.com/dryvist/tofu-github/compare/v1.1.1...v1.1.2) (2026-07-14)
+
+
+### Bug Fixes
+
+* **vault:** skip child token creation in vault provider ([#54](https://github.com/dryvist/tofu-github/issues/54)) ([ea4bbda](https://github.com/dryvist/tofu-github/commit/ea4bbda5fee12e3e13d0a293693b1c49bd15cb44))
+
 ## [1.1.1](https://github.com/dryvist/tofu-github/compare/v1.1.0...v1.1.1) (2026-07-13)
 
 
