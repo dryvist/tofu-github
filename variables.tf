@@ -18,6 +18,30 @@ variable "markdown_lint_enforcement" {
   }
 }
 
+variable "conventions_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-wide repo-conventions presence ruleset
+    (LICENSE, AGENTS.md, a Nix dev-shell entry, and a release-please config).
+
+    Defaults to "evaluate" (dry-run): the ruleset reports results in the org
+    Rulesets > Insights tab WITHOUT blocking any merges, and the injected
+    workflow additionally defaults to WARN (exit 0). This double-soft posture
+    lets the rule roll out across every repo without breaking the many that
+    are not yet compliant. Escalation path: repos opt in to hard failure via
+    the CONVENTIONS_STRICT repository variable, then flip this to "active"
+    once Insights shows the fleet is green.
+
+    One of: disabled, evaluate, active.
+  EOT
+  type        = string
+  default     = "evaluate"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.conventions_enforcement)
+    error_message = "conventions_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_branch_protection_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide branch-protection ruleset on default
