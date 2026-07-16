@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.2.0](https://github.com/dryvist/tofu-github/compare/v1.1.2...v1.2.0) (2026-07-16)
+
+
+### Features
+
+* **rulesets:** add org-conventions presence ruleset (soft rollout) ([#58](https://github.com/dryvist/tofu-github/issues/58)) ([bde4f71](https://github.com/dryvist/tofu-github/commit/bde4f71157f8726eea23e95909e0fd9d245a2a5e))
+
 ## [1.1.2](https://github.com/dryvist/tofu-github/compare/v1.1.1...v1.1.2) (2026-07-14)
 
 
