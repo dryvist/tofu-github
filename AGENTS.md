@@ -76,9 +76,10 @@ comes from the environment — see `versions.tf`; browser → GitHub via dex;
 requires membership in the org's `terrakube-admins` team). Token lands in
 `~/.terraform.d/credentials.tfrc.json`. The `TF_CLOUD_*` coordinates
 (hostname, org, workspace) are a fleet-wide fact owned by the platform, stored
-once in OpenBao (`secret/platform/terrakube/main`) and pulled by `.envrc` at
-direnv load via the platform AppRole (`BAO_ADDR` + role/secret ID from the
-operator's environment) — no manual exports, nothing sensitive committed.
+once in OpenBao (`secret/platform/terrakube/main`) and dynamically generated
+by the shared `nix-devenv` helper at `direnv allow` via the platform AppRole
+(`BAO_ADDR` + role/secret ID from the operator's environment) — no manual
+exports, nothing sensitive committed.
 
 **Approval gate (testing phase)**: `tofu apply` confirms interactively;
 UI-triggered runs use Terrakube's native approval-step template. This gate is
