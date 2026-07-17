@@ -166,6 +166,31 @@ variable "org_gitflow_develop_enforcement" {
   }
 }
 
+variable "org_gitflow_copilot_review_enforcement" {
+  description = <<-EOT
+    Enforcement mode for automatic Copilot code review on git-flow repos'
+    develop branch only (not main, which is release-only and low-volume).
+    Binds only local.gitflow_repos via the gitflow custom property.
+
+    Cost note: unlike the native rulesets in this repo, Copilot code review
+    bills per review in AI credits — it is the one ruleset here that costs
+    money to run. review_on_push = false caps it at roughly one review per
+    PR. Current rates and the org's seat position are point-in-time facts
+    that belong in the PR that changes them, not in this description.
+
+    One of: disabled, evaluate, active. Defaults to "active" — new rulesets
+    apply enabled per the convention; set to "disabled" with `-var` to stop
+    the spend without a code change.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_gitflow_copilot_review_enforcement)
+    error_message = "org_gitflow_copilot_review_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_push_protection_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide push-protection ruleset (native
