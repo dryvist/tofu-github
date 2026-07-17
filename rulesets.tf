@@ -398,12 +398,10 @@ resource "github_organization_ruleset" "org_gitflow_develop" {
 #
 # develop-only, not org_gitflow_base's main+develop pattern: develop is the
 # high-volume integration branch where feature PRs land; main on gitflow
-# repos is release/hotfix-only and low-volume. Each review costs ~13
-# premium requests (~$0.52 in AI credits, no pooled seat allowance since
-# the org has 0 assigned Copilot seats) on top of $0 Actions minutes
-# (public repos are exempt) — scoping to develop only, and
-# review_on_push = false, bounds that spend to ~1 review per PR on the
-# branch that actually needs it.
+# repos is release/hotfix-only and low-volume. Unlike the native rulesets
+# above, Copilot review bills per review in AI credits — scoping to develop
+# and setting review_on_push = false bound that to roughly one review per PR,
+# on the branch that actually needs it.
 resource "github_organization_ruleset" "org_gitflow_copilot_review" {
   name        = "org-gitflow-copilot-review"
   target      = "branch"

@@ -172,16 +172,15 @@ variable "org_gitflow_copilot_review_enforcement" {
     develop branch only (not main, which is release-only and low-volume).
     Binds only local.gitflow_repos via the gitflow custom property.
 
-    Cost note: each review costs ~13 premium requests (~$0.52 in AI
-    credits at the standard overage rate) since the org has 0 assigned
-    Copilot seats and so no pooled included allowance — usage bills
-    directly to the org. Actions minutes are $0 (all current gitflow repos
-    are public, which is a separate, independent exemption).
-    review_on_push = false caps this at ~1 review per PR.
+    Cost note: unlike the native rulesets in this repo, Copilot code review
+    bills per review in AI credits — it is the one ruleset here that costs
+    money to run. review_on_push = false caps it at roughly one review per
+    PR. Current rates and the org's seat position are point-in-time facts
+    that belong in the PR that changes them, not in this description.
 
     One of: disabled, evaluate, active. Defaults to "active" — new rulesets
-    apply enabled per the convention; disable with `-var` if AI-credit
-    spend needs to be capped.
+    apply enabled per the convention; set to "disabled" with `-var` to stop
+    the spend without a code change.
   EOT
   type        = string
   default     = "active"
