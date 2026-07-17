@@ -163,6 +163,27 @@ repos:
       - terraform
       - virtualization
 
+  ansible-proxmox:
+    visibility: public
+    gitflow: true
+    description: "Automate your Proxmox server setup in minutes instead of hours. Production-ready Ansible roles for performance tuning, ZFS swap, system limits, and monitoring—so every server is configured identically with a single command."
+    topics:
+      - ansible
+      - ansible-playbook
+      - ansible-roles
+      - automation
+      - configuration-management
+      - debian
+      - devops
+      - homelab
+      - infrastructure-as-code
+      - linux
+      - proxmox
+      - proxmox-ve
+      - sysadmin
+      - virtualization
+      - zfs
+
   ansible-proxmox-apps:
     visibility: public
     gitflow: true
