@@ -1,4 +1,29 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>dryvist/.github"]
+  "extends": ["local>dryvist/.github"],
+  "customManagers": [
+    {
+      "description": [
+        "Renovate-annotated version pins in this repo's workflow files. The org preset's custom managers cover .nix, Ansible role defaults, and biome.jsonc -- nothing scans .github/workflows for annotated tool pins, and the built-in github-actions manager only tracks `uses:`, not action inputs. Without this, `tflint_version:` in ci-gate.yml is invisible to Renovate and the pin rots silently. Only lines carrying an explicit `# renovate:` annotation are matched, so `uses:` lines are untouched."
+      ],
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": [
+        "Hold tflint upgrades for 60 days and never auto-merge them. Context: on 2026-07-17 GitHub removed the `bundle` field from attestation API responses, and tflint >=0.61 nil-derefs verifying its ruleset plugin during `tflint --init` (terraform-linters/tflint#2591). That crashes before any linting runs, so every PR touching .tf was blocked at the Merge Gate. The workaround is `signature = \"pgp\"` in .tflint.hcl plus the v0.63.1 pin in ci-gate.yml.",
+        "Why this rule is needed: terraform-linters/** is a trusted org in the shared preset, so a tflint minor/patch would otherwise auto-merge after only 3 days -- which is precisely how an upstream regression reaches every PR in this repo with no human in the loop. The 60-day hold gives upstream time to ship and bake terraform-linters/tflint#2593 (`fetch attestation bundles from bundle_url`), and automerge:false forces a human to confirm CI is green on the new version before it lands.",
+        "Remove this rule once #2593 has shipped and been adopted here, along with the `signature = \"pgp\"` line in .tflint.hcl. The v0.63.1 pin itself should stay -- pinning the tool is correct regardless of this incident."
+      ],
+      "matchDepNames": ["terraform-linters/tflint"],
+      "minimumReleaseAge": "60 days",
+      "automerge": false
+    }
+  ]
 }
