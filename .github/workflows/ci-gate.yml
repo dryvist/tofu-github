@@ -62,6 +62,11 @@ jobs:
               - '.terraform.lock.hcl'
               - '.tflint.hcl'
               - 'tests/**'
+              # This workflow defines the Terraform job (tool versions, tflint
+              # invocation), so a change here must re-run it -- otherwise a
+              # broken tool pin merges green as SKIPPED and only fails later,
+              # on someone else's .tf PR.
+              - '.github/workflows/ci-gate.yml'
 
   # ==========================================================================
   # CONDITIONAL CHECKS
@@ -85,6 +90,17 @@ jobs:
         run: tofu validate -no-color
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@6e1e0642c0289bd619021bf6b34e3c08ed1e005a # v6
+        with:
+          # Pinned, never `latest`: the action is SHA-pinned but the tool it
+          # installs was not, so any upstream tflint release lands here with no
+          # change to this repo. On 2026-07-17 that turned every PR red -- tflint
+          # >=0.61 nil-derefs verifying its plugin after GitHub removed the
+          # `bundle` field from attestation responses (see .tflint.hcl).
+          # v0.63.1 is the version this repo's CI has proven green.
+          # Renovate holds new releases 60 days and will not auto-merge them
+          # (see renovate.json) so an upstream regression cannot arrive silently.
+          # renovate: datasource=github-releases depName=terraform-linters/tflint
+          tflint_version: v0.63.1
       - name: TFLint
         run: tflint --init && tflint -f compact
 
