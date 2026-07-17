@@ -1,0 +1,13 @@
+# Explicit, narrowly-targeted Copilot code-review pilot -- opt-in
+# (branch -> repos) pairs, NOT a property match against the full gitflow
+# fleet. Each review bills AI credits directly (0 assigned Copilot seats,
+# so no pooled allowance) -- keep this list small and grow it deliberately,
+# one repo at a time, only after confirming headroom.
+#
+# Decoded with yamldecode(file(...)) in locals.tf and consumed by
+# copilot-review.tf via for_each -- one github_organization_ruleset PER
+# branch key, so a future repo that needs a different target branch is a
+# new top-level key here, not a change to the resource shape.
+copilot_review:
+  develop:
+    - ansible-proxmox-apps

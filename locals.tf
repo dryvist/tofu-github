@@ -21,4 +21,8 @@ locals {
   # Merge Gate required-check inventory: check context per repo group, decoded
   # from config/merge-gate.yml and consumed by merge-gate.tf.
   merge_gate_contexts = yamldecode(file("${path.module}/config/merge-gate.yml")).merge_gate.contexts
+
+  # Copilot code-review pilot targets: branch -> explicit repo list,
+  # decoded from config/copilot-review.yml and consumed by copilot-review.tf.
+  copilot_review_targets = yamldecode(file("${path.module}/config/copilot-review.yml")).copilot_review
 }
