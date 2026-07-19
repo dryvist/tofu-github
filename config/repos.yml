@@ -41,6 +41,17 @@
 # non-archived org repo is a follow-up (see the tracking issue).
 
 repos:
+  ai-llm-prompts:
+    visibility: public
+    description: "Version-controlled catalog of Dryvist LLM prompts"
+    topics:
+      - ai
+      - llm
+      - nix
+      - open-knowledge-format
+      - prompt-engineering
+      - prompts
+
   nix-ai:
     visibility: public
     gitflow: true
