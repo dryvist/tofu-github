@@ -2,9 +2,7 @@
 # .tf files rather than concentrated here:
 #
 #   rulesets.tf    — github_organization_ruleset.*
-#   (future)       — org_settings.tf (github_actions_organization_*),
-#                    repo_files.tf (github_repository_file.*),
-#                    labels.tf (github_issue_labels.*)
+#   (future)       — repo_files.tf (github_repository_file.*)
 #
 # main.tf is the entrypoint required by tflint's standard-module-structure
 # check. As top-level orchestration grows (e.g. a shared data lookup the
