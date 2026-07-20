@@ -442,4 +442,3 @@ import {
   to = github_issue_label.ai["tofu-proxmox/type:test"]
   id = "tofu-proxmox:type:test"
 }
-

@@ -38,6 +38,23 @@ resource "github_branch" "develop" {
   source_branch = "main"
 }
 
+# Adopt a develop branch that already exists.
+#
+# Any repo added to the git-flow set AFTER it has already been running git-flow
+# out of band arrives with develop present. github_branch only CREATES, and a
+# create against an existing ref 422s (the same failure migrations.tf documents
+# for the renamed repo), so each such repo needs a one-shot import. Expect to
+# add a block here whenever `gitflow: true` is set on a repo that is not brand
+# new; drop it again once the apply has landed.
+#
+# The sibling github_repository_custom_property.gitflow needs NO import: its
+# create calls the GitHub CreateOrUpdateCustomProperties endpoint, so it adopts
+# an already-set property value instead of failing.
+import {
+  to = github_branch.develop["llm-prompt-evals"]
+  id = "llm-prompt-evals:develop"
+}
+
 # Make develop the default branch on git-flow repos: new clones and new PRs
 # target the integration branch, while main is reserved for releases. The
 # reference to github_branch.develop makes this depend on the branch existing
