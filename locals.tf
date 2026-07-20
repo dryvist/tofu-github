@@ -13,12 +13,9 @@ locals {
   branch_protection_defaults = local.rulesets_defaults.branch_protection
   gitflow_defaults           = local.rulesets_defaults.gitflow
 
-  # Org-level Actions variables, decoded from config/actions-variables.yml so
-  # org_settings.tf carries no inline values.
-  ai_model_variables = yamldecode(file("${path.module}/config/actions-variables.yml")).ai_models
 
   # AI caller-workflow rollout config: opted-in repos (per-repo params) plus the
-  # shared label taxonomy. Consumed by labels.tf and ai-variables.tf. Single source of
+  # shared label taxonomy. Consumed by labels.tf. Single source of
   # truth for which repos are in the AI chain.
   ai = yamldecode(file("${path.module}/config/ai-callers.yml"))
 

@@ -1,9 +1,7 @@
 # Single source of truth for which repos are OPTED IN to the AI caller-workflow
 # rollout and the org-wide issue-label taxonomy. Repos NOT listed under `repos:`
-# are never touched. Two consumers read this file:
+# are never touched. One consumer reads this file:
 #   - labels.tf        -> github_issue_label (applies `labels:` to every repo)
-#   - ai-variables.tf  -> github_actions_organization_variable.ai_sweep_repos
-#                         (AI_SWEEP_REPOS = keys(repos) + the ai-workflows hub)
 #
 # `repos:` is a name-only inventory. The per-repo AI parameters that used to live
 # here were removed: repo_context and ci_workflow_name are derived from the
