@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.7.1](https://github.com/dryvist/tofu-github/compare/v1.7.0...v1.7.1) (2026-07-20)
+
+
+### Bug Fixes
+
+* stop managing org Actions variables in Terraform ([#76](https://github.com/dryvist/tofu-github/issues/76)) ([0f3066c](https://github.com/dryvist/tofu-github/commit/0f3066cb4f93c0dd34f3e4ea9c0155459dab7de5))
+
 ## [1.7.0](https://github.com/dryvist/tofu-github/compare/v1.6.0...v1.7.0) (2026-07-20)
 
 
