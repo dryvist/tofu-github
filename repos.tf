@@ -10,11 +10,33 @@
 locals {
   # Inventory of managed repos, keyed by repo name.
   repos = yamldecode(file("${path.module}/config/repos.yml")).repos
+
+  # The set this config actually governs.
+  #
+  # Default (var.manage_all_repos = false): exactly the repos listed above.
+  # That opt-in model is why repos in this org are born ungoverned — org
+  # rulesets bind every repo automatically, but repo SETTINGS reach only the
+  # ones someone remembered to list, and most of the org is not listed.
+  #
+  # Flipping the flag unions the live org enumeration under the config,
+  # inverting the default to managed-unless-excluded. Enumerated repos inherit
+  # their live description/topics/visibility (so nothing is blanked) and derive
+  # git-flow from their default branch; a config/repos.yml entry always wins
+  # wholesale, which also keeps archived repos — absent from the enumeration —
+  # under management.
+  managed_repos = var.manage_all_repos ? merge({
+    for name, repo in data.github_repository.enumerated : name => {
+      visibility  = repo.visibility
+      description = repo.description
+      topics      = repo.topics
+      gitflow     = repo.default_branch == "develop"
+    }
+  }, local.repos) : local.repos
 }
 
 module "repo_settings" {
   source   = "./modules/repo-settings"
-  for_each = local.repos
+  for_each = local.managed_repos
 
   name        = each.key
   description = each.value.description
@@ -38,7 +60,7 @@ module "repo_settings" {
 # These blocks are idempotent and only useful once. After a successful apply
 # they can be removed in a follow-up PR.
 import {
-  for_each = local.repos
+  for_each = local.managed_repos
   to       = module.repo_settings[each.key].github_repository.this
   id       = each.key
 }
@@ -48,13 +70,13 @@ import {
 # archived repos are filtered out — importing to a count=0 instance would be an
 # invalid target.
 import {
-  for_each = { for name, cfg in local.repos : name => cfg if !try(cfg.archived, false) }
+  for_each = { for name, cfg in local.managed_repos : name => cfg if !try(cfg.archived, false) }
   to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this[0]
   id       = each.key
 }
 
 import {
-  for_each = { for name, cfg in local.repos : name => cfg if !try(cfg.archived, false) }
+  for_each = { for name, cfg in local.managed_repos : name => cfg if !try(cfg.archived, false) }
   to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this[0]
   id       = each.key
 }

@@ -2,6 +2,10 @@
 # file decodes them into named locals so rulesets.tf reads them as terraform
 # values, not raw file reads scattered through resource bodies.
 locals {
+  # The org login, recovered from the `.github` repo's full_name rather than
+  # written down. The provider's `owner` decides which org that resolves to.
+  org = split("/", data.github_repository.dot_github.full_name)[0]
+
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
 
   ruleset_imports            = local.rulesets_defaults.imports

@@ -213,6 +213,12 @@ repos:
       - syslog
       - virtualization
 
+  llm-prompt-evals:
+    visibility: public
+    gitflow: true
+    description: "promptfoo evaluation harness for the dryvist LLM prompt catalog (ai-llm-prompts)"
+    topics: []
+
   ai-assistant-instructions:
     visibility: public
     gitflow: true
@@ -240,3 +246,23 @@ repos:
     description: "NixOS bare-metal config for the dryvist AI host (server A, standalone)"
     topics: []
     archived: true
+
+# Recorded opt-outs from the org repo-conventions standard, consumed by the
+# `repo-conventions-sweep` workflow in the org `.github` repo. Terraform does
+# NOT read this key (locals.tf decodes only `.repos`) — it lives here so the
+# sweep has exactly one source of truth to read, rather than a parallel list.
+#
+# Schema: <repo name> -> list of check names to SKIP. Valid check names are the
+# ones the sweep emits: LICENSE, AGENTS.md, dev-shell, release-please,
+# rp-config, rp-manifest. Opt-outs are per CHECK, never per repo — a repo that
+# legitimately never releases is still expected to carry a LICENSE.
+#
+# Public repos only. This file is committed to a public repo, so a private repo
+# name must never appear here (the sweep likewise names public repos only).
+#
+# Deliberately EMPTY. Several repos look like plausible opt-out candidates —
+# the template repos, the org `.github` repo — but the org contradicts that
+# reading: at least one template repo runs release-please normally. Rather than
+# invent a rule, every gap is reported and an entry is added here only once a
+# specific exemption has been decided, with the reason in a comment.
+conventions_exempt: {}
