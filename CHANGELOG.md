@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.7.2](https://github.com/dryvist/tofu-github/compare/v1.7.1...v1.7.2) (2026-07-27)
+
+
+### Bug Fixes
+
+* **providers:** repoint GitHub token read to secrets-external mount ([#78](https://github.com/dryvist/tofu-github/issues/78)) ([dbc8f35](https://github.com/dryvist/tofu-github/commit/dbc8f35784e854c0639f6f1724cad98374721378))
+
 ## [1.7.1](https://github.com/dryvist/tofu-github/compare/v1.7.0...v1.7.1) (2026-07-20)
 
 
