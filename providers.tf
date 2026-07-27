@@ -4,7 +4,7 @@ provider "vault" {
 }
 
 ephemeral "vault_kv_secret_v2" "github" {
-  mount = "secret"
+  mount = "secrets-external"
   name  = "infrastructure/github"
 }
 
