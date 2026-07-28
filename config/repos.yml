@@ -253,6 +253,31 @@ repos:
     topics: []
     archived: true
 
+  # This config, governing itself. Enrolled and opted into git-flow in one
+  # step, which is safe here only because the pieces line up:
+  #   - No `develop` branch exists yet, so gitflow.tf CREATES it from main and
+  #     needs no one-shot import block (unlike llm-prompt-evals, which arrived
+  #     already running git-flow out of band).
+  #   - release-please keeps working across the default-branch flip: the
+  #     shared dryvist/.github/_release-please.yml this repo already calls
+  #     hardcodes `target-branch: main`, so the release PR keeps targeting main
+  #     rather than following the default branch to develop.
+  #   - Topics were empty on GitHub, so this sets them rather than blanking.
+  # Description is verbatim from the live repo, so an apply shows no diff there.
+  tofu-github:
+    visibility: public
+    gitflow: true
+    description: "OpenTofu-managed GitHub org governance for dryvist: rulesets, required workflows, and org/repo settings as code."
+    topics:
+      - github
+      - github-api
+      - governance
+      - infrastructure-as-code
+      - opentofu
+      - policy-as-code
+      - repository-management
+      - terraform
+
   # Public documentation site. Enrolled with a description and topics it did
   # not previously carry — both were empty on GitHub, so this sets them rather
   # than overwriting anything. Default branch is main; not git-flow.
