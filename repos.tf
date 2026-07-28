@@ -33,19 +33,21 @@ locals {
     }
   }, local.repos) : local.repos
 
-  # Repos this config CREATES rather than adopts (`create: true` in
-  # config/repos.yml). Every import block below is an adoption of a
-  # pre-existing repo; targeting one at a repo that does not exist yet fails
-  # the plan with "Cannot import non-existent remote object", so a
-  # to-be-created repo must be excluded from all of them.
+  # Managed repos that already exist on GitHub, and are therefore ADOPTED by
+  # the import blocks below rather than created. The complement — a
+  # config/repos.yml entry naming a repo that does not exist yet — is simply
+  # created, because an import aimed at it would fail the plan with "Cannot
+  # import non-existent remote object".
   #
-  # The flag is a one-way door in practice: once the apply lands the repo is
-  # in state, so neither importing nor not-importing it does anything. Leave
-  # the flag set — removing it later would re-arm an import against a repo
-  # Terraform already manages.
+  # Derived from the live org (data.github_repositories.existing), never from
+  # a per-repo flag. A flag would encode how a repo came to be, which is true
+  # exactly once and then becomes a lie the config keeps telling; this asks
+  # GitHub, so the same entry stays correct before creation and forever after.
+  # An import block whose resource is already in state is a no-op, so a repo
+  # created by one apply is harmlessly re-listed here on the next.
   adopted_repos = {
     for name, cfg in local.managed_repos : name => cfg
-    if !try(cfg.create, false)
+    if contains(data.github_repositories.existing.names, name)
   }
 }
 
