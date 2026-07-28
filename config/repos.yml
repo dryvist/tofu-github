@@ -28,6 +28,18 @@
 #                develop rulesets to it while excluding it from the standard
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
 #                the opted-in set from this flag — set it here, nowhere else.
+#   create:      Optional, defaults to false. Set true for a repo this config
+#                CREATES rather than adopts. Every other entry describes a repo
+#                that already exists on GitHub and is pulled into state by the
+#                import blocks in repos.tf; an import aimed at a repo that does
+#                not exist yet fails the plan ("Cannot import non-existent
+#                remote object"), so local.adopted_repos filters these out.
+#                Leave the flag set after the apply — the repo is in state by
+#                then, so it is inert, but removing it would re-arm an import
+#                against a repo Terraform already manages. The created repo is
+#                NOT auto-initialised: it lands empty, ready for a first push,
+#                which avoids an unrelated-histories collision with content
+#                pushed from a local clone.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
 # rulesets.tf already enforce signed commits and Conventional
@@ -246,6 +258,28 @@ repos:
     description: "NixOS bare-metal config for the dryvist AI host (server A, standalone)"
     topics: []
     archived: true
+
+  # Created by this config rather than adopted (`create: true`) — the only
+  # entry so far that does not pre-exist on GitHub. Deliberately NOT git-flow:
+  # a policy dataset has no release train to stage, so a single default branch
+  # is the honest model, and omitting the flag keeps it bound to the standard
+  # org default-branch rulesets instead of the git-flow pair.
+  ai-cli-permissions:
+    visibility: public
+    create: true
+    description: "Tool-agnostic command permission policy for AI coding CLIs — one dataset, JSON Schema validated, rendered per tool"
+    topics:
+      - ai
+      - ai-agents
+      - ai-tools
+      - claude-code
+      - cli
+      - gemini-cli
+      - json-schema
+      - llm
+      - permissions
+      - policy-as-code
+      - security
 
 # Recorded opt-outs from the org repo-conventions standard, consumed by the
 # `repo-conventions-sweep` workflow in the org `.github` repo. Terraform does

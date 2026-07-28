@@ -32,6 +32,21 @@ locals {
       gitflow     = repo.default_branch == "develop"
     }
   }, local.repos) : local.repos
+
+  # Repos this config CREATES rather than adopts (`create: true` in
+  # config/repos.yml). Every import block below is an adoption of a
+  # pre-existing repo; targeting one at a repo that does not exist yet fails
+  # the plan with "Cannot import non-existent remote object", so a
+  # to-be-created repo must be excluded from all of them.
+  #
+  # The flag is a one-way door in practice: once the apply lands the repo is
+  # in state, so neither importing nor not-importing it does anything. Leave
+  # the flag set — removing it later would re-arm an import against a repo
+  # Terraform already manages.
+  adopted_repos = {
+    for name, cfg in local.managed_repos : name => cfg
+    if !try(cfg.create, false)
+  }
 }
 
 module "repo_settings" {
@@ -60,7 +75,7 @@ module "repo_settings" {
 # These blocks are idempotent and only useful once. After a successful apply
 # they can be removed in a follow-up PR.
 import {
-  for_each = local.managed_repos
+  for_each = local.adopted_repos
   to       = module.repo_settings[each.key].github_repository.this
   id       = each.key
 }
@@ -70,13 +85,13 @@ import {
 # archived repos are filtered out — importing to a count=0 instance would be an
 # invalid target.
 import {
-  for_each = { for name, cfg in local.managed_repos : name => cfg if !try(cfg.archived, false) }
+  for_each = { for name, cfg in local.adopted_repos : name => cfg if !try(cfg.archived, false) }
   to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this[0]
   id       = each.key
 }
 
 import {
-  for_each = { for name, cfg in local.managed_repos : name => cfg if !try(cfg.archived, false) }
+  for_each = { for name, cfg in local.adopted_repos : name => cfg if !try(cfg.archived, false) }
   to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this[0]
   id       = each.key
 }
