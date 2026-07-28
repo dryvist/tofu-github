@@ -253,6 +253,36 @@ repos:
     topics: []
     archived: true
 
+  # Public documentation site. Enrolled with a description and topics it did
+  # not previously carry — both were empty on GitHub, so this sets them rather
+  # than overwriting anything. Default branch is main; not git-flow.
+  docs:
+    visibility: public
+    description: "Source for the docs.jacobpevans.com documentation site — Mintlify, MDX + docs.json, portable to any MDX-aware generator"
+    topics:
+      - docs
+      - docs-as-code
+      - documentation
+      - documentation-site
+      - mdx
+      - mintlify
+      - nix
+      - technical-writing
+
+  # The first PRIVATE entry in this inventory. Two consequences worth knowing
+  # before adding more:
+  #   - visibility: private makes modules/repo-settings SKIP the
+  #     security_and_analysis block entirely, so no paid GitHub Advanced
+  #     Security feature is ever enabled by an apply. Cost impact: $0.
+  #   - this file lives in a PUBLIC repo, so the name and description below
+  #     are public permanently. Description is reproduced verbatim from the
+  #     live repo so an apply shows no diff. Enrolled deliberately.
+  # Default branch is main; not git-flow.
+  docs-starlight:
+    visibility: private
+    description: "Private companion docs for the dryvist homelab. Built with Starlight (Astro), deployed to Cloudflare Pages, gated by Cloudflare Access on /d/*."
+    topics: []
+
   # Does not exist on GitHub yet, so this entry creates it. Deliberately NOT
   # git-flow: a policy dataset has no release train to stage, so a single
   # default branch is the honest model, and omitting the flag keeps it bound
