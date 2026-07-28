@@ -32,6 +32,23 @@ locals {
       gitflow     = repo.default_branch == "develop"
     }
   }, local.repos) : local.repos
+
+  # Managed repos that already exist on GitHub, and are therefore ADOPTED by
+  # the import blocks below rather than created. The complement — a
+  # config/repos.yml entry naming a repo that does not exist yet — is simply
+  # created, because an import aimed at it would fail the plan with "Cannot
+  # import non-existent remote object".
+  #
+  # Derived from the live org (data.github_repositories.existing), never from
+  # a per-repo flag. A flag would encode how a repo came to be, which is true
+  # exactly once and then becomes a lie the config keeps telling; this asks
+  # GitHub, so the same entry stays correct before creation and forever after.
+  # An import block whose resource is already in state is a no-op, so a repo
+  # created by one apply is harmlessly re-listed here on the next.
+  adopted_repos = {
+    for name, cfg in local.managed_repos : name => cfg
+    if contains(data.github_repositories.existing.names, name)
+  }
 }
 
 module "repo_settings" {
@@ -60,7 +77,7 @@ module "repo_settings" {
 # These blocks are idempotent and only useful once. After a successful apply
 # they can be removed in a follow-up PR.
 import {
-  for_each = local.managed_repos
+  for_each = local.adopted_repos
   to       = module.repo_settings[each.key].github_repository.this
   id       = each.key
 }
@@ -70,13 +87,13 @@ import {
 # archived repos are filtered out — importing to a count=0 instance would be an
 # invalid target.
 import {
-  for_each = { for name, cfg in local.managed_repos : name => cfg if !try(cfg.archived, false) }
+  for_each = { for name, cfg in local.adopted_repos : name => cfg if !try(cfg.archived, false) }
   to       = module.repo_settings[each.key].github_repository_vulnerability_alerts.this[0]
   id       = each.key
 }
 
 import {
-  for_each = { for name, cfg in local.managed_repos : name => cfg if !try(cfg.archived, false) }
+  for_each = { for name, cfg in local.adopted_repos : name => cfg if !try(cfg.archived, false) }
   to       = module.repo_settings[each.key].github_repository_dependabot_security_updates.this[0]
   id       = each.key
 }

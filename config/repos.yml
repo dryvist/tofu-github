@@ -28,6 +28,12 @@
 #                develop rulesets to it while excluding it from the standard
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
 #                the opted-in set from this flag — set it here, nowhere else.
+# An entry naming a repo that does not exist yet CREATES it — no flag, no
+# ceremony. repos.tf derives adopt-vs-create by intersecting this inventory
+# with the live org listing, so an entry reads the same whether the repo
+# pre-dates this config or was born from it. A created repo is not
+# auto-initialised: it lands empty, ready for a first push, which avoids an
+# unrelated-histories collision with content pushed from a local clone.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
 # rulesets.tf already enforce signed commits and Conventional
@@ -246,6 +252,81 @@ repos:
     description: "NixOS bare-metal config for the dryvist AI host (server A, standalone)"
     topics: []
     archived: true
+
+  # This config, governing itself. Enrolled and opted into git-flow in one
+  # step, which is safe here only because the pieces line up:
+  #   - No `develop` branch exists yet, so gitflow.tf CREATES it from main and
+  #     needs no one-shot import block (unlike llm-prompt-evals, which arrived
+  #     already running git-flow out of band).
+  #   - release-please keeps working across the default-branch flip: the
+  #     shared dryvist/.github/_release-please.yml this repo already calls
+  #     hardcodes `target-branch: main`, so the release PR keeps targeting main
+  #     rather than following the default branch to develop.
+  #   - Topics were empty on GitHub, so this sets them rather than blanking.
+  # Description is verbatim from the live repo, so an apply shows no diff there.
+  tofu-github:
+    visibility: public
+    gitflow: true
+    description: "OpenTofu-managed GitHub org governance for dryvist: rulesets, required workflows, and org/repo settings as code."
+    topics:
+      - github
+      - github-api
+      - governance
+      - infrastructure-as-code
+      - opentofu
+      - policy-as-code
+      - repository-management
+      - terraform
+
+  # Public documentation site. Enrolled with a description and topics it did
+  # not previously carry — both were empty on GitHub, so this sets them rather
+  # than overwriting anything. Default branch is main; not git-flow.
+  docs:
+    visibility: public
+    description: "Source for the docs.jacobpevans.com documentation site — Mintlify, MDX + docs.json, portable to any MDX-aware generator"
+    topics:
+      - docs
+      - docs-as-code
+      - documentation
+      - documentation-site
+      - mdx
+      - mintlify
+      - nix
+      - technical-writing
+
+  # The first PRIVATE entry in this inventory. Two consequences worth knowing
+  # before adding more:
+  #   - visibility: private makes modules/repo-settings SKIP the
+  #     security_and_analysis block entirely, so no paid GitHub Advanced
+  #     Security feature is ever enabled by an apply. Cost impact: $0.
+  #   - this file lives in a PUBLIC repo, so the name and description below
+  #     are public permanently. Description is reproduced verbatim from the
+  #     live repo so an apply shows no diff. Enrolled deliberately.
+  # Default branch is main; not git-flow.
+  docs-starlight:
+    visibility: private
+    description: "Private companion docs for the dryvist homelab. Built with Starlight (Astro), deployed to Cloudflare Pages, gated by Cloudflare Access on /d/*."
+    topics: []
+
+  # Does not exist on GitHub yet, so this entry creates it. Deliberately NOT
+  # git-flow: a policy dataset has no release train to stage, so a single
+  # default branch is the honest model, and omitting the flag keeps it bound
+  # to the standard org default-branch rulesets instead of the git-flow pair.
+  ai-cli-permissions:
+    visibility: public
+    description: "Tool-agnostic command permission policy for AI coding CLIs — one dataset, JSON Schema validated, rendered per tool"
+    topics:
+      - ai
+      - ai-agents
+      - ai-tools
+      - claude-code
+      - cli
+      - gemini-cli
+      - json-schema
+      - llm
+      - permissions
+      - policy-as-code
+      - security
 
 # Recorded opt-outs from the org repo-conventions standard, consumed by the
 # `repo-conventions-sweep` workflow in the org `.github` repo. Terraform does

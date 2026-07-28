@@ -8,13 +8,24 @@
 # because the Terraform provider does not expose the resource yet. This file
 # becomes the canonical config — by IMPORT, not create — once the provider ships.
 #
-# Why not Terraform yet: as of provider v6.12.1, neither
-#   - github_repository_code_scanning_default_setup (PR #3315, OPEN), nor
-#   - github_organization_security_configuration     (PR #3284, OPEN)
-# exists in a tagged release. `integrations/github` ~> 6.0's
-# `security_and_analysis` block covers secret_scanning + push protection (free
-# on public, used in modules/repo-settings) but NOT the free CodeQL
-# default-setup endpoint.
+# RE-VALIDATED 2026-07-28 against v6.13.0 (latest, published 2026-07-08) —
+# not against this comment's prior claim. The registry's resource index for
+# 6.13.0 lists 88 resources and ZERO matching /scan/; the only adjacent one is
+# `enterprise_security_analysis_settings`, which is enterprise-scoped and does
+# not reach a repo's CodeQL default setup. Both upstream PRs are still OPEN:
+#   - github_repository_code_scanning_default_setup (PR #3315, last touched
+#     2026-06-03)
+#   - github_organization_security_configuration     (PR #3284, last touched
+#     2026-07-24)
+# `integrations/github` ~> 6.0's `security_and_analysis` block covers
+# secret_scanning + push protection (free on public, used in
+# modules/repo-settings) but NOT the free CodeQL default-setup endpoint.
+#
+# CONSEQUENCE FOR NEW REPOS: a repo created by this config (`create: true` in
+# config/repos.yml) lands WITHOUT code scanning. Until the provider ships,
+# enabling it is a manual step — the same one-off the other 31 repos went
+# through. Tracked in Vikunja so it is not lost between the two events
+# (repo creation now, provider support later).
 #
 # Upstream: https://github.com/integrations/terraform-provider-github/pull/3315
 # (feat: Add github_repository_code_scanning_default_setup resource).
