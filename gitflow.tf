@@ -55,6 +55,36 @@ import {
   id = "llm-prompt-evals:develop"
 }
 
+# The five repos enrolled alongside this block were each running git-flow by
+# hand before config/repos.yml described them: develop already exists and is
+# already the default branch on all five. Every one therefore adopts rather
+# than creates, and the plan must show imports / no-op updates for them — a
+# create-or-destroy on any of these is a bug, not an expected first apply.
+import {
+  to = github_branch.develop["ansible-proxmox-ai"]
+  id = "ansible-proxmox-ai:develop"
+}
+
+import {
+  to = github_branch.develop["nix-agy"]
+  id = "nix-agy:develop"
+}
+
+import {
+  to = github_branch.develop["nix-codex"]
+  id = "nix-codex:develop"
+}
+
+import {
+  to = github_branch.develop["nix-hermes"]
+  id = "nix-hermes:develop"
+}
+
+import {
+  to = github_branch.develop["x10-lite"]
+  id = "x10-lite:develop"
+}
+
 # Make develop the default branch on git-flow repos: new clones and new PRs
 # target the integration branch, while main is reserved for releases. The
 # reference to github_branch.develop makes this depend on the branch existing
