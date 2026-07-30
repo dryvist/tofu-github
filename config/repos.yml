@@ -328,6 +328,56 @@ repos:
       - policy-as-code
       - security
 
+  # Git-flow repos that were running the model out of band — `develop` was
+  # already their live default branch, set by hand, with nothing in this config
+  # describing it. That meant they took none of the shared git-flow wiring:
+  # no `gitflow` custom property, no git-flow ruleset pair, and no managed repo
+  # settings. Enrolling them here is what makes the model uniform — a change to
+  # the git-flow rules now reaches every git-flow repo, rather than the subset
+  # that happened to be listed.
+  #
+  # These entries change no live state on their own: `develop` already exists
+  # and is already the default on all five, so the branch and default-branch
+  # resources adopt what is there. Each therefore needs the one-shot `import`
+  # block in gitflow.tf documented above — `github_branch` only creates, and a
+  # create against an existing ref 422s.
+  #
+  # Descriptions are verbatim from the live repos so an apply shows no metadata
+  # diff. Topics are empty on all five today; `[]` preserves that rather than
+  # inventing tags.
+  ansible-proxmox-ai:
+    visibility: public
+    gitflow: true
+    description: "Ansible roles for the homelab AI/LLM serving stack (Hermes agent, LLM router, Ollama, Qdrant, RAG, model serving)."
+    topics: []
+
+  nix-agy:
+    visibility: public
+    gitflow: true
+    description: "Antigravity (agy) CLI configuration as a Nix module (interactive and autonomous profiles)"
+    topics: []
+
+  nix-codex:
+    visibility: public
+    gitflow: true
+    description: "Codex CLI configuration as a Nix module (interactive and autonomous profiles)"
+    topics: []
+
+  nix-hermes:
+    visibility: public
+    gitflow: true
+    description: "Shared content bundle (skills + SOUL persona) for the Hermes autonomous agent"
+    topics: []
+
+  # PRIVATE. The module's cost gate keys off this value and omits the
+  # security_and_analysis block entirely for a private repo, so no paid GitHub
+  # Advanced Security feature is enabled by an apply. Cost impact: $0.
+  x10-lite:
+    visibility: private
+    gitflow: true
+    description: "Private: deep docs + a simplified, original SAM/Falcon-on-Lambda portal and LLM-assistant reference implementation"
+    topics: []
+
 # Recorded opt-outs from the org repo-conventions standard, consumed by the
 # `repo-conventions-sweep` workflow in the org `.github` repo. Terraform does
 # NOT read this key (locals.tf decodes only `.repos`) — it lives here so the
