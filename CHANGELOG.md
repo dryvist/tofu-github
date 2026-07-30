@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.9.0](https://github.com/dryvist/tofu-github/compare/v1.8.0...v1.9.0) (2026-07-30)
+
+
+### Features
+
+* **gitflow:** enroll the five repos running git-flow out of band ([#82](https://github.com/dryvist/tofu-github/issues/82)) ([1eb5d37](https://github.com/dryvist/tofu-github/commit/1eb5d37184ee8698bfa26054b1f6d3cfb5946ade))
+
 ## [1.8.0](https://github.com/dryvist/tofu-github/compare/v1.7.2...v1.8.0) (2026-07-28)
 
 
