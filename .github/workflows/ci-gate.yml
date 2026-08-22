@@ -62,6 +62,14 @@ jobs:
               - '.terraform.lock.hcl'
               - '.tflint.hcl'
               - 'tests/**'
+              # config/*.yml is not inert data: locals.tf reads it with
+              # yamldecode(file(...)) and it drives for_each on the repo,
+              # ruleset and merge-gate modules. Without this pattern a change
+              # to the inventory skips the Terraform job entirely, so a
+              # malformed entry merges green and fails later on someone
+              # else's .tf PR -- the same trap the ci-gate.yml pattern below
+              # was added to close.
+              - 'config/**'
               # This workflow defines the Terraform job (tool versions, tflint
               # invocation), so a change here must re-run it -- otherwise a
               # broken tool pin merges green as SKIPPED and only fails later,
