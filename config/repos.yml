@@ -378,6 +378,44 @@ repos:
     description: "Private: deep docs + a simplified, original SAM/Falcon-on-Lambda portal and LLM-assistant reference implementation"
     topics: []
 
+  # Enrolled 2026-08-22. All four receive Renovate PRs but were unmanaged, so
+  # nothing held them to the module's repo-settings baseline and they had
+  # drifted away from it: raycast-smart-issue had merge commits disabled, and
+  # nix-openwhispr had both auto-merge and delete-branch-on-merge disabled.
+  # Descriptions, topics and visibility below mirror the live values, so
+  # enrolling changes settings and nothing else. cc-edge-pack-template had no
+  # description at all; the one below is drawn from its README.
+  cc-edge-pack-template:
+    visibility: public
+    description: "Template repo for dryvist Cribl packs - reusable test/release workflows and scaffolding"
+    topics: []
+
+  mlx-benchmarks:
+    visibility: public
+    description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"
+    topics: []
+
+  nix-openwhispr:
+    visibility: public
+    description: "Reproducible Nix packaging and macOS lifecycle integration for OpenWhispr"
+    topics: []
+
+  raycast-smart-issue:
+    visibility: public
+    description: "Too lazy to write GitHub issues yourself? Let a local AI do it. Raycast extension that turns a half-baked idea into a fully-structured issue using Ollama."
+    topics:
+      - ai-powered
+      - developer-tools
+      - github-issues
+      - llm
+      - local-ai
+      - ollama
+      - productivity
+      - raycast
+      - raycast-extension
+      - typescript
+
+
 # Recorded opt-outs from the org repo-conventions standard, consumed by the
 # `repo-conventions-sweep` workflow in the org `.github` repo. Terraform does
 # NOT read this key (locals.tf decodes only `.repos`) — it lives here so the
