@@ -1,0 +1,8 @@
+repository: docs
+required_workflow:
+  path: .github/workflows/docs-publisher-provenance.yml
+  ref: refs/heads/main
+pull_request:
+  required_approvals: 1
+  allowed_merge_methods:
+    - squash

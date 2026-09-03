@@ -7,6 +7,7 @@ locals {
   org = split("/", data.github_repository.dot_github.full_name)[0]
 
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
+  docs_publisher    = yamldecode(file("${path.module}/config/docs-publisher.yml"))
 
   ruleset_imports            = local.rulesets_defaults.imports
   push_protection_defaults   = local.rulesets_defaults.push_protection
