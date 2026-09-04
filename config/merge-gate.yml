@@ -47,6 +47,7 @@ merge_gate:
         - nix-ai-open-harness
         - nix-claude-code
         - nix-devenv
+        - nix-hermes
         - nix-pxe-bootstrap
         - nixos-ai
         - python-template
@@ -57,6 +58,7 @@ merge_gate:
       context: "Merge Gate"
       repos:
         - ai-assistant-instructions
+        - ansible-proxmox-ai
         - ansible-proxmox-apps
         - ansible-splunk
         - mlx-benchmarks
