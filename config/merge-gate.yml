@@ -51,8 +51,8 @@ merge_gate:
         - nixos-ai
         - python-template
         - raycast-smart-issue
-        - tf-splunk-aws
         - tofu-aws-templates
+        - tofu-splunk-aws
     bare:
       context: "Merge Gate"
       repos:
@@ -63,9 +63,9 @@ merge_gate:
         - nix-ai
         - nix-darwin
         - nix-home
-        - terraform-proxmox
-        - terraform-runs-on
         - tofu-github
+        - tofu-proxmox
+        - tofu-runs-on
     ci:
       context: "ci / Merge Gate"
       repos:
