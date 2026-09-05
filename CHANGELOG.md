@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.10.0](https://github.com/dryvist/tofu-github/compare/v1.9.0...v1.10.0) (2026-09-05)
+
+
+### Features
+
+* **merge-gate:** require the gate on nix-hermes and ansible-proxmox-ai ([2555782](https://github.com/dryvist/tofu-github/commit/2555782599c69ea3f2e3f098877c169e64388dba))
+* **rulesets:** gate public docs publishing ([78106e3](https://github.com/dryvist/tofu-github/commit/78106e396a19c9214cb5317e86015b1272974b83))
+* **rulesets:** gate public docs publishing ([#94](https://github.com/dryvist/tofu-github/issues/94)) ([a0ee904](https://github.com/dryvist/tofu-github/commit/a0ee90413b8d44064cf48e8cd16d82f94a94688b))
+
+
+### Bug Fixes
+
+* **merge-gate:** correct three renamed repo names in the required-check inventory ([9991765](https://github.com/dryvist/tofu-github/commit/9991765a5ffdfa9164d3a20049befeab22e1b39b))
+* **merge-gate:** repair three stale repo names and gate two uncovered repos ([82d5d1f](https://github.com/dryvist/tofu-github/commit/82d5d1f53361e28a3c898734f1e51a2f62743ffa))
+
 ## [1.9.0](https://github.com/dryvist/tofu-github/compare/v1.8.0...v1.9.0) (2026-07-30)
 
 
