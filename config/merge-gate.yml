@@ -47,25 +47,27 @@ merge_gate:
         - nix-ai-open-harness
         - nix-claude-code
         - nix-devenv
+        - nix-hermes
         - nix-pxe-bootstrap
         - nixos-ai
         - python-template
         - raycast-smart-issue
-        - tf-splunk-aws
         - tofu-aws-templates
+        - tofu-splunk-aws
     bare:
       context: "Merge Gate"
       repos:
         - ai-assistant-instructions
+        - ansible-proxmox-ai
         - ansible-proxmox-apps
         - ansible-splunk
         - mlx-benchmarks
         - nix-ai
         - nix-darwin
         - nix-home
-        - terraform-proxmox
-        - terraform-runs-on
         - tofu-github
+        - tofu-proxmox
+        - tofu-runs-on
     ci:
       context: "ci / Merge Gate"
       repos:

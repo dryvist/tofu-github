@@ -42,6 +42,23 @@ variable "conventions_enforcement" {
   }
 }
 
+variable "docs_publisher_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the public documentation publisher ruleset. The
+    ruleset requires the org provenance workflow and a fresh human approval
+    before projected documentation can merge.
+
+    One of: disabled, evaluate, active. Defaults to active.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.docs_publisher_enforcement)
+    error_message = "docs_publisher_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_branch_protection_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide branch-protection ruleset on default
