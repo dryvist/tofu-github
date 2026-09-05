@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.10.1](https://github.com/dryvist/tofu-github/compare/v1.10.0...v1.10.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* **agents:** restore the trailing newline on AGENTS.md ([47dfc64](https://github.com/dryvist/tofu-github/commit/47dfc64e8f223d8c5b8dbc3188a0c47f787e4d53))
+* **agents:** restore the trailing newline on AGENTS.md ([7d7d38c](https://github.com/dryvist/tofu-github/commit/7d7d38c33444e97e8c0c2391b3f2e95d535ec176))
+
 ## [1.10.0](https://github.com/dryvist/tofu-github/compare/v1.9.0...v1.10.0) (2026-09-05)
 
 
