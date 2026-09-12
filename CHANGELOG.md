@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.11.0](https://github.com/dryvist/tofu-github/compare/v1.10.1...v1.11.0) (2026-09-12)
+
+
+### Features
+
+* mint the GitHub token per run instead of reading a stored one ([#100](https://github.com/dryvist/tofu-github/issues/100)) ([c366061](https://github.com/dryvist/tofu-github/commit/c366061323036c9642ea6590edfac01cdb2d44f2))
+* **repos:** register cc-stream-secret-redaction-io and splunk-homelab-alerts ([#104](https://github.com/dryvist/tofu-github/issues/104)) ([9a89c11](https://github.com/dryvist/tofu-github/commit/9a89c1126010a325646e8f664d97ef55eb87ce2c))
+* **rulesets:** require the Merge Gate on develop as well as main ([#106](https://github.com/dryvist/tofu-github/issues/106)) ([0078286](https://github.com/dryvist/tofu-github/commit/0078286af04474c9406f46c3b308d2376a1998f7))
+
 ## [1.10.1](https://github.com/dryvist/tofu-github/compare/v1.10.0...v1.10.1) (2026-09-05)
 
 
