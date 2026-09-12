@@ -144,10 +144,9 @@ resource "github_organization_ruleset" "org_review_gate" {
   }
 
   bypass_actors {
-    # OrganizationAdmin role: actor_id = 1 is the only valid value for this
-    # actor_type per the GitHub Rulesets API (a protocol constant, not a
-    # tunable threshold). Every OrganizationAdmin bypasses review on merge.
-    actor_id    = 1
+    # OrganizationAdmin is an ID-less actor type: the Rulesets API ignores
+    # actor_id for it and reads back none, so the provider requires the
+    # attribute to be omitted. Every OrganizationAdmin bypasses review on merge.
     actor_type  = "OrganizationAdmin"
     bypass_mode = "pull_request"
   }
