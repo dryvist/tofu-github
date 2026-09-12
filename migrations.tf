@@ -442,3 +442,10 @@ import {
   to = github_issue_label.ai["tofu-proxmox/type:test"]
   id = "tofu-proxmox:type:test"
 }
+
+# The `docs` org custom property pre-dates its declaration in
+# docs-publisher.tf; adopt it instead of failing to create a duplicate.
+import {
+  to = github_organization_custom_properties.docs
+  id = "docs"
+}
