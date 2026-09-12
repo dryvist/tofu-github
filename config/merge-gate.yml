@@ -76,3 +76,7 @@ merge_gate:
       context: "Build & deploy"
       repos:
         - docs-starlight
+    docs-secret-scan:
+      context: "gitleaks (redacted)"
+      repos:
+        - docs
