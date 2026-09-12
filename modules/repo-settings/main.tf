@@ -1,7 +1,7 @@
 # Per-repo settings — the repository-settings half of the retired
 # `.github-tofu` nix-repo module. Baseline established on the nix-* family:
 # all merge methods enabled, auto-merge on, branch deleted
-# on merge, web commit signoff required, wiki off.
+# on merge, wiki off. Web commit signoff is an org-level policy, not set here.
 #
 # Per-repo rulesets are intentionally NOT ported: the org-level rulesets in
 # ../../rulesets.tf already enforce signed commits and
@@ -34,12 +34,17 @@ resource "github_repository" "this" {
   has_discussions = false
 
   # All merge methods are enabled by default for all repositories.
-  allow_merge_commit          = true
-  allow_squash_merge          = true
-  allow_rebase_merge          = true
-  allow_auto_merge            = true
-  delete_branch_on_merge      = true
-  web_commit_signoff_required = true
+  allow_merge_commit     = true
+  allow_squash_merge     = true
+  allow_rebase_merge     = true
+  allow_auto_merge       = true
+  delete_branch_on_merge = true
+
+  # web_commit_signoff_required is deliberately NOT set. The org enforces
+  # web-commit signoff, and GitHub rejects the field on a repo PATCH under
+  # that policy — even with value true — which fails every new repo's
+  # create. The attribute is Computed, so omitting it reads the org-enforced
+  # value back without drift.
 
   # Secret scanning + push protection are free on public repos but require
   # paid GitHub Advanced Security (Secret Protection) on private repos. Emit
