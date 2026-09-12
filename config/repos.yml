@@ -390,6 +390,35 @@ repos:
     description: "Template repo for dryvist Cribl packs - reusable test/release workflows and scaffolding"
     topics: []
 
+  # Does not exist on GitHub yet, so this entry creates it. A Cribl Stream pack
+  # holding one pipeline that masks credential patterns out of events; it is
+  # attached as a destination post-processing pipeline rather than routed to.
+  # Deliberately NOT git-flow, matching the other pack repos: a pack has no
+  # release train to stage, so a single default branch is the honest model.
+  cc-stream-secret-redaction-io:
+    visibility: public
+    description: "Cribl Stream pack that masks credential patterns out of events, attached as a destination post-processing pipeline"
+    topics:
+      - cribl
+      - cribl-pack
+      - cribl-stream
+      - data-masking
+      - log-management
+      - observability
+      - redaction
+      - security
+
+  # Does not exist on GitHub yet, so this entry creates it. PRIVATE: the app's
+  # saved searches carry index names and host-glob patterns, which describe
+  # internal topology and must not be published. The module's cost gate omits
+  # the security_and_analysis block entirely for a private repo, so no paid
+  # GitHub Advanced Security feature is enabled by an apply. Cost impact: $0.
+  # Not git-flow: a Splunk app has no release train to stage.
+  splunk-homelab-alerts:
+    visibility: private
+    description: "Splunk app providing the zammad custom alert action and the delivery defaults homelab detectors inherit"
+    topics: []
+
   mlx-benchmarks:
     visibility: public
     description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"

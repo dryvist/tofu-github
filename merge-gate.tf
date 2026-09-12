@@ -1,12 +1,13 @@
-# Merge Gate as a required status check on main — every public repo.
+# Merge Gate as a required status check on main and develop — every public repo.
 #
 # One org ruleset per live gate check-context (see config/merge-gate.yml for
 # the context taxonomy and the freeze warning). Targets literal
-# refs/heads/main on trunk AND git-flow repos alike: on trunk repos main is
-# the default branch; on git-flow repos main is the release branch, and
-# develop deliberately carries no required checks — a required status check
-# blocks direct ref updates, and develop must keep accepting direct pushes
-# and back-merges.
+# refs/heads/main and refs/heads/develop: on trunk repos only main exists; on
+# git-flow repos main is the release branch and develop the integration
+# branch. develop is included because org-gitflow-develop already requires a
+# pull request there (direct pushes and back-merges arrive as PRs), so the
+# only thing a required check changes on develop is that a PR can no longer
+# merge while its gate is still queued or red.
 #
 # strict policy is off: requiring branches to be up to date with main would
 # serialize every merge behind a rebase, which the volume of Renovate PRs
@@ -20,7 +21,7 @@ resource "github_organization_ruleset" "org_merge_gate" {
 
   conditions {
     ref_name {
-      include = ["refs/heads/main"]
+      include = ["refs/heads/main", "refs/heads/develop"]
       exclude = []
     }
     repository_name {

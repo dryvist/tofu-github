@@ -21,13 +21,16 @@
 #                appears when a job CALLS a reusable workflow). Required so a
 #                red build can no longer auto-merge (incident: #130).
 #
-# Adding a repo to a list REQUIRES its check context to be live on main first —
-# a required check that never reports blocks every PR in the repo. Verify with
-# a recent PR's check-run names before editing. Org rulesets apply to dryvist
-# private repos too — docs-starlight is the first private entry (astro-build);
-# the paid-feature gate is on secret scanning / push protection, not on
-# required-check rulesets. develop branches are out of scope by design
-# (required checks block direct pushes, which develop must allow).
+# Adding a repo to a list REQUIRES its check context to be live on every PR
+# first — a required check that never reports blocks every PR in the repo.
+# Verify with a recent PR's check-run names before editing. Org rulesets apply
+# to dryvist private repos too — docs-starlight is the first private entry
+# (astro-build); the paid-feature gate is on secret scanning / push
+# protection, not on required-check rulesets. The rule targets main AND
+# develop: every git-flow repo's gate workflow triggers on `pull_request`
+# without a base filter, so the same context reports on develop PRs, and
+# develop already requires a PR (org-gitflow-develop), so nothing that reached
+# it by direct push is lost.
 merge_gate:
   contexts:
     gate:
