@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.11.1](https://github.com/dryvist/tofu-github/compare/v1.11.0...v1.11.1) (2026-09-12)
+
+
+### Bug Fixes
+
+* **repos:** manage the docs org property and stop setting web signoff per repo ([#110](https://github.com/dryvist/tofu-github/issues/110)) ([c5a3fd2](https://github.com/dryvist/tofu-github/commit/c5a3fd256a6dfea12f066cdfad651e214015b521))
+
 ## [1.11.0](https://github.com/dryvist/tofu-github/compare/v1.10.1...v1.11.0) (2026-09-12)
 
 
