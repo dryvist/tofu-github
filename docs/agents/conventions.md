@@ -46,4 +46,3 @@
   `git config user.signingkey`).
 - Never commit secrets — store references, not values. Backend bucket/key and
   the `GITHUB_TOKEN` are supplied at runtime, never hardcoded.
-

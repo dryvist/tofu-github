@@ -25,4 +25,3 @@ Two gotchas when adding an entry here:
 `var.manage_all_repos` stages the inverse model (manage every unarchived org
 repo, with this file as overrides). It is **off**; see its docstring before
 flipping it.
-

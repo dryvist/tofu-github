@@ -45,4 +45,3 @@ any operator who runs `tofu apply` without overrides). Enforce explicitly:
 ```bash
 tofu apply -var markdown_lint_enforcement=active
 ```
-

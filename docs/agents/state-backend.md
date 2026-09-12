@@ -25,4 +25,3 @@ repo was ever applied) happens via the committed `import` blocks in
 `rulesets.tf` with GitHub-assigned IDs in `config/rulesets-defaults.yml` —
 the first plan must show those resources as imports / no-op updates, never
 as create-or-destroy.
-
