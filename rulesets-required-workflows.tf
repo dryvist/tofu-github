@@ -82,3 +82,41 @@ resource "github_organization_ruleset" "conventions" {
     }
   }
 }
+
+# Org-wide AI review, enforced as a Required Workflow.
+#
+# Injects the org `.github` repo's ai-review.yml (PR-Agent against the model
+# router) into every repo's pull requests, so no repo skips an AI review by
+# omitting a caller. Same shape as `conventions` above; enforcement is
+# var.ai_review_enforcement (default active — every pull request is reviewed
+# and the review gates the merge; "evaluate" keeps it advisory while the
+# router is being worked on). `do_not_enforce_on_create` keeps brand-new repos
+# from being blocked before their default branch exists.
+resource "github_organization_ruleset" "ai_review" {
+  name        = "org-ai-review"
+  target      = "branch"
+  enforcement = var.ai_review_enforcement
+
+  conditions {
+    ref_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+    repository_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = data.github_repository.dot_github.repo_id
+        path          = ".github/workflows/ai-review.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+}
