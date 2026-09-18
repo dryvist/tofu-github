@@ -42,6 +42,28 @@ variable "conventions_enforcement" {
   }
 }
 
+variable "ai_review_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-wide AI review ruleset (dryvist/.github's
+    ai-review.yml, PR-Agent on the model router, injected into every repo's
+    pull requests).
+
+    Defaults to "active": every pull request is reviewed and the outcome gates
+    the merge. The workflow waits through a router outage and then fails
+    rather than passing empty, so an outage blocks merges until it clears;
+    "evaluate" keeps the review advisory while the router is worked on.
+
+    One of: disabled, evaluate, active.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.ai_review_enforcement)
+    error_message = "ai_review_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "docs_publisher_enforcement" {
   description = <<-EOT
     Enforcement mode for the public documentation publisher ruleset. The
