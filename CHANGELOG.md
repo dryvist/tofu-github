@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.12.0](https://github.com/dryvist/tofu-github/compare/v1.11.2...v1.12.0) (2026-09-18)
+
+
+### Features
+
+* **rulesets:** org-wide AI review required workflow ([#124](https://github.com/dryvist/tofu-github/issues/124)) ([5976d4a](https://github.com/dryvist/tofu-github/commit/5976d4abbaa86a2464b18fb3b4fba7474f6cc870))
+
 ## [1.11.2](https://github.com/dryvist/tofu-github/compare/v1.11.1...v1.11.2) (2026-09-12)
 
 
