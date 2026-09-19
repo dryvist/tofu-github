@@ -44,4 +44,9 @@ resource "github_organization_ruleset" "org_merge_gate" {
       }
     }
   }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
 }
