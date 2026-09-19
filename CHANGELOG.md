@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.14.0](https://github.com/dryvist/tofu-github/compare/v1.13.0...v1.14.0) (2026-09-19)
+
+
+### Features
+
+* **repos:** register splunk-homelab-indexes ([819e4ab](https://github.com/dryvist/tofu-github/commit/819e4ab3262d61bfd366acf4968297246a797630))
+* **repos:** register splunk-homelab-indexes ([a8ec133](https://github.com/dryvist/tofu-github/commit/a8ec133b01498f150835ad36a05775f85d69eecf))
+
 ## [1.13.0](https://github.com/dryvist/tofu-github/compare/v1.12.0...v1.13.0) (2026-09-19)
 
 
