@@ -1,35 +1,5 @@
 resource "github_organization_ruleset" "docs_publisher" {
-  name        = "docs-publisher-review"
-  target      = "branch"
-  enforcement = var.docs_publisher_enforcement
-
-  depends_on = [github_organization_ruleset.docs_publisher_ci]
-
-  conditions {
-    ref_name {
-      include = ["refs/heads/main"]
-      exclude = []
-    }
-    repository_name {
-      include = [local.docs_publisher.repository]
-      exclude = []
-    }
-  }
-
-  rules {
-    pull_request {
-      required_approving_review_count   = local.docs_publisher.pull_request.required_approvals
-      dismiss_stale_reviews_on_push     = true
-      require_code_owner_review         = false
-      require_last_push_approval        = true
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.docs_publisher.pull_request.allowed_merge_methods
-    }
-  }
-}
-
-resource "github_organization_ruleset" "docs_publisher_ci" {
-  name        = "docs-publisher-ci"
+  name        = "docs-publisher"
   target      = "branch"
   enforcement = var.docs_publisher_enforcement
 
@@ -54,11 +24,15 @@ resource "github_organization_ruleset" "docs_publisher_ci" {
         ref           = local.docs_publisher.required_workflow.ref
       }
     }
-  }
 
-  bypass_actors {
-    actor_type  = "OrganizationAdmin"
-    bypass_mode = "pull_request"
+    pull_request {
+      required_approving_review_count   = local.docs_publisher.pull_request.required_approvals
+      dismiss_stale_reviews_on_push     = true
+      require_code_owner_review         = false
+      require_last_push_approval        = true
+      required_review_thread_resolution = true
+      allowed_merge_methods             = local.docs_publisher.pull_request.allowed_merge_methods
+    }
   }
 }
 
