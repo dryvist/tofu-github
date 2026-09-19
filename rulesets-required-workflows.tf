@@ -92,6 +92,11 @@ resource "github_organization_ruleset" "conventions" {
 # and the review gates the merge; "evaluate" keeps it advisory while the
 # router is being worked on). `do_not_enforce_on_create` keeps brand-new repos
 # from being blocked before their default branch exists.
+#
+# Targets only the branches pull requests merge into: the default branch and
+# main (git-flow repos default to develop). A required workflow behaves like a
+# required status check on its target refs, so `~ALL` here would reject every
+# push to an existing feature branch as "Required workflow not satisfied".
 resource "github_organization_ruleset" "ai_review" {
   name        = "org-ai-review"
   target      = "branch"
@@ -99,7 +104,7 @@ resource "github_organization_ruleset" "ai_review" {
 
   conditions {
     ref_name {
-      include = ["~ALL"]
+      include = ["~DEFAULT_BRANCH", "refs/heads/main"]
       exclude = []
     }
     repository_name {
