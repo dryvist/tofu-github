@@ -47,6 +47,17 @@
 # non-archived org repo is a follow-up (see the tracking issue).
 
 repos:
+  # PR-Agent reads `<org>/pr-agent-settings/.pr_agent.toml` as the org-wide
+  # default before a repository's own `.pr_agent.toml`. Public so the review
+  # job's repository-scoped token can read it from any repo.
+  pr-agent-settings:
+    visibility: public
+    description: "Org-wide PR-Agent defaults: the review checklist every repository starts from"
+    topics:
+      - ai
+      - code-review
+      - pr-agent
+
   ai-llm-prompts:
     visibility: public
     description: "Version-controlled catalog of Dryvist LLM prompts"
