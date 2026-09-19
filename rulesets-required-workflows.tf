@@ -124,4 +124,9 @@ resource "github_organization_ruleset" "ai_review" {
       }
     }
   }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
 }
