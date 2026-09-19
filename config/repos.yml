@@ -430,6 +430,16 @@ repos:
     description: "Splunk app providing the zammad custom alert action and the delivery defaults homelab detectors inherit"
     topics: []
 
+  # Does not exist on GitHub yet, so this entry creates it. PRIVATE: index and
+  # volume definitions carry internal topology (index names, HEC input
+  # scoping) that must not be published. Same cost/git-flow shape as
+  # splunk-homelab-alerts above — no paid GitHub Advanced Security feature on
+  # a private repo, and no release train to stage.
+  splunk-homelab-indexes:
+    visibility: private
+    description: "Splunk app providing the homelab's index and HEC input definitions"
+    topics: []
+
   mlx-benchmarks:
     visibility: public
     description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"
