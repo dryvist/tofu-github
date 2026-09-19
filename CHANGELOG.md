@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.13.0](https://github.com/dryvist/tofu-github/compare/v1.12.0...v1.13.0) (2026-09-19)
+
+
+### Features
+
+* add IaC drift opt-in ([ecc8df7](https://github.com/dryvist/tofu-github/commit/ecc8df74b7664836001f4f4382d26ac00dfba579))
+* add iac-drift opt-in config ([48c02b7](https://github.com/dryvist/tofu-github/commit/48c02b78aa5d3976e2a0591a4fedcf05509393e7))
+* add organization admin CI bypass ([9e9deb6](https://github.com/dryvist/tofu-github/commit/9e9deb6232a51bc7565323bd89009754605a99d3))
+* **repos:** manage the org-wide PR-Agent settings repository ([#133](https://github.com/dryvist/tofu-github/issues/133)) ([dcb6f9e](https://github.com/dryvist/tofu-github/commit/dcb6f9ed8fa5f0fe40db2be923e2c50251c073b1))
+* **rulesets:** add organization admin CI bypass ([ec1a16e](https://github.com/dryvist/tofu-github/commit/ec1a16e1a172375ae54ef3072a7ceb9c1475d1b4))
+* **rulesets:** bypass required CI workflows for organization admins ([0c33a2d](https://github.com/dryvist/tofu-github/commit/0c33a2dcbd8d8fba8ae2994dd4654fcfe8f6920b))
+
+
+### Bug Fixes
+
+* **rulesets:** require AI review only on the branches pull requests merge into ([#128](https://github.com/dryvist/tofu-github/issues/128)) ([1c6eef6](https://github.com/dryvist/tofu-github/commit/1c6eef6bbba7059a611ca941111e68798c318966))
+* **rulesets:** restore docs publisher review gate ([c611dcc](https://github.com/dryvist/tofu-github/commit/c611dccb496d7a90d24b1ebe4ad9d48355f27f06))
+
 ## [1.12.0](https://github.com/dryvist/tofu-github/compare/v1.11.2...v1.12.0) (2026-09-18)
 
 
