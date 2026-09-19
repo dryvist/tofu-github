@@ -1,0 +1,14 @@
+# Opt-in registry for deterministic (no-AI) scheduled IaC drift detection.
+#
+# Each repo listed with `enabled: true` gets the Actions variable
+# IAC_DRIFT_ENABLED=true (see iac-drift.tf). The repo's own drift caller
+# workflow gates on that variable (`vars.IAC_DRIFT_ENABLED == 'true'`); when it
+# is unset the caller emits a ::notice and skips, so drift is off intentionally
+# rather than silently. Repos not listed here (or set to false) never run it.
+#
+# The consumer caller to drop in each opted-in repo lives at:
+#   dryvist/ai-workflows -> examples/iac-drift-caller.yml
+# which calls the reusable dryvist/ai-workflows/.github/workflows/_iac-drift.yml.
+repos:
+  terraform-proxmox:
+    enabled: true

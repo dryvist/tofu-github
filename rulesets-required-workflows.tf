@@ -37,6 +37,11 @@ resource "github_organization_ruleset" "markdown_lint" {
       }
     }
   }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
 }
 
 # Org-wide repo-conventions presence check, enforced as a Required Workflow.
@@ -81,6 +86,11 @@ resource "github_organization_ruleset" "conventions" {
       }
     }
   }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
 }
 
 # Org-wide AI review, enforced as a Required Workflow.
@@ -123,5 +133,10 @@ resource "github_organization_ruleset" "ai_review" {
         ref           = "refs/heads/main"
       }
     }
+  }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
   }
 }
