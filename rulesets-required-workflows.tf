@@ -98,9 +98,9 @@ resource "github_organization_ruleset" "conventions" {
 # Injects the org `.github` repo's ai-review.yml (PR-Agent against the model
 # router) into every repo's pull requests, so no repo skips an AI review by
 # omitting a caller. Same shape as `conventions` above; enforcement is
-# var.ai_review_enforcement (default active — every pull request is reviewed
-# and the review gates the merge; "evaluate" keeps it advisory while the
-# router is being worked on). `do_not_enforce_on_create` keeps brand-new repos
+# var.ai_review_enforcement (default evaluate — every pull request is
+# reviewed and the outcome is reported, but does not gate the merge; "active"
+# gates the merge instead). `do_not_enforce_on_create` keeps brand-new repos
 # from being blocked before their default branch exists.
 #
 # Targets only the branches pull requests merge into: the default branch and
