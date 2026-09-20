@@ -430,6 +430,12 @@ repos:
     description: "Splunk app providing the zammad custom alert action and the delivery defaults homelab detectors inherit"
     topics: []
 
+  # Does not exist on GitHub yet, so this entry creates it.
+  splunk-homelab-indexes:
+    visibility: public
+    description: "Splunk app providing the homelab's index and HEC input definitions"
+    topics: []
+
   mlx-benchmarks:
     visibility: public
     description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"
