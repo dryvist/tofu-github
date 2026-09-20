@@ -419,14 +419,8 @@ repos:
       - redaction
       - security
 
-  # Does not exist on GitHub yet, so this entry creates it. PRIVATE: the app's
-  # saved searches carry index names and host-glob patterns, which describe
-  # internal topology and must not be published. The module's cost gate omits
-  # the security_and_analysis block entirely for a private repo, so no paid
-  # GitHub Advanced Security feature is enabled by an apply. Cost impact: $0.
-  # Not git-flow: a Splunk app has no release train to stage.
   splunk-homelab-alerts:
-    visibility: private
+    visibility: public
     description: "Splunk app providing the zammad custom alert action and the delivery defaults homelab detectors inherit"
     topics: []
 
