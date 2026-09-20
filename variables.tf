@@ -48,15 +48,15 @@ variable "ai_review_enforcement" {
     ai-review.yml, PR-Agent on the model router, injected into every repo's
     pull requests).
 
-    Defaults to "active": every pull request is reviewed and the outcome gates
-    the merge. The workflow waits through a router outage and then fails
-    rather than passing empty, so an outage blocks merges until it clears;
-    "evaluate" keeps the review advisory while the router is worked on.
+    Defaults to "evaluate": every pull request is reviewed and the outcome is
+    reported, but does not gate the merge. "active" gates the merge instead —
+    the workflow waits through a router outage and then fails rather than
+    passing empty, so an outage blocks merges until it clears.
 
     One of: disabled, evaluate, active.
   EOT
   type        = string
-  default     = "active"
+  default     = "evaluate"
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.ai_review_enforcement)
