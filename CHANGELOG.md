@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.14.1](https://github.com/dryvist/tofu-github/compare/v1.14.0...v1.14.1) (2026-09-20)
+
+
+### Bug Fixes
+
+* **repos:** declare splunk-homelab-alerts as a public repository ([5fe0a95](https://github.com/dryvist/tofu-github/commit/5fe0a954dadb3fc09025d64f13e31a305985aabe))
+* **repos:** declare splunk-homelab-alerts as a public repository ([c8652d9](https://github.com/dryvist/tofu-github/commit/c8652d9da15537474e1eeb0ac638a470cebbec27))
+* **repos:** drop the private splunk-homelab-indexes entry ([#142](https://github.com/dryvist/tofu-github/issues/142)) ([4eb50be](https://github.com/dryvist/tofu-github/commit/4eb50be0eb169c5076382d423930b86cdd564272))
+* **rulesets:** make the org AI review advisory by default ([b7dcaed](https://github.com/dryvist/tofu-github/commit/b7dcaed4b497b0163a4f315784bb931d4bf6af28))
+* **rulesets:** make the org AI review advisory by default ([b1b4458](https://github.com/dryvist/tofu-github/commit/b1b445837223819316241bbad4e7a9319f76a961))
+
 ## [1.14.0](https://github.com/dryvist/tofu-github/compare/v1.13.0...v1.14.0) (2026-09-19)
 
 
