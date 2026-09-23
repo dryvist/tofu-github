@@ -39,6 +39,8 @@ resource "github_organization_ruleset" "org_branch_protection" {
 
   rules {
     required_signatures = true
+    deletion            = true
+    non_fast_forward    = true
 
     branch_name_pattern {
       operator = local.branch_protection_defaults.branch_name_operator

@@ -360,7 +360,11 @@ repos:
     visibility: public
     gitflow: true
     description: "Ansible roles for the homelab AI/LLM serving stack (Hermes agent, LLM router, Ollama, Qdrant, RAG, model serving)."
-    topics: []
+    topics:
+      - ansible
+      - automation
+      - homelab
+      - infrastructure-as-code
 
   nix-agy:
     visibility: public
