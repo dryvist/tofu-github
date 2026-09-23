@@ -378,6 +378,19 @@ repos:
     description: "Codex CLI configuration as a Nix module (interactive and autonomous profiles)"
     topics: []
 
+  # Trunk-based (branches off main), so no `gitflow`. Enrolling it enables
+  # Dependabot alerts, and with them the dependency graph its Dependency Review
+  # check needs.
+  nix-pi:
+    visibility: public
+    description: "Home Manager module for the pi coding agent, kept in sync with upstream releases"
+    topics:
+      - ai
+      - home-manager
+      - nix
+      - nix-flakes
+      - pi-coding-agent
+
   nix-hermes:
     visibility: public
     gitflow: true
