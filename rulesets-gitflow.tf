@@ -1,8 +1,8 @@
 # Git-flow `base` protection — common rules for main and develop.
 #
 # Binds local.gitflow_repos on both refs/heads/main and refs/heads/develop.
-# Enforces required signatures on both branches in a single ruleset, as
-# requested.
+# Enforces required signatures, and blocks branch deletion and non-fast-forward
+# (force) pushes, on both branches in a single ruleset, as requested.
 resource "github_organization_ruleset" "org_gitflow_base" {
   name        = "org-gitflow-base"
   target      = "branch"
@@ -24,6 +24,8 @@ resource "github_organization_ruleset" "org_gitflow_base" {
 
   rules {
     required_signatures = true
+    deletion            = true
+    non_fast_forward    = true
   }
 }
 
