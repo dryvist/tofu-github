@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.15.0](https://github.com/dryvist/tofu-github/compare/v1.14.1...v1.15.0) (2026-09-23)
+
+
+### Features
+
+* **rulesets:** block branch deletion and force-push on main/develop ([1d79a41](https://github.com/dryvist/tofu-github/commit/1d79a418208b19a0502ba76c57cf2ae59278e038))
+* **rulesets:** block branch deletion and force-push on main/develop ([621e8a5](https://github.com/dryvist/tofu-github/commit/621e8a58ae41cf795430807fa182016a4de382a3))
+* **topics:** tag ansible-proxmox-ai as infrastructure-as-code ([625a684](https://github.com/dryvist/tofu-github/commit/625a6840b7c3a48bf1db27e4ffe9f94da6432922))
+* **topics:** tag ansible-proxmox-ai as infrastructure-as-code ([0dd6a01](https://github.com/dryvist/tofu-github/commit/0dd6a010f9786c0983245d7fbe9789caf7eaa189))
+
 ## [1.14.1](https://github.com/dryvist/tofu-github/compare/v1.14.0...v1.14.1) (2026-09-20)
 
 
