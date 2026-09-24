@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.16.0](https://github.com/dryvist/tofu-github/compare/v1.15.0...v1.16.0) (2026-09-24)
+
+
+### Features
+
+* **repos:** enroll nix-pi ([b14e4d4](https://github.com/dryvist/tofu-github/commit/b14e4d4c6600647abf981351c382f4c55c05feae))
+* **repos:** enroll nix-pi ([9203180](https://github.com/dryvist/tofu-github/commit/9203180e14bf5f5f87b1d489635d0484e23a4875))
+
+
+### Bug Fixes
+
+* **direnv:** remove stale export-terrakube-env invocation ([#155](https://github.com/dryvist/tofu-github/issues/155)) ([68527a5](https://github.com/dryvist/tofu-github/commit/68527a5c895ffa5c2dca2c6bd79b1c1663dfd67e))
+
 ## [1.15.0](https://github.com/dryvist/tofu-github/compare/v1.14.1...v1.15.0) (2026-09-23)
 
 
