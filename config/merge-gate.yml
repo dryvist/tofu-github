@@ -45,6 +45,7 @@ merge_gate:
         - claude-code-plugins
         - claude-code-routines
         - docs
+        - grafana-dashboards
         - homelab-contracts
         - iac-platform
         - nix-ai-open-harness

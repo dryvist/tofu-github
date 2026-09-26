@@ -472,6 +472,14 @@ repos:
       - raycast-extension
       - typescript
 
+  grafana-dashboards:
+    visibility: public
+    description: "Grafana-native dashboard JSON for the homelab Grafana stack"
+    topics:
+      - dashboards
+      - grafana
+      - homelab
+      - observability
 
 # Recorded opt-outs from the org repo-conventions standard, consumed by the
 # `repo-conventions-sweep` workflow in the org `.github` repo. Terraform does
