@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.17.0](https://github.com/dryvist/tofu-github/compare/v1.16.0...v1.17.0) (2026-09-26)
+
+
+### Features
+
+* **config:** register grafana-dashboards ([#161](https://github.com/dryvist/tofu-github/issues/161)) ([e4ab3ed](https://github.com/dryvist/tofu-github/commit/e4ab3ed3b4f29da8fad2dfdae3e3a74c87d8fbec))
+
 ## [1.16.0](https://github.com/dryvist/tofu-github/compare/v1.15.0...v1.16.0) (2026-09-24)
 
 
