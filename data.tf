@@ -40,14 +40,16 @@ data "github_repositories" "org" {
 #
 # `archived:false` is deliberately ABSENT: archived repos are still managed
 # (nix-ai-server), and omitting them here would classify them as
-# non-existent and make Terraform try to recreate them.
+# non-existent and make Terraform try to recreate them. `fork:true` is
+# deliberately PRESENT for the same reason: repository search leaves forks
+# out unless asked, so a managed fork would otherwise be planned as a create.
 #
 # Cost: one search-API call per plan. If the search is stale or unavailable
 # the failure is safe and loud — a genuinely existing repo drops out of the
 # adopted set, Terraform attempts a create, and GitHub rejects the duplicate
 # name. It cannot silently destroy or blank a repo.
 data "github_repositories" "existing" {
-  query = "org:${local.org}"
+  query = "org:${local.org} fork:true"
 }
 
 # Live metadata per enumerated repo, so enrolling a repo INHERITS its current
