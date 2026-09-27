@@ -28,12 +28,22 @@ resource "github_organization_ruleset" "org_branch_protection" {
     }
     # Git-flow repos are excluded: their default branch is develop. Their main and
     # develop protection comes from the org-gitflow-* rulesets below instead.
+    # Upstream forks are excluded: upstream history cannot satisfy the signature
+    # and commit-format rules. org-upstream-fork-protection (upstream-forks.tf)
+    # covers their default branch instead.
     repository_property {
-      exclude = [{
-        name            = "gitflow"
-        property_values = ["true"]
-        source          = "custom"
-      }]
+      exclude = [
+        {
+          name            = "gitflow"
+          property_values = ["true"]
+          source          = "custom"
+        },
+        {
+          name            = github_organization_custom_properties.upstream_fork.property_name
+          property_values = ["true"]
+          source          = "custom"
+        },
+      ]
     }
   }
 
@@ -69,9 +79,10 @@ resource "github_organization_ruleset" "org_branch_protection" {
 
 # Org-wide signature enforcement on every branch.
 #
-# This ruleset already exists live and is adopted without changing its
-# behavior. Keeping it separate from default-branch protection preserves the
-# broader all-branch coverage.
+# This ruleset already exists live and is adopted. Keeping it separate from
+# default-branch protection preserves the broader all-branch coverage. Upstream
+# forks are the one exclusion: their upstream history is unsigned by
+# construction, so no sync could ever land.
 import {
   to = github_organization_ruleset.required_signatures
   id = local.ruleset_imports.required_signatures
@@ -87,9 +98,12 @@ resource "github_organization_ruleset" "required_signatures" {
       include = ["~ALL"]
       exclude = []
     }
-    repository_name {
-      include = ["~ALL"]
-      exclude = []
+    repository_property {
+      exclude = [{
+        name            = github_organization_custom_properties.upstream_fork.property_name
+        property_values = ["true"]
+        source          = "custom"
+      }]
     }
   }
 

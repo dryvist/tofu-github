@@ -298,3 +298,20 @@ variable "manage_all_repos" {
   type        = bool
   default     = false
 }
+
+variable "org_upstream_fork_protection_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the default-branch ruleset on upstream forks (repos
+    with `upstream_fork: true`): pull request required, merge commits only,
+    no deletion or force-push.
+
+    One of: disabled, evaluate, active.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_upstream_fork_protection_enforcement)
+    error_message = "org_upstream_fork_protection_enforcement must be one of: disabled, evaluate, active."
+  }
+}

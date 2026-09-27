@@ -13,6 +13,7 @@ locals {
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection
   gitflow_defaults           = local.rulesets_defaults.gitflow
+  upstream_fork_defaults     = local.rulesets_defaults.upstream_fork
 
 
   # AI caller-workflow rollout config: opted-in repos (per-repo params) plus the
