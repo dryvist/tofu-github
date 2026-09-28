@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.18.0](https://github.com/dryvist/tofu-github/compare/v1.17.0...v1.18.0) (2026-09-28)
+
+
+### Features
+
+* **rulesets:** bind upstream forks to a fork-specific default-branch ruleset ([#166](https://github.com/dryvist/tofu-github/issues/166)) ([e39fdb7](https://github.com/dryvist/tofu-github/commit/e39fdb701faf5b9af4d6ed803b72337932e96298))
+
+
+### Bug Fixes
+
+* **repos:** include forks in the existing-repos lookup ([#167](https://github.com/dryvist/tofu-github/issues/167)) ([c54e353](https://github.com/dryvist/tofu-github/commit/c54e3534b11a72d6734f67a19f1150abca6851ac))
+
 ## [1.17.0](https://github.com/dryvist/tofu-github/compare/v1.16.0...v1.17.0) (2026-09-26)
 
 
