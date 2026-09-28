@@ -5,6 +5,8 @@
 #   rulesets-branch-protection.tf   — github_organization_ruleset.{org_branch_protection,required_signatures,org_review_gate}
 #   rulesets-required-workflows.tf  — github_organization_ruleset.{markdown_lint,conventions}
 #   rulesets-gitflow.tf             — github_organization_ruleset.org_gitflow_*
+#   variables-enforcement.tf        — var.*_enforcement (one per org ruleset)
+#   upstream-forks.tf               — upstream_fork property + github_organization_ruleset.org_upstream_fork_protection
 #   (future)                        — repo_files.tf (github_repository_file.*)
 #
 # main.tf is the entrypoint required by tflint's standard-module-structure

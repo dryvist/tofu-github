@@ -28,6 +28,13 @@
 #                develop rulesets to it while excluding it from the standard
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
 #                the opted-in set from this flag — set it here, nowhere else.
+#   upstream_fork: Optional, defaults to false. Set true on a fork that tracks a
+#                third-party upstream default branch. Upstream history is
+#                authored outside the org and cannot carry the org's commit
+#                signatures or Conventional Commit messages, so upstream-forks.tf
+#                binds the repo to org-upstream-fork-protection instead of the
+#                signature and commit-format rulesets. Changes the org makes on
+#                the fork still arrive by pull request.
 # An entry naming a repo that does not exist yet CREATES it — no flag, no
 # ceremony. repos.tf derives adopt-vs-create by intersecting this inventory
 # with the live org listing, so an entry reads the same whether the repo
@@ -471,6 +478,14 @@ repos:
       - raycast
       - raycast-extension
       - typescript
+
+  # Fork of a third-party project: fixes land here as upstream-shaped pull
+  # requests, and upstream's default branch is merged in on a schedule.
+  token-meter:
+    visibility: public
+    description: "Open-source, local-first AI coding agent usage and cost dashboard for Claude Code, Codex, Cursor, OpenCode, Kiro, and Pi."
+    topics: []
+    upstream_fork: true
 
   grafana-dashboards:
     visibility: public

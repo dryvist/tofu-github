@@ -78,3 +78,13 @@ gitflow:
   # so the git-flow variant adds a leading "Merge " alternation. Everything else
   # is the same v1.0.0 type set with an optional lowercase scope and `!`.
   commit_message_pattern: '^(Merge .+|(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9\-]+\))?(!)?: .+)$'
+
+# Consumed by github_organization_ruleset.org_upstream_fork_protection
+# (upstream-forks.tf) for repos opted in via `upstream_fork: true` in
+# config/repos.yml.
+upstream_fork:
+  # Merge commits only: an upstream sync must keep upstream's commits as
+  # ancestors, or the next sync re-applies them and conflicts. Squash or rebase
+  # would rewrite them into org-authored copies.
+  allowed_merge_methods:
+    - merge
