@@ -17,7 +17,7 @@ repos:
   # ruleset this repo itself defines (MD033 no-inline-html) — self-defeating
   # governance.
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.92.0
+    rev: v1.109.1
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
