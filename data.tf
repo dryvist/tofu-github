@@ -58,3 +58,19 @@ data "github_repository" "enumerated" {
   for_each = var.manage_all_repos ? toset(data.github_repositories.org[0].names) : toset([])
   name     = each.value
 }
+
+# The canonical label set, read at plan time from the `.github` repo so this
+# config carries no copy of it. labels.tf applies it to every repo below.
+data "github_repository_file" "labels" {
+  repository = data.github_repository.dot_github.name
+  branch     = data.github_repository.dot_github.default_branch
+  file       = ".github/labels.yml"
+}
+
+# Every unarchived repo in the org, public and private, forks included,
+# resolved at plan time. Separate from the staged `org` enumeration above
+# because labels apply to the whole org regardless of var.manage_all_repos,
+# and that enumeration leaves forks out and is gated.
+data "github_repositories" "labelled" {
+  query = "org:${local.org} fork:true archived:false"
+}
