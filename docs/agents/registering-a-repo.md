@@ -15,8 +15,7 @@ does not exist yet.
 The full creation-to-registration path lives in the org `.github` repo's
 `AGENTS.md` under **New repo checklist** — that is the canonical standard and
 the file agents already read. It is enforced from two sides: a PR-time
-required-workflow check, and a weekly `repo-conventions-sweep` that also reports
-repos missing from `config/repos.yml`. Recorded opt-outs live in the
+required-workflow check, and a weekly `repo-conventions-sweep`. Recorded opt-outs live in the
 `conventions_exempt:` key of that same file, per check rather than per repo.
 
 Gotchas when adding an entry here:
