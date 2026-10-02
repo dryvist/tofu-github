@@ -1,12 +1,12 @@
 # Git-flow pilot wiring.
 #
-# A repo opts into the git-flow model with `gitflow: true` in config/repos.yml.
-# local.gitflow_repos derives that opted-in set once, and everything git-flow
+# A repo is git-flow when its live default branch is develop, or when its
+# config/repos.yml entry sets `gitflow: true` (which wins wholesale; see
+# repos.tf). local.gitflow_repos derives that set once, and everything git-flow
 # reads from it: the develop branch + default-branch switch below, and the
-# git-flow rulesets in rulesets.tf. Adding or removing a repo from the pilot is
-# a one-line edit to config/repos.yml — never a second list to keep in sync.
+# git-flow rulesets. Never a second list to keep in sync.
 locals {
-  gitflow_repos = [for name, cfg in local.repos : name if try(cfg.gitflow, false)]
+  gitflow_repos = [for name, cfg in local.managed_repos : name if try(cfg.gitflow, false)]
 }
 
 # Define the custom property at the org level to tag git-flow enabled repositories
@@ -40,19 +40,21 @@ resource "github_branch" "develop" {
 
 # Adopt a develop branch that already exists.
 #
-# Any repo added to the git-flow set AFTER it has already been running git-flow
-# out of band arrives with develop present. github_branch only CREATES, and a
-# create against an existing ref 422s (the same failure migrations.tf documents
-# for the renamed repo), so each such repo needs a one-shot import. Expect to
-# add a block here whenever `gitflow: true` is set on a repo that is not brand
-# new; drop it again once the apply has landed.
+# github_branch only CREATES, and a create against an existing ref 422s, so a
+# git-flow repo whose live default branch is already develop is imported
+# instead. Derived from the live org, never a per-repo block: an import whose
+# target is already in state is a no-op, so the set can stay as wide as this.
 #
 # The sibling github_repository_custom_property.gitflow needs NO import: its
 # create calls the GitHub CreateOrUpdateCustomProperties endpoint, so it adopts
 # an already-set property value instead of failing.
 import {
-  to = github_branch.develop["llm-prompt-evals"]
-  id = "llm-prompt-evals:develop"
+  for_each = toset([
+    for name in local.gitflow_repos : name
+    if try(data.github_repository.enumerated[name].default_branch, "") == "develop"
+  ])
+  to = github_branch.develop[each.key]
+  id = "${each.key}:develop"
 }
 
 # Make develop the default branch on git-flow repos: new clones and new PRs
