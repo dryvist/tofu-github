@@ -66,7 +66,7 @@ After successful apply, the `import` blocks can be removed in a follow-up
 PR (they're idempotent but only useful once).
 
 Next up (separate PRs): org Actions permissions, org-level settings, org
-variables, per-repo labels and LICENSE files via `for_each`. CodeQL
+variables, LICENSE files via `for_each`. CodeQL
 default-setup across every public org repo is staged in
 `code_scanning.tf` as a commented-out resource block pending upstream
 [integrations/terraform-provider-github#3315](https://github.com/integrations/terraform-provider-github/pull/3315);
