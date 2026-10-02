@@ -19,7 +19,12 @@ repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.109.1
     hooks:
+      # The shell supplies both terraform and tofu; this repo is OpenTofu
+      # (lock file on registry.opentofu.org, .opentofu-version), so pin the
+      # hooks to tofu rather than the default terraform binary.
       - id: terraform_fmt
+        args:
+          - --hook-config=--tf-path=tofu
       - id: terraform_validate
         # `terraform_validate` fails on first run when a module source is
         # pinned to a new commit SHA and `.terraform/modules/` still holds
@@ -29,6 +34,7 @@ repos:
         # antonbabenko/pre-commit-terraform for SHA-pinned module sources.
         args:
           - --hook-config=--retry-once-with-cleanup=true
+          - --hook-config=--tf-path=tofu
       - id: terraform_tflint
         args:
           - --args=--only=terraform_deprecated_interpolation
