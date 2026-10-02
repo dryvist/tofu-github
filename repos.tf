@@ -59,10 +59,9 @@ module "repo_settings" {
   description = each.value.description
   topics      = each.value.topics
   visibility  = each.value.visibility
-  # Optional — most repos.yml entries omit these, which yamldecode simply drops
-  # from the map, so try() falls back to each module default (`false`).
+  # Optional — most repos.yml entries omit this, which yamldecode simply drops
+  # from the map, so try() falls back to the module default (`false`).
   archived = try(each.value.archived, false)
-  gitflow  = try(each.value.gitflow, false)
 }
 
 # Import-on-first-apply: adopt every managed repo (and its two Dependabot
