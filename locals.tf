@@ -15,11 +15,6 @@ locals {
   gitflow_defaults           = local.rulesets_defaults.gitflow
   upstream_fork_defaults     = local.rulesets_defaults.upstream_fork
 
-
-  # AI caller-workflow rollout config: opted-in repos (per-repo params) plus the
-  # shared label taxonomy. Consumed by labels.tf. Single source of
-  # truth for which repos are in the AI chain.
-  ai = yamldecode(file("${path.module}/config/ai-callers.yml"))
   # Merge Gate required-check inventory: check context per repo group, decoded
   # from config/merge-gate.yml and consumed by merge-gate.tf.
   merge_gate_contexts = yamldecode(file("${path.module}/config/merge-gate.yml")).merge_gate.contexts
