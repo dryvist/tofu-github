@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.20.0](https://github.com/dryvist/tofu-github/compare/v1.19.2...v1.20.0) (2026-10-02)
+
+
+### Features
+
+* **labels:** apply the org label set to every unarchived repo ([#186](https://github.com/dryvist/tofu-github/issues/186)) ([e84afa4](https://github.com/dryvist/tofu-github/commit/e84afa4e18d3d389e5d4fc1516a2c64127550c78))
+* **repos:** govern every unarchived org repository's settings by default ([#187](https://github.com/dryvist/tofu-github/issues/187)) ([0ff98c4](https://github.com/dryvist/tofu-github/commit/0ff98c42b395d4dd966e3394bfc648f3aa9a9789))
+
+
+### Bug Fixes
+
+* **provider:** mint the admin token from the github-admin mount ([#157](https://github.com/dryvist/tofu-github/issues/157)) ([460f49f](https://github.com/dryvist/tofu-github/commit/460f49f18085c55145015c92fbc08be8f2d67bce))
+
 ## [1.19.2](https://github.com/dryvist/tofu-github/compare/v1.19.1...v1.19.2) (2026-10-02)
 
 
