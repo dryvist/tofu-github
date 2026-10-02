@@ -1,7 +1,14 @@
-# Inventory of repos whose per-repo GitHub settings this config manages.
+# Per-repo overrides for the repository settings this config manages.
 #
-# Decoded with yamldecode(file(...)) in locals.tf and consumed by repos.tf
-# via for_each. The map key is the repo name; the org owner is implied by the
+# Every unarchived org repo is governed whether or not it is listed here (see
+# repos.tf): an unlisted repo inherits its live description, topics and
+# visibility, and is git-flow when its default branch is develop. An entry
+# replaces those enumerated values wholesale, so list a repo only to override
+# them, to set a flag below, to keep an archived repo managed, or to create a
+# repo that does not exist yet.
+#
+# Decoded with yamldecode(file(...)) in repos.tf and merged over the
+# enumeration. The map key is the repo name; the org owner is implied by the
 # single provider's `owner` setting (see providers.tf) and is intentionally
 # NOT repeated here — an account login in config/*.yml would violate the
 # no-identity-in-source rule. Repo names are governance subjects (the things
@@ -22,12 +29,13 @@
 #                reference it here. One-way: the GitHub API doesn't support
 #                unarchiving. See modules/repo-settings/variables.tf for the
 #                "most other settings become read-only" caveat.
-#   gitflow:     Optional, defaults to false. Set true to opt the repo into the
-#                git-flow model: gitflow.tf creates a `develop` branch and
-#                makes it the default, and rulesets.tf binds the git-flow main /
+#   gitflow:     Optional, defaults to false on a listed repo. Set true to opt
+#                the repo into the git-flow model: gitflow.tf creates a
+#                `develop` branch and makes it the default, and rulesets.tf binds the git-flow main /
 #                develop rulesets to it while excluding it from the standard
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
-#                the opted-in set from this flag — set it here, nowhere else.
+#                the set from this flag and, for unlisted repos, the live
+#                default branch.
 #   upstream_fork: Optional, defaults to false. Set true on a fork that tracks a
 #                third-party upstream default branch. Upstream history is
 #                authored outside the org and cannot carry the org's commit
@@ -47,11 +55,6 @@
 # Commits on every repo. This config manages only repository *settings*
 # (merge methods, auto-merge, branch deletion, wiki, web-commit signoff,
 # Dependabot, and the public-only secret-scanning block).
-#
-# Seeded with the nix-* family ported from the retired `.github-tofu` scaffold,
-# then extended with the git-flow pilot repos (terraform-proxmox,
-# ansible-proxmox-apps, ai-assistant-instructions). Expanding to every
-# non-archived org repo is a follow-up (see the tracking issue).
 
 repos:
   # PR-Agent reads `<org>/pr-agent-settings/.pr_agent.toml` as the org-wide

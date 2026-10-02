@@ -15,9 +15,9 @@ tooling, not its Proxmox domain content.
 
 Full docs live under `docs/agents/`, one topic per page:
 
-- [Registering a repo](docs/agents/registering-a-repo.md) — the
-  `config/repos.yml` opt-in model, what an unlisted repo gets vs. loses, and
-  the two gotchas when adding an entry.
+- [Registering a repo](docs/agents/registering-a-repo.md) — every unarchived
+  repo is governed by default, `config/repos.yml` as per-repo overrides, and
+  the gotchas when adding an entry.
 - [Conventions](docs/agents/conventions.md) — no personal-account references,
   no magic numbers or identities in `.tf`, org-agnostic code, `config/`
   usage, commit and signing rules.
