@@ -390,7 +390,7 @@ repos:
   # check needs.
   nix-pi:
     visibility: public
-    description: "Home Manager module extending programs.pi-coding-agent for the pi coding agent"
+    description: "Reference Nix flake template and Home Manager options for the pi coding agent"
     topics:
       - ai
       - home-manager
