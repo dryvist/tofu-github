@@ -1,37 +1,30 @@
-# Per-repo settings for the repos this config governs. The repository-settings
+# Per-repo settings for every unarchived org repo. The repository-settings
 # half ported from the retired `.github-tofu` scaffold (its per-repo rulesets
-# are dropped — the org rulesets in rulesets.tf already cover signed commits and
+# are dropped — the org rulesets already cover signed commits and
 # Conventional Commits on every repo).
 #
-# config/repos.yml is the single source of truth for which repos are managed
-# and their per-repo metadata (visibility, description, topics). The owner is
+# Every unarchived org repo is enumerated at plan time and governed by
+# module.repo_settings. config/repos.yml holds per-repo overrides only: an
+# entry replaces the enumerated defaults wholesale, and also covers the cases
+# enumeration cannot (archived repos, repos to be created). The owner is
 # supplied by the single provider in providers.tf, never repeated per repo.
 
 locals {
-  # Inventory of managed repos, keyed by repo name.
+  # Per-repo overrides, keyed by repo name.
   repos = yamldecode(file("${path.module}/config/repos.yml")).repos
 
-  # The set this config actually governs.
-  #
-  # Default (var.manage_all_repos = false): exactly the repos listed above.
-  # That opt-in model is why repos in this org are born ungoverned — org
-  # rulesets bind every repo automatically, but repo SETTINGS reach only the
-  # ones someone remembered to list, and most of the org is not listed.
-  #
-  # Flipping the flag unions the live org enumeration under the config,
-  # inverting the default to managed-unless-excluded. Enumerated repos inherit
-  # their live description/topics/visibility (so nothing is blanked) and derive
-  # git-flow from their default branch; a config/repos.yml entry always wins
-  # wholesale, which also keeps archived repos — absent from the enumeration —
-  # under management.
-  managed_repos = var.manage_all_repos ? merge({
+  # The set this config governs: the live org enumeration with the overrides
+  # merged over it. Enumerated repos inherit their live description, topics
+  # and visibility (so nothing is blanked) and derive git-flow from their
+  # default branch (so no develop branch is cut on a trunk repo).
+  managed_repos = merge({
     for name, repo in data.github_repository.enumerated : name => {
       visibility  = repo.visibility
       description = repo.description
       topics      = repo.topics
       gitflow     = repo.default_branch == "develop"
     }
-  }, local.repos) : local.repos
+  }, local.repos)
 
   # Managed repos that already exist on GitHub, and are therefore ADOPTED by
   # the import blocks below rather than created. The complement — a
@@ -64,8 +57,8 @@ module "repo_settings" {
   archived = try(each.value.archived, false)
 }
 
-# Import-on-first-apply: adopt every managed repo (and its two Dependabot
-# sub-resources) into Terraform state so the first apply RECONCILES the
+# Import-on-first-apply: adopt every existing managed repo (and its two
+# Dependabot sub-resources) into Terraform state so the first apply RECONCILES the
 # existing repos' settings instead of trying to create them — which
 # prevent_destroy would block and a name collision would fail anyway. Mirrors
 # what `.github-tofu/scripts/import.sh` imported, but as native Terraform 1.5+
@@ -73,8 +66,8 @@ module "repo_settings" {
 # github_repository is the bare repo name (owner comes from the provider); for
 # the Dependabot sub-resources it is likewise the repo name.
 #
-# These blocks are idempotent and only useful once. After a successful apply
-# they can be removed in a follow-up PR.
+# These blocks are idempotent: an import whose target is already in state is a
+# no-op, so they stay and adopt each repo the org gains between applies.
 import {
   for_each = local.adopted_repos
   to       = module.repo_settings[each.key].github_repository.this
