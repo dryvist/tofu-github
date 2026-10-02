@@ -30,3 +30,10 @@ resource "github_issue_label" "org" {
   color       = each.value.color
   description = each.value.description
 }
+
+# Carries the state of the earlier per-repo label resource (same
+# "<repo>/<label>" keys) over to the org resource.
+moved {
+  from = github_issue_label.ai
+  to   = github_issue_label.org
+}
