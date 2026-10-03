@@ -37,3 +37,32 @@ moved {
   from = github_issue_label.ai
   to   = github_issue_label.org
 }
+
+# The labels each repo already carries, read at plan time.
+data "github_issue_labels" "existing" {
+  for_each = toset(data.github_repositories.org.names)
+
+  repository = each.key
+}
+
+locals {
+  # Lower-cased: GitHub treats label names case-insensitively.
+  existing_label_names = {
+    for repo, d in data.github_issue_labels.existing :
+    repo => [for l in d.labels : lower(l.name)]
+  }
+}
+
+# github_issue_label create does not adopt an existing label (GitHub answers
+# 422 already_exists), so every desired label that already exists is imported
+# instead. Import id format: "<repository>:<name>". An import whose target is
+# already in state is a no-op; missing labels fall through to create.
+import {
+  for_each = {
+    for k, v in local.repo_labels : k => v
+    if contains(local.existing_label_names[v.repository], lower(v.name))
+  }
+
+  to = github_issue_label.org[each.key]
+  id = "${each.value.repository}:${each.value.name}"
+}
