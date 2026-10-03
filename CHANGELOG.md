@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.22.0](https://github.com/dryvist/tofu-github/compare/v1.21.1...v1.22.0) (2026-10-03)
+
+
+### Features
+
+* **org-webhook:** add Hermes PR-review org webhook ([#193](https://github.com/dryvist/tofu-github/issues/193)) ([a01818d](https://github.com/dryvist/tofu-github/commit/a01818dacbcefff59449701c5a1fc734cfd09a98))
+
 ## [1.21.1](https://github.com/dryvist/tofu-github/compare/v1.21.0...v1.21.1) (2026-10-03)
 
 
