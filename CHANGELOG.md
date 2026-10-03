@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.21.1](https://github.com/dryvist/tofu-github/compare/v1.21.0...v1.21.1) (2026-10-03)
+
+
+### Bug Fixes
+
+* **repo-settings:** ignore template read-back drift ([#201](https://github.com/dryvist/tofu-github/issues/201)) ([8159ca5](https://github.com/dryvist/tofu-github/commit/8159ca532c492bda9a9292e9ebcbc7e3ee9911b4))
+
 ## [1.21.0](https://github.com/dryvist/tofu-github/compare/v1.20.1...v1.21.0) (2026-10-03)
 
 
