@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.20.1](https://github.com/dryvist/tofu-github/compare/v1.20.0...v1.20.1) (2026-10-03)
+
+
+### Bug Fixes
+
+* **labels:** move github_issue_label.ai state to org ([#192](https://github.com/dryvist/tofu-github/issues/192)) ([596be4a](https://github.com/dryvist/tofu-github/commit/596be4acc9fbd98e9df960313c31c3a93c44e291))
+
 ## [1.20.0](https://github.com/dryvist/tofu-github/compare/v1.19.2...v1.20.0) (2026-10-02)
 
 
