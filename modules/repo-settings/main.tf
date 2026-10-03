@@ -78,6 +78,8 @@ resource "github_repository" "this" {
       auto_init,
       gitignore_template,
       license_template,
+      # Template origin only matters at creation; the API read-back drops it.
+      template,
       # Homepage URL is per-repo and may be set manually; don't fight it.
       homepage_url,
     ]
