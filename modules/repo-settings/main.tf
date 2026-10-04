@@ -88,6 +88,7 @@ resource "github_repository" "this" {
 
 # Dependabot alerts — notifications when CVEs are detected in dependencies.
 # Free on public and private repos (dependency graph + Dependabot is not GHAS).
+# Enabling vulnerability alerts also enables the dependency graph.
 #
 # Skipped (count = 0) on archived repos: the GitHub API rejects enabling or
 # disabling Dependabot on an archived repo, so a managed resource errors every
@@ -97,6 +98,7 @@ resource "github_repository" "this" {
 resource "github_repository_vulnerability_alerts" "this" {
   count      = var.archived ? 0 : 1
   repository = github_repository.this.name
+  enabled    = true
 }
 
 moved {
