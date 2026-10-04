@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.22.2](https://github.com/dryvist/tofu-github/compare/v1.22.1...v1.22.2) (2026-10-04)
+
+
+### Bug Fixes
+
+* **repos:** declare vulnerability alerts enabled ([#215](https://github.com/dryvist/tofu-github/issues/215)) ([ba67f56](https://github.com/dryvist/tofu-github/commit/ba67f56a3ec0f346203ae2ab07c8bf2318660e8f))
+
 ## [1.22.1](https://github.com/dryvist/tofu-github/compare/v1.22.0...v1.22.1) (2026-10-04)
 
 
