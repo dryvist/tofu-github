@@ -1,4 +1,5 @@
-# Org-wide branch-protection — quality rules on every default branch.
+# Org-wide branch-protection — quality rules on default branches and develop
+# refs not covered by the git-flow rulesets.
 #
 # Reverse-engineered from the pre-Terraform "main" org ruleset plus new
 # directives: Conventional Commits enforcement and PR
@@ -23,11 +24,13 @@ resource "github_organization_ruleset" "org_branch_protection" {
 
   conditions {
     ref_name {
-      include = ["~DEFAULT_BRANCH"]
+      include = ["~DEFAULT_BRANCH", "refs/heads/develop"]
       exclude = []
     }
     # Git-flow repos are excluded: their default branch is develop. Their main and
     # develop protection comes from the org-gitflow-* rulesets below instead.
+    # The explicit develop ref also covers repositories that retain a develop
+    # branch without opting into the git-flow property.
     # Upstream forks are excluded: upstream history cannot satisfy the signature
     # and commit-format rules. org-upstream-fork-protection (upstream-forks.tf)
     # covers their default branch instead.
