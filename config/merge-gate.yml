@@ -10,7 +10,6 @@
 #   bare:  `Merge Gate` — the older inline ci-gate.yml pattern, where the
 #          alls-green summary job is a top-level job. These repos migrate to
 #          the thin caller over time; move each to `gate` when it does.
-#   ci:    `ci / Merge Gate` — caller job id `ci` (_ansible-ci.yml consumer).
 #
 # A repo whose required check is NOT the org Merge Gate gets its own bucket:
 #
@@ -66,6 +65,7 @@ merge_gate:
       context: "Merge Gate"
       repos:
         - ai-assistant-instructions
+        - ansible-proxmox
         - ansible-proxmox-ai
         - ansible-proxmox-apps
         - ansible-splunk
@@ -76,10 +76,6 @@ merge_gate:
         - tofu-github
         - tofu-proxmox
         - tofu-runs-on
-    ci:
-      context: "ci / Merge Gate"
-      repos:
-        - ansible-proxmox
     astro-build:
       context: "Build & deploy"
       repos:
