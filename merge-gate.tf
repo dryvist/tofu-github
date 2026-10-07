@@ -1,4 +1,4 @@
-# Merge Gate as a required status check on main and develop — every public repo.
+# Merge Gate as a required status check on main and develop for each registered repo.
 #
 # One org ruleset per live gate check-context (see config/merge-gate.yml for
 # the context taxonomy and the freeze warning). Targets literal
