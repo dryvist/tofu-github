@@ -1,5 +1,5 @@
-# Required-check inventory — the org Merge Gate on every public, non-archived
-# repo, plus any repo's own bespoke required check.
+# Required-check inventory — the org Merge Gate for each registered repo,
+# plus any repo's own bespoke required check.
 #
 # required_status_checks rules match check-run context strings EXACTLY, and
 # repos emit different contexts for the same logical gate depending on their
@@ -68,6 +68,7 @@ merge_gate:
         - ansible-proxmox
         - ansible-proxmox-ai
         - ansible-proxmox-apps
+        - ansible-servarr
         - ansible-splunk
         - mlx-benchmarks
         - nix-ai
