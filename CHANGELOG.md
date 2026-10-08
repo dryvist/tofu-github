@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.22.3](https://github.com/dryvist/tofu-github/compare/v1.22.2...v1.22.3) (2026-10-08)
+
+
+### Bug Fixes
+
+* add required Merge Gate context ([4f2878a](https://github.com/dryvist/tofu-github/commit/4f2878adf8f9379fb82fb29ccc3e4c9442fffa0d))
+* **merge-gate:** move ansible-proxmox to bare Merge Gate context ([#220](https://github.com/dryvist/tofu-github/issues/220)) ([697f4d8](https://github.com/dryvist/tofu-github/commit/697f4d8433a4ba3ab02bcffd22fe815872b233a6))
+* require the single Merge Gate check ([10f37a6](https://github.com/dryvist/tofu-github/commit/10f37a6b3ed23417cd5b4af343eee63a2f5cb577))
+
 ## [1.22.2](https://github.com/dryvist/tofu-github/compare/v1.22.1...v1.22.2) (2026-10-04)
 
 
