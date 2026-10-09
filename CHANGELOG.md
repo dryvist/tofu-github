@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.23.0](https://github.com/dryvist/tofu-github/compare/v1.22.3...v1.23.0) (2026-10-09)
+
+
+### Features
+
+* **repo-settings:** declare allow_update_branch and note org code-security config ([#231](https://github.com/dryvist/tofu-github/issues/231)) ([c957155](https://github.com/dryvist/tofu-github/commit/c957155bb0850a26764799bd45c2b2dcbc2e052f))
+
+
+### Bug Fixes
+
+* **rulesets:** scope org-branch-protection to default branches only ([#230](https://github.com/dryvist/tofu-github/issues/230)) ([aaaa4e5](https://github.com/dryvist/tofu-github/commit/aaaa4e59977541b9745e185f053ec78fa4d5a50d))
+
 ## [1.22.3](https://github.com/dryvist/tofu-github/compare/v1.22.2...v1.22.3) (2026-10-08)
 
 
