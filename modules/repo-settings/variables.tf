@@ -45,3 +45,9 @@ variable "archived" {
   type        = bool
   default     = false
 }
+
+variable "allow_update_branch" {
+  description = "Show the \"Update branch\" button on pull requests whose head is behind the base. Defaults to false."
+  type        = bool
+  default     = false
+}
