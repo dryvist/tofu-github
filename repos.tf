@@ -55,6 +55,8 @@ module "repo_settings" {
   # Optional — most repos.yml entries omit this, which yamldecode simply drops
   # from the map, so try() falls back to the module default (`false`).
   archived = try(each.value.archived, false)
+  # Optional, like archived.
+  allow_update_branch = try(each.value.allow_update_branch, false)
 }
 
 # Import-on-first-apply: adopt every existing managed repo (and its two

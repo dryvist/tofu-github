@@ -36,6 +36,8 @@
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
 #                the set from this flag and, for unlisted repos, the live
 #                default branch.
+#   allow_update_branch: Optional, defaults to false. Shows the "Update branch"
+#                button on pull requests whose head is behind the base.
 #   upstream_fork: Optional, defaults to false. Set true on a fork that tracks a
 #                third-party upstream default branch. Upstream history is
 #                authored outside the org and cannot carry the org's commit
@@ -82,6 +84,7 @@ repos:
   nix-ai:
     visibility: public
     gitflow: true
+    allow_update_branch: true
     description: "Your AI coding toolkit, declared in Nix — Claude, Gemini, Copilot, 15+ MCP servers, one flake"
     topics:
       - ai
@@ -326,6 +329,7 @@ repos:
   # Default branch is main; not git-flow.
   docs-starlight:
     visibility: private
+    allow_update_branch: true
     description: "Private companion docs for the dryvist homelab. Built with Starlight (Astro), deployed to Cloudflare Pages, gated by Cloudflare Access on /d/*."
     topics: []
 
@@ -369,6 +373,7 @@ repos:
   ansible-proxmox-ai:
     visibility: public
     gitflow: true
+    allow_update_branch: true
     description: "Ansible roles for the homelab AI/LLM serving stack (Hermes agent, LLM router, Ollama, Qdrant, RAG, model serving)."
     topics:
       - ansible
