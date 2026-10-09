@@ -15,14 +15,19 @@ resource "github_organization_custom_properties" "gitflow" {
   value_type    = "true_false"
 }
 
-# Attach the custom property to all gitflow repos
+# Set the custom property on every unarchived managed repo: "true" on git-flow
+# repos, "false" on the rest. Setting "false" explicitly clears a value left
+# over from repo creation, which would otherwise keep a trunk repo under the
+# property-targeted git-flow rulesets. Archived repos are read-only and skipped.
 resource "github_repository_custom_property" "gitflow" {
-  for_each = toset(local.gitflow_repos)
+  for_each = toset([
+    for name, cfg in local.managed_repos : name if !try(cfg.archived, false)
+  ])
 
   repository     = each.value
   property_name  = github_organization_custom_properties.gitflow.property_name
   property_type  = "true_false"
-  property_value = ["true"]
+  property_value = [tostring(contains(local.gitflow_repos, each.value))]
 }
 
 # develop branch, cut from main for each git-flow repo. github_branch only
