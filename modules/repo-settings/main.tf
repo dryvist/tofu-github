@@ -39,6 +39,7 @@ resource "github_repository" "this" {
   allow_rebase_merge     = true
   allow_auto_merge       = true
   delete_branch_on_merge = true
+  allow_update_branch    = var.allow_update_branch
 
   # web_commit_signoff_required is deliberately NOT set. The org enforces
   # web-commit signoff, and GitHub rejects the field on a repo PATCH under

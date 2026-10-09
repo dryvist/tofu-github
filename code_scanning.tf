@@ -3,8 +3,8 @@
 # Code scanning default-setup is FREE on public repos (no GHAS license
 # consumed) and is the chosen mechanism for org-wide code scanning.
 #
-# CURRENT STATE (2026-06-28): default setup is ENABLED on every public org repo
-# (31 repos), bootstrapped manually via the code-scanning default-setup API
+# CURRENT STATE: default setup was bootstrapped on 2026-06-28 on the 31 public
+# org repos that existed then, manually via the code-scanning default-setup API
 # because the Terraform provider does not expose the resource yet. This file
 # becomes the canonical config — by IMPORT, not create — once the provider ships.
 #
@@ -21,10 +21,18 @@
 # secret_scanning + push protection (free on public, used in
 # modules/repo-settings) but NOT the free CodeQL default-setup endpoint.
 #
+# ORG CODE-SECURITY CONFIGURATIONS: no provider resource either (PR #3284
+# above). No org configuration is enforced on the org's repos, so the
+# per-repo `security_and_analysis` block in modules/repo-settings is the
+# single source of truth for secret scanning and push protection. Adopt the
+# org configuration here by import once #3284 ships in a tagged release.
+#
 # CONSEQUENCE FOR NEW REPOS: a repo created by this config (`create: true` in
-# config/repos.yml) lands WITHOUT code scanning. Until the provider ships,
-# enabling it is a manual step — the same one-off the other 31 repos went
-# through. Tracked in Vikunja so it is not lost between the two events
+# config/repos.yml), or made public after that bootstrap, lands WITHOUT code
+# scanning. repos.tf governs every unarchived org repo, so the public set is
+# larger than that original 31 (59 at the 2026-10-09 plan). Until the provider
+# ships, enabling it is a manual step — the same one-off the bootstrapped repos
+# went through. Tracked in Vikunja so it is not lost between the two events
 # (repo creation now, provider support later).
 #
 # Upstream: https://github.com/integrations/terraform-provider-github/pull/3315
