@@ -7,3 +7,33 @@ resource "github_actions_runner_group" "homelab" {
   visibility                 = "all"
   allows_public_repositories = false
 }
+
+locals {
+  # ai-workflows reusables whose jobs run on self-hosted runners by default.
+  homelab_ai_workflows = [
+    "cc-release-notes",
+    "docs-drift",
+    "docs-publisher",
+    "docs-sync",
+    "policy-gate",
+    "pr-agent",
+    "pricing-discovery",
+    "repo-hygiene-digest",
+    "thread-triage",
+  ]
+  homelab_ai_refs = ["refs/heads/main", "refs/tags/v1"]
+}
+
+# Self-hosted runner group that public repositories can use, limited to the
+# ai-workflows reusables above at the release refs. Only jobs defined in a
+# listed workflow, at a listed ref, are dispatched to these runners.
+resource "github_actions_runner_group" "homelab_ai" {
+  name                       = "homelab-ai"
+  visibility                 = "all"
+  allows_public_repositories = true
+  restricted_to_workflows    = true
+  selected_workflows = [
+    for pair in setproduct(local.homelab_ai_workflows, local.homelab_ai_refs) :
+    "dryvist/ai-workflows/.github/workflows/${pair[0]}.yml@${pair[1]}"
+  ]
+}
