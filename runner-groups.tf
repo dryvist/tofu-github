@@ -37,3 +37,16 @@ resource "github_actions_runner_group" "homelab_ai" {
     "dryvist/ai-workflows/.github/workflows/${pair[0]}.yml@${pair[1]}"
   ]
 }
+
+# GitHub's built-in Default group (id 1). Kept private-only so a runner that
+# registers without a group can never pick up a public repository's jobs.
+import {
+  to = github_actions_runner_group.default
+  id = "1"
+}
+
+resource "github_actions_runner_group" "default" {
+  name                       = "Default"
+  visibility                 = "all"
+  allows_public_repositories = false
+}
