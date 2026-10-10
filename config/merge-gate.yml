@@ -40,27 +40,40 @@ merge_gate:
       context: "gate / Merge Gate"
       repos:
         - .github
+        - ai-llm-prompts
         - ai-workflows
         - cc-edge-claude-code-io
+        - cc-edge-codex-io
         - cc-edge-pack-template
         - cc-edge-the-mac-pack-io
+        - cc-stream-openrouter-rest-io
         - claude-code-best-practice
         - claude-code-plugins
         - claude-code-routines
+        - cribl-migration
         - docs
+        - docs-starlight
         - grafana-dashboards
         - homelab-contracts
         - iac-platform
+        - int_homelab
         - nix-ai-open-harness
         - nix-claude-code
         - nix-devenv
         - nix-hermes
+        - nix-mac-performance
+        - nix-pi
         - nix-pxe-bootstrap
+        - nix-screenpipe
         - nixos-ai
         - python-template
         - raycast-smart-issue
+        - splunk-app-2-cribl-pack
         - tofu-aws-templates
         - tofu-splunk-aws
+        - tofu-unifi
+        - X10
+        - x10-lite
     bare:
       context: "Merge Gate"
       repos:
