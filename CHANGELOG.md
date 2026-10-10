@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.24.0](https://github.com/dryvist/tofu-github/compare/v1.23.1...v1.24.0) (2026-10-10)
+
+
+### Features
+
+* add a private-repositories-only self-hosted runner group ([#240](https://github.com/dryvist/tofu-github/issues/240)) ([1849eae](https://github.com/dryvist/tofu-github/commit/1849eaefee8a3f887fb20d8aced28c173cb9046a))
+
+
+### Bug Fixes
+
+* let conventional commit rulesets accept a message body ([#243](https://github.com/dryvist/tofu-github/issues/243)) ([d204063](https://github.com/dryvist/tofu-github/commit/d20406326c57d4bd242bbcfbb25f413f01f451ee))
+
 ## [1.23.1](https://github.com/dryvist/tofu-github/compare/v1.23.0...v1.23.1) (2026-10-09)
 
 
