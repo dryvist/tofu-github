@@ -6,13 +6,19 @@
 #
 # config/automerge.yml names the "manual" repos, by name prefix or exact
 # name. On those, the ruleset below requires one approving review on main and
-# develop before a merge. People (org admins) and the agent apps in
-# var.agent_bypass_app_ids bypass it on merge, so their pull requests merge as
-# before. The bot-PR sweep's app (var.triage_merge_app_ids) also bypasses it;
-# the sweep merges a dependency or release PR there only after the local
-# triage agent labels it low risk. Other automation waits for a person.
+# develop before a merge. People (org admins), the agent apps in
+# local.automerge_agent_app_ids and in var.agent_bypass_app_ids, and the bot-PR
+# sweep's app (var.triage_merge_app_ids) bypass it on merge. The sweep merges a
+# dependency or release PR there only after the local triage agent labels it
+# low risk. Other automation waits for a person. Required status checks still
+# apply to every merge.
 locals {
   automerge_config = yamldecode(file("${path.module}/config/automerge.yml"))
+
+  # Agent apps that always bypass the review on "manual" repos: jacobpevans-claude
+  # and JacobPEvans-claude-admin. Committed so an empty workspace variable cannot
+  # drop them.
+  automerge_agent_app_ids = [2956476, 5274352]
 
   automerge_manual_repos = [
     for name in data.github_repositories.org.names : name
@@ -76,7 +82,7 @@ resource "github_organization_ruleset" "org_automerge_manual" {
   }
 
   dynamic "bypass_actors" {
-    for_each = toset(concat(var.agent_bypass_app_ids, var.triage_merge_app_ids))
+    for_each = toset(concat(local.automerge_agent_app_ids, var.agent_bypass_app_ids, var.triage_merge_app_ids))
     content {
       actor_id    = bypass_actors.value
       actor_type  = "Integration"
@@ -103,21 +109,22 @@ variable "org_automerge_manual_enforcement" {
 variable "agent_bypass_app_ids" {
   description = <<-EOT
     GitHub App IDs of AI agents whose merges skip the approval that
-    org-automerge-manual requires. Supplied as a workspace variable. List
-    agent apps only, never dependency-update or release apps: a pull request
-    from those must wait for a person on "manual" repos.
+    org-automerge-manual requires, in addition to local.automerge_agent_app_ids.
+    The default mirrors the workspace variable. List agent apps only, never
+    dependency-update or release apps: a pull request from those must wait for
+    a person on "manual" repos.
   EOT
   type        = list(number)
-  default     = []
+  default     = [2956476, 1236702, 4241562, 4952939, 1144995, 1210556, 5274352]
 }
 
 variable "triage_merge_app_ids" {
   description = <<-EOT
     GitHub App IDs that merge bot PRs on "manual" repos for the bot-PR sweep,
     which merges one only after the local triage agent labels it low risk.
-    Their merges skip the approval org-automerge-manual requires. Supplied as
-    a workspace variable.
+    Their merges skip the approval org-automerge-manual requires. The default
+    mirrors the workspace variable.
   EOT
   type        = list(number)
-  default     = []
+  default     = [3923580]
 }
