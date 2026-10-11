@@ -41,6 +41,13 @@ resource "github_repository" "this" {
   delete_branch_on_merge = true
   allow_update_branch    = var.allow_update_branch
 
+  # Default merge messages take the PR title as the subject, so a merge from
+  # the merge box or auto-merge satisfies the org Conventional Commits rule.
+  squash_merge_commit_title   = "PR_TITLE"
+  squash_merge_commit_message = "COMMIT_MESSAGES"
+  merge_commit_title          = "PR_TITLE"
+  merge_commit_message        = "PR_BODY"
+
   # web_commit_signoff_required is deliberately NOT set. The org enforces
   # web-commit signoff, and GitHub rejects the field on a repo PATCH under
   # that policy — even with value true — which fails every new repo's
