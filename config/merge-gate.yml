@@ -19,6 +19,9 @@
 #                `bare` above, NOT `CI / Build & deploy` (that prefix form only
 #                appears when a job CALLS a reusable workflow). Required so a
 #                red build can no longer auto-merge (incident: #130).
+#   canary:      `Canary` — dryvist/.github's caller-contract canary summary
+#                (canary.yml `canary-summary` job). It reports on every PR and
+#                passes with a notice on Markdown-only changes.
 #   flake-lock-fresh: `Flake Lock Fresh / Flake inputs at branch head` — repos
 #                without the org Merge Gate that call dryvist/.github
 #                `_flake-lock-fresh.yml` from a `fresh` job (workflow name
@@ -94,6 +97,10 @@ merge_gate:
       context: "Build & deploy"
       repos:
         - docs-starlight
+    canary:
+      context: "Canary"
+      repos:
+        - .github
     flake-lock-fresh:
       context: "Flake Lock Fresh / Flake inputs at branch head"
       repos:
