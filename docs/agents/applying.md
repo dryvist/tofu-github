@@ -38,6 +38,12 @@ directly. No dry-run gate. The variable still exists so a misbehaving rule
 can be disabled with `-var <name>_enforcement=disabled` without a code
 change.
 
+**`automation_bypass_app_ids` has no default.** The branch-write restriction
+(`rulesets-branch-write-restriction.tf`) lets only these GitHub Apps create or
+update a branch other than `main`. Set it as a Terrakube workspace variable
+(a list of numeric app IDs) before the first plan. Leaving an app out stops its
+branch pushes and PR updates on the next apply; add its ID and re-apply.
+
 **The existing `markdown_lint_enforcement` keeps its legacy `evaluate`
 default** (changing it would silently flip enforcement on the next apply for
 any operator who runs `tofu apply` without overrides). Enforce explicitly:
