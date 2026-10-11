@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.27.0](https://github.com/dryvist/tofu-github/compare/v1.26.0...v1.27.0) (2026-10-11)
+
+
+### Features
+
+* **automerge:** add the automerge repo property and the manual-merge ruleset ([#272](https://github.com/dryvist/tofu-github/issues/272)) ([1580304](https://github.com/dryvist/tofu-github/commit/15803046c7cb8dc3e0bbd1acad051dbd981783d7))
+* **repos:** rename docs-starlight to docs-private in place ([#265](https://github.com/dryvist/tofu-github/issues/265)) ([54d21b1](https://github.com/dryvist/tofu-github/commit/54d21b128fc4cc02f044d86fb8ee09425ed08229))
+* **rulesets:** require the Canary check on dryvist/.github ([#275](https://github.com/dryvist/tofu-github/issues/275)) ([d4bd0d8](https://github.com/dryvist/tofu-github/commit/d4bd0d8f7f8f2ffce491b8b2678b7c5c3a0fabd6))
+
+
+### Bug Fixes
+
+* **iac-drift:** enable drift detection on tofu-proxmox ([#271](https://github.com/dryvist/tofu-github/issues/271)) ([14563ba](https://github.com/dryvist/tofu-github/commit/14563ba159bb8e5a507f941d4ff9a761b82fc04c))
+
 ## [1.26.0](https://github.com/dryvist/tofu-github/compare/v1.25.0...v1.26.0) (2026-10-11)
 
 
