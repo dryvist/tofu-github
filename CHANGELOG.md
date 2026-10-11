@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.29.0](https://github.com/dryvist/tofu-github/compare/v1.28.1...v1.29.0) (2026-10-11)
+
+
+### Features
+
+* **automerge:** let the bot-PR sweep app bypass approval on manual repos ([#294](https://github.com/dryvist/tofu-github/issues/294)) ([cfaf527](https://github.com/dryvist/tofu-github/commit/cfaf5274f3efd40d81ced44e54dbc5859412ddca))
+
 ## [1.28.1](https://github.com/dryvist/tofu-github/compare/v1.28.0...v1.28.1) (2026-10-11)
 
 
