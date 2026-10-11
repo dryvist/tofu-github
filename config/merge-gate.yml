@@ -13,7 +13,7 @@
 #
 # A repo whose required check is NOT the org Merge Gate gets its own bucket:
 #
-#   astro-build: `Build & deploy` — docs-starlight's bespoke Astro build
+#   astro-build: `Build & deploy` — docs-private's bespoke Astro build
 #                (ci.yml `build` job). It is a top-level job, so it reports a
 #                bare job-name context with no workflow prefix — same shape as
 #                `bare` above, NOT `CI / Build & deploy` (that prefix form only
@@ -27,7 +27,7 @@
 # Adding a repo to a list REQUIRES its check context to be live on every PR
 # first — a required check that never reports blocks every PR in the repo.
 # Verify with a recent PR's check-run names before editing. Org rulesets apply
-# to dryvist private repos too — docs-starlight is the first private entry
+# to dryvist private repos too — docs-private is the first private entry
 # (astro-build); the paid-feature gate is on secret scanning / push
 # protection, not on required-check rulesets. The rule targets main AND
 # develop: every git-flow repo's gate workflow triggers on `pull_request`
@@ -52,7 +52,7 @@ merge_gate:
         - claude-code-routines
         - cribl-migration
         - docs
-        - docs-starlight
+        - docs-private
         - grafana-dashboards
         - homelab-contracts
         - iac-platform
@@ -93,7 +93,7 @@ merge_gate:
     astro-build:
       context: "Build & deploy"
       repos:
-        - docs-starlight
+        - docs-private
     flake-lock-fresh:
       context: "Flake Lock Fresh / Flake inputs at branch head"
       repos:
