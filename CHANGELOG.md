@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.30.0](https://github.com/dryvist/tofu-github/compare/v1.29.0...v1.30.0) (2026-10-11)
+
+
+### Features
+
+* **automerge:** commit the agent and sweep bypass app IDs ([#299](https://github.com/dryvist/tofu-github/issues/299)) ([adccd46](https://github.com/dryvist/tofu-github/commit/adccd46d906ca6a6ee3c24575d569f29f066d607))
+
 ## [1.29.0](https://github.com/dryvist/tofu-github/compare/v1.28.1...v1.29.0) (2026-10-11)
 
 
