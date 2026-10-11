@@ -13,6 +13,13 @@ locals {
   # Per-repo overrides, keyed by repo name.
   repos = yamldecode(file("${path.module}/config/repos.yml")).repos
 
+  # Previous names of renamed repos (config/repos.yml `renamed_from`), kept
+  # out of the enumeration so the old live name never gets its own instance.
+  renamed_from = toset([
+    for cfg in values(local.repos) : cfg.renamed_from
+    if try(cfg.renamed_from, null) != null
+  ])
+
   # The set this config governs: the live org enumeration with the overrides
   # merged over it. Enumerated repos inherit their live description, topics
   # and visibility (so nothing is blanked) and derive git-flow from their
@@ -23,7 +30,7 @@ locals {
       description = repo.description
       topics      = repo.topics
       gitflow     = repo.default_branch == "develop"
-    }
+    } if !contains(local.renamed_from, name)
   }, local.repos)
 
   # Managed repos that already exist on GitHub, and are therefore ADOPTED by
@@ -57,6 +64,11 @@ module "repo_settings" {
   archived = try(each.value.archived, false)
   # Optional, like archived.
   allow_update_branch = try(each.value.allow_update_branch, false)
+}
+
+moved {
+  from = module.repo_settings["docs-starlight"]
+  to   = module.repo_settings["docs-private"]
 }
 
 # Import-on-first-apply: adopt every existing managed repo (and its two
