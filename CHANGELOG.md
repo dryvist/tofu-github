@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.28.0](https://github.com/dryvist/tofu-github/compare/v1.27.0...v1.28.0) (2026-10-11)
+
+
+### Features
+
+* **automerge:** mark ansible-* and nix-ai manual and let agents and admins bypass ([#279](https://github.com/dryvist/tofu-github/issues/279)) ([8c11c1b](https://github.com/dryvist/tofu-github/commit/8c11c1bd040e55baceb7bd5f0f12c074487cf1bb))
+
 ## [1.27.0](https://github.com/dryvist/tofu-github/compare/v1.26.0...v1.27.0) (2026-10-11)
 
 
