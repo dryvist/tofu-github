@@ -4,12 +4,20 @@
 # default "simple": a pull request may merge on its own (GitHub auto-merge,
 # Renovate automerge, an automation app) once its required checks pass.
 #
-# A repo opts out with `automerge: manual` in config/repos.yml. The ruleset
-# below then requires one approving review on main and develop, with the
-# approval given after the last push. No bypass actors are listed, so no app
-# or automation can merge there without a person.
+# config/automerge.yml names the "manual" repos, by name prefix or exact
+# name. On those, the ruleset below requires one approving review on main and
+# develop before a merge. People (org admins) and the agent apps in
+# var.agent_bypass_app_ids bypass it on merge, so their pull requests merge as
+# before; a pull request from other automation (dependency updates, releases)
+# waits for a person's approval.
 locals {
-  automerge_manual_repos = [for name, cfg in local.repos : name if try(cfg.automerge, "simple") == "manual"]
+  automerge_config = yamldecode(file("${path.module}/config/automerge.yml"))
+
+  automerge_manual_repos = [
+    for name in data.github_repositories.org.names : name
+    if contains(local.automerge_config.manual.repos, name) ||
+    anytrue([for p in local.automerge_config.manual.prefixes : startswith(name, p)])
+  ]
 }
 
 resource "github_organization_custom_properties" "automerge" {
@@ -59,13 +67,28 @@ resource "github_organization_ruleset" "org_automerge_manual" {
       allowed_merge_methods             = ["merge", "squash", "rebase"]
     }
   }
+
+  # OrganizationAdmin is an ID-less actor type; the API ignores actor_id for it.
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
+
+  dynamic "bypass_actors" {
+    for_each = toset(var.agent_bypass_app_ids)
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "pull_request"
+    }
+  }
 }
 
 variable "org_automerge_manual_enforcement" {
   description = <<-EOT
-    Enforcement mode for the ruleset on repos with `automerge: manual`
-    (automerge.tf): one approving review after the last push on main and
-    develop, so no automation merges there without a person.
+    Enforcement mode for the ruleset on repos whose `automerge` property is
+    "manual" (automerge.tf): one approving review on main and develop unless
+    an org admin or an agent app in var.agent_bypass_app_ids merges.
   EOT
   type        = string
   default     = "active"
@@ -74,4 +97,15 @@ variable "org_automerge_manual_enforcement" {
     condition     = contains(["disabled", "evaluate", "active"], var.org_automerge_manual_enforcement)
     error_message = "org_automerge_manual_enforcement must be one of: disabled, evaluate, active."
   }
+}
+
+variable "agent_bypass_app_ids" {
+  description = <<-EOT
+    GitHub App IDs of AI agents whose merges skip the approval that
+    org-automerge-manual requires. Supplied as a workspace variable. List
+    agent apps only, never dependency-update or release apps: a pull request
+    from those must wait for a person on "manual" repos.
+  EOT
+  type        = list(number)
+  default     = []
 }
