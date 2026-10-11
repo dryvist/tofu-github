@@ -15,6 +15,17 @@ locals {
   gitflow_defaults           = local.rulesets_defaults.gitflow
   upstream_fork_defaults     = local.rulesets_defaults.upstream_fork
 
+  # Strict Conventional Commits regex on the subject line: the v1.0.0 type
+  # set, an optional lowercase alphanumeric + hyphen scope, `!` for a breaking
+  # change, anchored at the start only so a body and trailers may follow. The
+  # file is the single copy; local commit-msg hooks read it too.
+  commit_message_pattern = trimspace(file("${path.module}/config/commit-message-pattern.txt"))
+
+  # Git-flow variant: back-merges and release merges land "Merge branch ..." /
+  # "Merge pull request ..." subjects, so a leading "Merge " alternation wraps
+  # the same pattern.
+  gitflow_commit_message_pattern = "^(Merge .+|${trimprefix(local.commit_message_pattern, "^")})"
+
   # Merge Gate required-check inventory: check context per repo group, decoded
   # from config/merge-gate.yml and consumed by merge-gate.tf.
   merge_gate_contexts = yamldecode(file("${path.module}/config/merge-gate.yml")).merge_gate.contexts
