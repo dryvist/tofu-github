@@ -259,21 +259,6 @@ variable "org_upstream_fork_protection_enforcement" {
   }
 }
 
-variable "org_automerge_manual_enforcement" {
-  description = <<-EOT
-    Enforcement mode for the ruleset on repos with `automerge: manual`
-    (automerge.tf): one approving review after the last push on main and
-    develop, so no automation merges there without a person.
-  EOT
-  type        = string
-  default     = "active"
-
-  validation {
-    condition     = contains(["disabled", "evaluate", "active"], var.org_automerge_manual_enforcement)
-    error_message = "org_automerge_manual_enforcement must be one of: disabled, evaluate, active."
-  }
-}
-
 variable "org_branch_write_restriction_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide branch-write restriction ruleset

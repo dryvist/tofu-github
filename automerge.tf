@@ -60,3 +60,18 @@ resource "github_organization_ruleset" "org_automerge_manual" {
     }
   }
 }
+
+variable "org_automerge_manual_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the ruleset on repos with `automerge: manual`
+    (automerge.tf): one approving review after the last push on main and
+    develop, so no automation merges there without a person.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_automerge_manual_enforcement)
+    error_message = "org_automerge_manual_enforcement must be one of: disabled, evaluate, active."
+  }
+}
