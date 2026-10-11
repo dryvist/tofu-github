@@ -63,7 +63,7 @@ resource "github_organization_ruleset" "org_branch_protection" {
     commit_message_pattern {
       name     = "conventional-commits"
       operator = "regex"
-      pattern  = local.branch_protection_defaults.commit_message_pattern
+      pattern  = local.commit_message_pattern
       negate   = false
     }
 

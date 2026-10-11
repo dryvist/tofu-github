@@ -63,7 +63,7 @@ resource "github_organization_ruleset" "org_gitflow_main" {
     commit_message_pattern {
       name     = "conventional-commits-or-merge"
       operator = "regex"
-      pattern  = local.gitflow_defaults.commit_message_pattern
+      pattern  = local.gitflow_commit_message_pattern
       negate   = false
     }
 
@@ -109,7 +109,7 @@ resource "github_organization_ruleset" "org_gitflow_develop" {
     commit_message_pattern {
       name     = "conventional-commits-or-merge"
       operator = "regex"
-      pattern  = local.gitflow_defaults.commit_message_pattern
+      pattern  = local.gitflow_commit_message_pattern
       negate   = false
     }
 
