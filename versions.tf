@@ -14,8 +14,8 @@ terraform {
 
   # Remote state, locking, and execution live in the homelab Terrakube
   # management tier (the iac-platform stack). Plans and applies run REMOTELY
-  # on its executor: the org-admin GITHUB_TOKEN is a sensitive workspace
-  # variable there and never exists on dev machines or CI runners.
+  # on its executor; providers.tf mints the GitHub token per run, so it never
+  # exists on dev machines or CI runners.
   #
   # The block is intentionally empty so no internal hostname, org login, or
   # workspace name is committed to this public repo. All three come from the
