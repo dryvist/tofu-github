@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.28.1](https://github.com/dryvist/tofu-github/compare/v1.28.0...v1.28.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* **iac-drift:** adopt the drift variables under a renamed resource ([#285](https://github.com/dryvist/tofu-github/issues/285)) ([cf1456f](https://github.com/dryvist/tofu-github/commit/cf1456f56de140a1663c29b6549316b29c4dce41))
+* **rulesets:** allow underscores in commit scopes ([#289](https://github.com/dryvist/tofu-github/issues/289)) ([fd4ffc8](https://github.com/dryvist/tofu-github/commit/fd4ffc83c9379f8cc36c2410ed863884e2e77afa))
+
 ## [1.28.0](https://github.com/dryvist/tofu-github/compare/v1.27.0...v1.28.0) (2026-10-11)
 
 
