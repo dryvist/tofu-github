@@ -1,0 +1,10 @@
+# Repos whose `automerge` custom property is "manual" (see automerge.tf).
+# Every other unarchived repo keeps the default, "simple".
+#
+#   prefixes: a repo whose name starts with one of these is manual.
+#   repos:    exact repo names that are manual.
+manual:
+  prefixes:
+    - ansible-
+  repos:
+    - nix-ai
