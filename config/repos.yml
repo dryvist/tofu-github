@@ -45,10 +45,6 @@
 #                binds the repo to org-upstream-fork-protection instead of the
 #                signature and commit-format rulesets. Changes the org makes on
 #                the fork still arrive by pull request.
-#   automerge:   Optional, "simple" (default) or "manual". "simple" lets a pull
-#                request merge on its own once required checks pass. "manual"
-#                sets the repo's `automerge` custom property, and automerge.tf
-#                then requires a person's approval on main and develop.
 # An entry naming a repo that does not exist yet CREATES it — no flag, no
 # ceremony. repos.tf derives adopt-vs-create by intersecting this inventory
 # with the live org listing, so an entry reads the same whether the repo
@@ -380,7 +376,6 @@ repos:
     visibility: public
     gitflow: true
     allow_update_branch: true
-    automerge: manual
     description: "Ansible roles for the homelab AI/LLM serving stack (Hermes agent, LLM router, Ollama, Qdrant, RAG, model serving)."
     topics:
       - ansible
