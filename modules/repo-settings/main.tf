@@ -43,10 +43,11 @@ resource "github_repository" "this" {
 
   # Default merge messages take the PR title as the subject, so a merge from
   # the merge box or auto-merge satisfies the org Conventional Commits rule.
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "COMMIT_MESSAGES"
-  merge_commit_title          = "PR_TITLE"
-  merge_commit_message        = "PR_BODY"
+  # Left unset on archived repos, which reject any settings change.
+  squash_merge_commit_title   = var.archived ? null : "PR_TITLE"
+  squash_merge_commit_message = var.archived ? null : "COMMIT_MESSAGES"
+  merge_commit_title          = var.archived ? null : "PR_TITLE"
+  merge_commit_message        = var.archived ? null : "PR_BODY"
 
   # web_commit_signoff_required is deliberately NOT set. The org enforces
   # web-commit signoff, and GitHub rejects the field on a repo PATCH under
