@@ -10,7 +10,7 @@ concurrent runs against the workspace queue behind the active one.
 | Backend | empty `cloud {}` block; host/org/workspace from `TF_CLOUD_*` env |
 | Workspace | `tofu-github` (engine: tofu, version pinned platform-side) |
 | Execution | Remote, on the platform's executor |
-| Provider credential | `GITHUB_TOKEN` = sensitive Terrakube workspace variable |
+| Provider credential | Installation token minted per run from OpenBao (`ephemeral` in `providers.tf`); never in state |
 | Workspace definition | Code, in iac-platform `tofu/terrakube/workspaces.tf` |
 
 There is **no AWS involvement**: the previous S3 + `tf-github` IAM design

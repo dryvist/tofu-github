@@ -3,9 +3,9 @@
 Plans and applies execute **remotely on the homelab Terrakube**
 ([dryvist/iac-platform](https://github.com/dryvist/iac-platform)) via the
 `cloud` block in `versions.tf` — run plain `tofu plan` / `tofu apply` and the
-output streams back. The org-admin `GITHUB_TOKEN` the provider needs
-(`admin:org`) is a **sensitive workspace variable in Terrakube**: it never
-exists on dev machines, in CI config, or in any keychain.
+output streams back. The provider's GitHub token is minted from OpenBao on
+every run by an `ephemeral` resource in `providers.tf`: it never exists on dev
+machines, in CI config, in any keychain, or in state.
 
 Authentication (zero keychain, zero stored passwords):
 `tofu login "$TF_CLOUD_HOSTNAME"` once per machine (the Terrakube API FQDN

@@ -10,5 +10,5 @@
 #   dryvist/ai-workflows -> examples/iac-drift-caller.yml
 # which calls the reusable dryvist/ai-workflows/.github/workflows/_iac-drift.yml.
 repos:
-  terraform-proxmox:
+  tofu-proxmox:
     enabled: true
