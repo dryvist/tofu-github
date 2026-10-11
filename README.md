@@ -85,7 +85,7 @@ uncomment + bump the provider version when that PR ships.
 
 ```text
 versions.tf       # tofu + provider pins, Terrakube cloud backend
-providers.tf      # github provider, GITHUB_TOKEN auth
+providers.tf      # github provider, token minted per run (ephemeral)
 variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # config/*.yml decoded into named locals for the rulesets-*.tf files
@@ -127,7 +127,7 @@ upstream via `data "http"`, not committed as a local template.
 
 - **A reachable Terrakube workspace.** State, locking, and remote
   execution come from the homelab Terrakube instance; the `tofu-github`
-  workspace (and its sensitive org-admin `GITHUB_TOKEN` variable) is
+  workspace is
   defined as code in the platform repo. The platform is deliberately
   not-24/7 — power its node on for off-hours work.
 
@@ -145,8 +145,9 @@ upstream via `data "http"`, not committed as a local template.
 
   Requires membership in the org's `terrakube-admins` team.
 
-No AWS account, no aws-vault, no local `GITHUB_TOKEN`: the github
-provider's org-admin credential is injected by Terrakube at run time.
+No AWS account, no aws-vault, no local `GITHUB_TOKEN`: `providers.tf`
+mints a short-lived GitHub App installation token from OpenBao on every
+run, through an `ephemeral` resource, so it is never stored or written to state.
 
 ## Usage
 
