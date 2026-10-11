@@ -11,29 +11,10 @@ locals {
   }
 }
 
-resource "github_actions_variable" "iac_drift" {
+resource "github_actions_variable" "iac_drift_enabled" {
   for_each = local.iac_drift_repos
 
   repository    = each.key
   variable_name = "IAC_DRIFT_ENABLED"
   value         = "true"
-}
-
-# The resource was renamed from iac_drift_enabled when terraform-proxmox became
-# tofu-proxmox: the old state key named the old repository, and the provider
-# replaces a variable whose repository changes. Forget the old resource without
-# deleting the live variables and adopt them under the new name. An import whose
-# target is already in state is a no-op.
-removed {
-  from = github_actions_variable.iac_drift_enabled
-
-  lifecycle {
-    destroy = false
-  }
-}
-
-import {
-  for_each = local.iac_drift_repos
-  to       = github_actions_variable.iac_drift[each.key]
-  id       = "${each.key}:IAC_DRIFT_ENABLED"
 }
