@@ -21,6 +21,7 @@ defined **once** here and applied to **every** repo automatically.
 | `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) |
 | `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) |
 | `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) |
+| `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) |
 
 ### Push protection
 
@@ -46,6 +47,14 @@ Review gate on every default branch: 1 approving review + CODEOWNER
 review on PRs. **OrganizationAdmin bypass in `pull_request` mode** so
 admins can merge their own PRs; bots and other contributors must
 obtain the review.
+
+### Branch-write restriction
+
+Only the GitHub Apps listed in `automation_bypass_app_ids` can create or
+update a branch other than `main`. Everyone else, org admins included,
+can open and merge pull requests into `main` but cannot push or create
+any other branch. The list is a required workspace variable with no
+default.
 
 ### Markdown lint
 
@@ -84,6 +93,7 @@ rulesets-push-protection.tf     # org_push_protection
 rulesets-branch-protection.tf   # org_branch_protection, required_signatures, org_review_gate + import blocks
 rulesets-required-workflows.tf  # markdown_lint, conventions + import blocks
 rulesets-gitflow.tf             # org_gitflow_*
+rulesets-branch-write-restriction.tf  # org_branch_write_restriction
 main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
 config/           # YAML thresholds + lists consumed via yamldecode(file(...))
