@@ -258,3 +258,38 @@ variable "org_upstream_fork_protection_enforcement" {
     error_message = "org_upstream_fork_protection_enforcement must be one of: disabled, evaluate, active."
   }
 }
+
+variable "org_branch_write_restriction_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the org-wide branch-write restriction ruleset
+    (rulesets-branch-write-restriction.tf). "active" stops every actor
+    outside var.automation_bypass_app_ids from creating or updating any
+    branch except main.
+
+    Set to "disabled" with `-var` to switch the rule off without a code change.
+  EOT
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_branch_write_restriction_enforcement)
+    error_message = "org_branch_write_restriction_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
+variable "automation_bypass_app_ids" {
+  description = <<-EOT
+    GitHub App IDs allowed to create and update branches that the
+    branch-write restriction covers. Supplied by the operator as a workspace
+    variable; there is no default, so the ruleset cannot apply with an empty
+    bypass list and lock out every automation. Include every app that opens
+    or updates branches: the Actions app, the dependency-update app, the
+    release app and the org's own automation apps.
+  EOT
+  type        = list(number)
+
+  validation {
+    condition     = length(var.automation_bypass_app_ids) > 0
+    error_message = "automation_bypass_app_ids must list at least one GitHub App ID."
+  }
+}

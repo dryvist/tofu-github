@@ -326,8 +326,10 @@ repos:
   #   - this file lives in a PUBLIC repo, so the name and description below
   #     are public permanently. Description is reproduced verbatim from the
   #     live repo so an apply shows no diff. Enrolled deliberately.
-  # Default branch is main; not git-flow.
-  docs-starlight:
+  # Default branch is main; not git-flow. renamed_from: the repo's previous
+  # name, dropped from enumeration so the rename is one in-place update.
+  docs-private:
+    renamed_from: docs-starlight
     visibility: private
     allow_update_branch: true
     description: "Private companion docs for the dryvist homelab. Built with Starlight (Astro), deployed to Cloudflare Pages, gated by Cloudflare Access on /d/*."

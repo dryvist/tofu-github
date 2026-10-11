@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.26.0](https://github.com/dryvist/tofu-github/compare/v1.25.0...v1.26.0) (2026-10-11)
+
+
+### Features
+
+* **repo-settings:** default merge messages to the PR title ([e4b8fde](https://github.com/dryvist/tofu-github/commit/e4b8fde17589d1bb254f1a3d72ba24d43c35d5fa))
+* **repo-settings:** default merge messages to the PR title ([1f18f7f](https://github.com/dryvist/tofu-github/commit/1f18f7fe9f98dde1dad5c55049f53514ca06fac2))
+* **rulesets:** restrict branch writes to automation apps outside main ([0c6d048](https://github.com/dryvist/tofu-github/commit/0c6d048fd8a39b7681880631b8ffde4418501fc3))
+
+
+### Bug Fixes
+
+* **repo-settings:** leave merge messages unset on archived repos ([e080db6](https://github.com/dryvist/tofu-github/commit/e080db6ef2a5335d027a7ed75c5e0c2291e4f581))
+
 ## [1.25.0](https://github.com/dryvist/tofu-github/compare/v1.24.0...v1.25.0) (2026-10-10)
 
 
