@@ -6,6 +6,11 @@ locals {
   # written down. The provider's `owner` decides which org that resolves to.
   org = split("/", data.github_repository.dot_github.full_name)[0]
 
+  release_app_ids = [
+    for variable in data.github_actions_organization_variables.org.variables : tonumber(trimspace(variable.value))
+    if variable.name == "GH_ACTION_RELEASE_PLEASE_APP_ID" && trimspace(variable.value) != ""
+  ]
+
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
   docs_publisher    = yamldecode(file("${path.module}/config/docs-publisher.yml"))
 
