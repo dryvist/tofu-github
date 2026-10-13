@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.31.0](https://github.com/dryvist/tofu-github/compare/v1.30.0...v1.31.0) (2026-10-13)
+
+
+### Features
+
+* **rulesets:** add the release-freeze status ruleset for git-flow develop ([05ae9cf](https://github.com/dryvist/tofu-github/commit/05ae9cf866fe9f94c8c21408f9cbafcb4b06cc6b))
+* **rulesets:** release app and triage app bypass the approval rulesets ([0365bc5](https://github.com/dryvist/tofu-github/commit/0365bc50b9d3580f00e52d3dec35a4ca2560abe1))
+* **rulesets:** release app bypass, docs publisher triage bypass, release-freeze ruleset ([#306](https://github.com/dryvist/tofu-github/issues/306)) ([b1ab19d](https://github.com/dryvist/tofu-github/commit/b1ab19dfae05f68f48080c07dfc8136462977b6e))
+
+
+### Bug Fixes
+
+* **rulesets:** skip an empty release app id variable instead of failing the plan ([1e23f7a](https://github.com/dryvist/tofu-github/commit/1e23f7a8f5907e34355a5e95fb16f8dfc8c600b9))
+
 ## [1.30.0](https://github.com/dryvist/tofu-github/compare/v1.29.0...v1.30.0) (2026-10-11)
 
 
