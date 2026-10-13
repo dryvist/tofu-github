@@ -178,6 +178,23 @@ variable "org_gitflow_develop_enforcement" {
     error_message = "org_gitflow_develop_enforcement must be one of: disabled, evaluate, active."
   }
 }
+
+variable "org_release_freeze_enforcement" {
+  description = <<-EOT
+    Enforcement mode for the release-freeze required status check on the
+    develop branch of git-flow repos. It defaults to "evaluate" so the rule
+    reports without blocking merges. Set it to "active" once the shared status
+    workflow is called from every git-flow repo.
+  EOT
+  type        = string
+  default     = "evaluate"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_release_freeze_enforcement)
+    error_message = "org_release_freeze_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_copilot_review_enforcement" {
   description = <<-EOT
     Enforcement mode for the Copilot code-review pilot ruleset(s) --

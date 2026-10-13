@@ -22,6 +22,7 @@ defined **once** here and applied to **every** repo automatically.
 | `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) |
 | `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) |
 | `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) |
+| `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) |
 | `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) |
 
@@ -63,6 +64,11 @@ Requires the org provenance workflow and the configured approval count for
 projected public documentation pull requests. The release automation and
 configured triage apps bypass review in `pull_request` mode.
 
+### Release freeze
+
+Requires the `release-freeze` status on `develop` in repos with the
+`gitflow: true` property. The ruleset defaults to `evaluate` and can be set to
+`active` after the shared status workflow is called from every git-flow repo.
 
 ### Branch-write restriction
 
@@ -109,6 +115,7 @@ rulesets-push-protection.tf     # org_push_protection
 rulesets-branch-protection.tf   # org_branch_protection, required_signatures, org_review_gate + import blocks
 rulesets-required-workflows.tf  # markdown_lint, conventions + import blocks
 rulesets-gitflow.tf             # org_gitflow_*
+release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
 main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
