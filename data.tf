@@ -18,6 +18,10 @@ data "github_repositories" "org" {
   query = "org:${local.org} fork:true archived:false"
 }
 
+# Read the release automation App ID from the org Actions variable so rulesets
+# can grant its pull-request review bypass without storing the ID in this repo.
+data "github_actions_organization_variables" "org" {}
+
 # Every repo that ALREADY EXISTS in the org, archived included, resolved at
 # plan time. Kept separate from the enumeration above because its filter
 # differs: archived repos must be included here (see below).

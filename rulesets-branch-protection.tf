@@ -116,11 +116,11 @@ resource "github_organization_ruleset" "required_signatures" {
 # Org-wide review gate — 1 approving review + CODEOWNER review on PRs.
 #
 # Separate ruleset (rather than rolled into org_branch_protection) so the
-# OrganizationAdmin bypass below applies ONLY to review enforcement, not
+# bypass actors below apply ONLY to review enforcement, not
 # to signed commits or commit format. Any OrganizationAdmin
-# can merge their own PRs without external review; non-admin actors (bots,
-# external contributors) must obtain the review and, on critical files,
-# a CODEOWNER review.
+# can merge their own PRs without external review. Other non-admin actors
+# (bots, external contributors) must obtain the review and, on critical files,
+# a CODEOWNER review. The release automation app also bypasses review.
 #
 # bypass_mode = "pull_request": admins bypass on merge only, not on push.
 # Pushes still satisfy every other rule (signed, conventional).
@@ -166,5 +166,14 @@ resource "github_organization_ruleset" "org_review_gate" {
     # attribute to be omitted. Every OrganizationAdmin bypasses review on merge.
     actor_type  = "OrganizationAdmin"
     bypass_mode = "pull_request"
+  }
+
+  dynamic "bypass_actors" {
+    for_each = toset(local.release_app_ids)
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "pull_request"
+    }
   }
 }

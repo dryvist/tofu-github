@@ -61,8 +61,8 @@ variable "ai_review_enforcement" {
 variable "docs_publisher_enforcement" {
   description = <<-EOT
     Enforcement mode for the public documentation publisher ruleset. The
-    ruleset requires the org provenance workflow and a fresh human approval
-    before projected documentation can merge.
+    ruleset requires the org provenance workflow and configured approval
+    count, with pull-request bypasses for release automation and triage apps.
   EOT
   type        = string
   default     = "active"
@@ -111,15 +111,9 @@ variable "org_review_gate_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide review-gate ruleset on default
     branches. Requires 1 approving review + CODEOWNER review on PRs.
-    Bypass actor: OrganizationAdmin in `pull_request` mode — any account
-    holding the OrganizationAdmin role can merge their own PRs without
-    external review. Non-admin actors (bots, external contributors) must
-    obtain the review.
-
-    Defaults to "disabled": this is a single-operator org today, so required
-    reviews only get in the way. The ruleset stays DEFINED as the documented
-    future-state placeholder — flip to "active" with `-var` (or change this
-    default) once AI bots merge as separate non-admin users that must be gated.
+    OrganizationAdmin and the release automation app bypass review in
+    `pull_request` mode; other non-bypass actors must obtain the review.
+    Defaults to "disabled".
   EOT
   type        = string
   default     = "disabled"
@@ -184,7 +178,6 @@ variable "org_gitflow_develop_enforcement" {
     error_message = "org_gitflow_develop_enforcement must be one of: disabled, evaluate, active."
   }
 }
-
 variable "org_copilot_review_enforcement" {
   description = <<-EOT
     Enforcement mode for the Copilot code-review pilot ruleset(s) --
