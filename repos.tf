@@ -10,8 +10,9 @@
 # supplied by the single provider in providers.tf, never repeated per repo.
 
 locals {
-  # Per-repo overrides, keyed by repo name.
-  repos = yamldecode(file("${path.module}/${local.org_config_dir}/repos.yml")).repos
+  # Per-repo overrides, keyed by repo name: the committed file plus the
+  # private-repo overrides supplied by the workspace.
+  repos = merge(yamldecode(file("${path.module}/${local.org_config_dir}/repos.yml")).repos, var.private_repo_overrides)
 
   # Previous names of renamed repos (`renamed_from` in the selected per-org
   # repos.yml), kept out of the enumeration so the old live name never gets its

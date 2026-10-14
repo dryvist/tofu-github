@@ -31,6 +31,12 @@ variable "config_org" {
   }
 }
 
+variable "private_repo_overrides" {
+  description = "Per-repo overrides for private repositories, keyed by repo name, in the same shape as the repos map in repos.yml. Supplied as a workspace variable so private repo names stay out of this public repository."
+  type        = any
+  default     = {}
+}
+
 variable "markdown_lint_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-wide markdown-lint ruleset.
