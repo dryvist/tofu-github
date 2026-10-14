@@ -20,7 +20,8 @@ own configuration.
 | `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
-| `github_organization_custom_properties.*`, `github_repository_custom_property.*` | Auto-merge, docs, git-flow, and upstream-fork properties | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
+| `github_organization_custom_properties.*` | Organization property schemas | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
+| `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
 | `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
 | `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) | `rulesets-required-workflows.tf` |
