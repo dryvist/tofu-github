@@ -1,7 +1,8 @@
-# Structured defaults consumed by org rulesets live in config/*.yml; this
-# file decodes them into named locals so rulesets.tf reads them as terraform
-# values, not raw file reads scattered through resource bodies.
+# Shared defaults and per-org policy config are decoded into named locals so
+# resources read Terraform values rather than scattering file reads in bodies.
 locals {
+  org_config_dir = var.config_org == "" ? "config" : "config/orgs/${var.config_org}"
+
   # The org login, recovered from the `.github` repo's full_name rather than
   # written down. The provider's `owner` decides which org that resolves to.
   org = split("/", data.github_repository.dot_github.full_name)[0]
@@ -12,7 +13,7 @@ locals {
   ]
 
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
-  docs_publisher    = yamldecode(file("${path.module}/config/docs-publisher.yml"))
+  docs_publisher    = yamldecode(file("${path.module}/${local.org_config_dir}/docs-publisher.yml"))
 
   ruleset_imports            = local.rulesets_defaults.imports
   push_protection_defaults   = local.rulesets_defaults.push_protection
@@ -32,14 +33,14 @@ locals {
   gitflow_commit_message_pattern = "^(Merge .+|${trimprefix(local.commit_message_pattern, "^")})"
 
   # Merge Gate required-check inventory: check context per repo group, decoded
-  # from config/merge-gate.yml and consumed by merge-gate.tf.
-  merge_gate_contexts = yamldecode(file("${path.module}/config/merge-gate.yml")).merge_gate.contexts
+  # from the selected per-org merge-gate.yml and consumed by merge-gate.tf.
+  merge_gate_contexts = yamldecode(file("${path.module}/${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts
 
-  # Copilot code-review pilot targets: branch -> explicit repo list,
-  # decoded from config/copilot-review.yml and consumed by copilot-review.tf.
-  copilot_review_targets = yamldecode(file("${path.module}/config/copilot-review.yml")).copilot_review
+  # Copilot code-review pilot targets: branch -> explicit repo list, decoded
+  # from the selected per-org copilot-review.yml and consumed by copilot-review.tf.
+  copilot_review_targets = yamldecode(file("${path.module}/${local.org_config_dir}/copilot-review.yml")).copilot_review
 
   # IaC drift-detection opt-in: repos flagged enabled get IAC_DRIFT_ENABLED=true.
-  # Consumed by iac-drift.tf. See config/iac-drift.yml.
-  iac_drift = yamldecode(file("${path.module}/config/iac-drift.yml"))
+  # Consumed by iac-drift.tf. See the selected per-org iac-drift.yml.
+  iac_drift = yamldecode(file("${path.module}/${local.org_config_dir}/iac-drift.yml"))
 }

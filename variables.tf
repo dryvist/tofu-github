@@ -40,9 +40,9 @@ variable "conventions_enforcement" {
 
 variable "ai_review_enforcement" {
   description = <<-EOT
-    Enforcement mode for the org-wide AI review ruleset (dryvist/.github's
-    ai-review.yml, PR-Agent on the model router, injected into every repo's
-    pull requests).
+    Enforcement mode for the org-wide AI review ruleset, which injects the
+    `ai-review.yml` workflow from the org's `.github` repo into every repo's
+    pull requests. It runs PR-Agent on the model router.
 
     Defaults to "evaluate": every pull request is reviewed and the outcome is
     reported, but does not gate the merge. "active" gates the merge instead —
@@ -198,7 +198,7 @@ variable "org_release_freeze_enforcement" {
 variable "org_copilot_review_enforcement" {
   description = <<-EOT
     Enforcement mode for the Copilot code-review pilot ruleset(s) --
-    explicit (branch, repo-list) targets from config/copilot-review.yml,
+    explicit (branch, repo-list) targets from the selected copilot-review.yml,
     not a property match. Growing the pilot is a config edit there, never
     a variable change here.
 
@@ -241,7 +241,7 @@ variable "org_merge_gate_enforcement" {
   description = <<-EOT
     Enforcement mode for the org-merge-gate-* required-check rulesets
     (merge-gate.tf). "active" blocks merging into main until the repo's
-    Merge Gate check succeeds. Every repo listed in config/merge-gate.yml
+    Merge Gate check succeeds. Every repo listed in the selected merge-gate.yml
     must have its gate context live on main BEFORE this is active — a
     required check that never reports freezes the repo's PRs.
   EOT

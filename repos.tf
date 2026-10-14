@@ -4,17 +4,19 @@
 # Conventional Commits on every repo).
 #
 # Every unarchived org repo is enumerated at plan time and governed by
-# module.repo_settings. config/repos.yml holds per-repo overrides only: an
-# entry replaces the enumerated defaults wholesale, and also covers the cases
-# enumeration cannot (archived repos, repos to be created). The owner is
+# module.repo_settings. The selected per-org repos.yml holds per-repo overrides
+# only: an entry replaces the enumerated defaults wholesale, and also covers
+# cases enumeration cannot (archived repos, repos to be created). The owner is
 # supplied by the single provider in providers.tf, never repeated per repo.
 
 locals {
-  # Per-repo overrides, keyed by repo name.
-  repos = yamldecode(file("${path.module}/config/repos.yml")).repos
+  # Per-repo overrides, keyed by repo name: the committed file plus the
+  # private-repo overrides supplied by the workspace.
+  repos = merge(yamldecode(file("${path.module}/${local.org_config_dir}/repos.yml")).repos, var.private_repo_overrides)
 
-  # Previous names of renamed repos (config/repos.yml `renamed_from`), kept
-  # out of the enumeration so the old live name never gets its own instance.
+  # Previous names of renamed repos (`renamed_from` in the selected per-org
+  # repos.yml), kept out of the enumeration so the old live name never gets its
+  # own instance.
   renamed_from = toset([
     for cfg in values(local.repos) : cfg.renamed_from
     if try(cfg.renamed_from, null) != null
@@ -35,9 +37,9 @@ locals {
 
   # Managed repos that already exist on GitHub, and are therefore ADOPTED by
   # the import blocks below rather than created. The complement — a
-  # config/repos.yml entry naming a repo that does not exist yet — is simply
-  # created, because an import aimed at it would fail the plan with "Cannot
-  # import non-existent remote object".
+  # selected per-org repos.yml entry naming a repo that does not exist yet — is
+  # simply created, because an import aimed at it would fail the plan with
+  # "Cannot import non-existent remote object".
   #
   # Derived from the live org (data.github_repositories.existing), never from
   # a per-repo flag. A flag would encode how a repo came to be, which is true
