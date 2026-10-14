@@ -34,6 +34,15 @@ resource "github_organization_ruleset" "docs_publisher" {
       allowed_merge_methods             = local.docs_publisher.pull_request.allowed_merge_methods
     }
   }
+
+  dynamic "bypass_actors" {
+    for_each = toset(concat(var.triage_merge_app_ids, local.release_app_ids))
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "pull_request"
+    }
+  }
 }
 
 # Org custom property classifying each repo's documentation as private (the

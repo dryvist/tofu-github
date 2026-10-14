@@ -17,7 +17,7 @@ repos:
   # ruleset this repo itself defines (MD033 no-inline-html) — self-defeating
   # governance.
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.109.1
+    rev: v1.109.2
     hooks:
       # The shell supplies both terraform and tofu; this repo is OpenTofu
       # (lock file on registry.opentofu.org, .opentofu-version), so pin the
@@ -52,7 +52,7 @@ repos:
 
   # Checkov - Terraform IaC security scanner
   - repo: https://github.com/bridgecrewio/checkov.git
-    rev: 3.3.22
+    rev: 3.3.26
     hooks:
       - id: checkov
         args: ['-d', '.', '--framework', 'terraform', '--quiet']
