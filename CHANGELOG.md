@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.32.0](https://github.com/dryvist/tofu-github/compare/v1.31.0...v1.32.0) (2026-10-14)
+
+
+### Features
+
+* **actions:** add the bot_sweep_live repository variable ([#312](https://github.com/dryvist/tofu-github/issues/312)) ([d135b56](https://github.com/dryvist/tofu-github/commit/d135b56b7da8ccb2860745088fa554825c5ffdbe))
+* **actions:** declare BOT_SWEEP_LIVE for the shared workflow repository ([d135b56](https://github.com/dryvist/tofu-github/commit/d135b56b7da8ccb2860745088fa554825c5ffdbe))
+
 ## [1.31.0](https://github.com/dryvist/tofu-github/compare/v1.30.0...v1.31.0) (2026-10-13)
 
 
