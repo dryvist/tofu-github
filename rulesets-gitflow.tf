@@ -31,8 +31,8 @@ resource "github_organization_ruleset" "org_gitflow_base" {
 
 # Git-flow `main` protection — the release branch on opted-in repos.
 #
-# Binds only local.gitflow_repos (derived from `gitflow: true` in
-# config/repos.yml) on the literal refs/heads/main — NOT ~DEFAULT_BRANCH, which
+# Binds only local.gitflow_repos (derived from `gitflow: true` in the selected
+# per-org repos.yml) on the literal refs/heads/main — NOT ~DEFAULT_BRANCH, which
 # now points at develop on these repos. main is release-only: PRs required (no
 # direct pushes), merge-commit the sole merge method so release/hotfix history is
 # preserved, PR threads must resolve, and commit messages match the

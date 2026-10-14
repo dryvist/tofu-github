@@ -1,9 +1,9 @@
 # Git-flow pilot wiring.
 #
 # A repo is git-flow when its live default branch is develop, or when its
-# config/repos.yml entry sets `gitflow: true` (which wins wholesale; see
-# repos.tf). local.gitflow_repos derives that set once, and everything git-flow
-# reads from it: the develop branch + default-branch switch below, and the
+# selected per-org repos.yml entry sets `gitflow: true` (which wins wholesale;
+# see repos.tf). local.gitflow_repos derives that set once, and all git-flow
+# consumers use it: the develop branch + default-branch switch below, and the
 # git-flow rulesets. Never a second list to keep in sync.
 locals {
   gitflow_repos = [for name, cfg in local.managed_repos : name if try(cfg.gitflow, false)]

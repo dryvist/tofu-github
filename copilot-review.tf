@@ -1,7 +1,7 @@
 # Copilot code review -- narrowly targeted pilot, bound to explicit
-# (branch, repo-list) pairs from config/copilot-review.yml, NOT a property
-# match against every gitflow repo. The org has already exhausted its
-# Copilot review capacity once from unrelated usage, and each review bills
+# (branch, repo-list) pairs from the selected per-org copilot-review.yml, NOT
+# a property match against every gitflow repo. The org has already exhausted
+# its Copilot review capacity once from unrelated usage, and each review bills
 # AI credits directly with no pooled seat allowance -- growing this pilot
 # is a one-line YAML edit, never a broader property match.
 # review_on_push = false caps spend at ~1 review per PR regardless of push

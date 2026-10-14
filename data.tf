@@ -27,8 +27,8 @@ data "github_actions_organization_variables" "org" {}
 # differs: archived repos must be included here (see below).
 #
 # This exists to answer one question the config cannot answer from its own
-# text: for each entry in config/repos.yml, does the repo exist yet? An
-# import block aimed at a repo that does not exist fails the plan, so
+# text: for each entry in the selected per-org repos.yml, does the repo exist
+# yet? An import block aimed at a repo that does not exist fails the plan, so
 # repos.tf intersects this list with the managed inventory to decide which
 # entries are ADOPTED (import) and which are CREATED.
 #

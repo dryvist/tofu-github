@@ -16,12 +16,12 @@ provider "vault" {
 # extracted. The permission set is installation-scoped on the OpenBao side, so
 # no installation_id is passed here.
 ephemeral "vault_generic_endpoint" "github_token" {
-  path         = "github-admin/token/dryvist-full-automation"
+  path         = "github-admin/token/${var.github_token_permission_set}"
   data_json    = jsonencode({})
   write_fields = ["token"]
 }
 
 provider "github" {
-  owner = "dryvist"
+  owner = var.github_owner
   token = ephemeral.vault_generic_endpoint.github_token.write_data["token"]
 }

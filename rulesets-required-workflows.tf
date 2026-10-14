@@ -5,9 +5,11 @@
 # being blocked before their default branch exists. Enforcement defaults to
 # the legacy `evaluate` posture; pass `-var markdown_lint_enforcement=active`
 # to enforce.
+# Only the existing flat-config workspace adopts this organization-specific ID.
 import {
-  to = github_organization_ruleset.markdown_lint
-  id = local.ruleset_imports.markdown_lint
+  for_each = var.config_org == "" ? { existing = local.ruleset_imports.markdown_lint } : {}
+  to       = github_organization_ruleset.markdown_lint
+  id       = each.value
 }
 
 resource "github_organization_ruleset" "markdown_lint" {
