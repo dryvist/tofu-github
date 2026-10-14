@@ -414,15 +414,6 @@ repos:
     description: "Shared content bundle (skills + SOUL persona) for the Hermes autonomous agent"
     topics: []
 
-  # PRIVATE. The module's cost gate keys off this value and omits the
-  # security_and_analysis block entirely for a private repo, so no paid GitHub
-  # Advanced Security feature is enabled by an apply. Cost impact: $0.
-  x10-lite:
-    visibility: private
-    gitflow: true
-    description: "Private: deep docs + a simplified, original SAM/Falcon-on-Lambda portal and LLM-assistant reference implementation"
-    topics: []
-
   # Enrolled 2026-08-22. All four receive Renovate PRs but were unmanaged, so
   # nothing held them to the module's repo-settings baseline and they had
   # drifted away from it: raycast-smart-issue had merge commits disabled, and
