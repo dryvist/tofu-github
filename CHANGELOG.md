@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.33.0](https://github.com/dryvist/tofu-github/compare/v1.32.0...v1.33.0) (2026-10-14)
+
+
+### Features
+
+* **config:** select the organization, permission set and config directory per workspace ([#311](https://github.com/dryvist/tofu-github/issues/311)) ([5129703](https://github.com/dryvist/tofu-github/commit/5129703232a362b34b319ab3235145b0a1c7bfeb))
+
 ## [1.32.0](https://github.com/dryvist/tofu-github/compare/v1.31.0...v1.32.0) (2026-10-14)
 
 
