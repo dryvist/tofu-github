@@ -1,8 +1,8 @@
 # Upstream forks.
 #
-# A repo opts in with `upstream_fork: true` in config/repos.yml. Such a repo is
-# a fork of a third-party project whose default branch merges upstream's
-# default branch on a schedule. Upstream commits are authored outside the org:
+# A repo opts in with `upstream_fork: true` in the selected per-org repos.yml.
+# Such a repo is a fork of a third-party project whose default branch merges
+# the upstream default branch on a schedule. Upstream commits are authored outside the org:
 # they are mostly unsigned and do not follow Conventional Commits, so the
 # org's signature and commit-format rulesets would reject every sync. Those
 # rulesets exclude this property, and the ruleset below keeps the rest of the

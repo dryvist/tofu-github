@@ -1,30 +1,42 @@
 # tofu-github
 
-OpenTofu-managed GitHub **organization governance** for the `dryvist` org:
-rulesets, required workflows, and (over time) org/repo settings — as code, in
-one place, instead of click-ops scattered across the org's repos.
+OpenTofu-managed GitHub **organization governance** for the organization
+selected by each workspace. Each organization uses the same root with its own
+state and per-org configuration.
 
 ## Why this exists
 
-GitHub doesn't auto-inherit CI config across repos. The old pattern was a
-reusable workflow plus a per-repo `uses:` call and a per-repo `.markdownlint*`
-file in every repo — N copies that drift. Now that `dryvist` is a real org (on
-the Team plan, which gained org rulesets in June 2025), governance can be
-defined **once** here and applied to **every** repo automatically.
+Organization-level rulesets, required workflows, repository settings, and
+labels apply common policy across an organization's repositories. This root
+defines that policy once, and each workspace selects one organization and its
+own configuration.
 
 ## What it manages today
 
-| Resource | Effect |
-| --- | --- |
-| `github_organization_ruleset.org_push_protection` | [Push protection](#push-protection) |
-| `github_organization_ruleset.org_branch_protection` | [Branch protection](#branch-protection) |
-| `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) |
-| `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) |
-| `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) |
-| `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) |
-| `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) |
-| `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) |
-| `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) |
+| Resource | Effect | Source |
+| --- | --- | --- |
+| `github_organization_ruleset.org_push_protection` | [Push protection](#push-protection) | `rulesets-push-protection.tf` |
+| `github_organization_ruleset.org_branch_protection` | [Branch protection](#branch-protection) | `rulesets-branch-protection.tf` |
+| `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) | `rulesets-branch-protection.tf` |
+| `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
+| `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
+| `github_organization_custom_properties.*` | Organization property schemas | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
+| `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
+| `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
+| `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
+| `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) | `rulesets-required-workflows.tf` |
+| `github_organization_ruleset.conventions` | Repo-conventions required workflow | `rulesets-required-workflows.tf` |
+| `github_organization_ruleset.ai_review` | AI-review required workflow | `rulesets-required-workflows.tf` |
+| `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
+| `github_organization_ruleset.org_gitflow_*` | Git-flow branch rulesets | `rulesets-gitflow.tf` |
+| `github_organization_ruleset.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
+| `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
+| `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
+| `module.repo_settings` | Repository settings | `repos.tf`, `modules/repo-settings/main.tf` |
+| `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
+| `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
+| `github_actions_runner_group.homelab` | Private-repository runner group | `runner-groups.tf` |
+| `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
 
 ### Push protection
 
@@ -86,22 +98,17 @@ on every ref of every repo. Single source of truth: the workflow +
 `do_not_enforce_on_create` so brand-new repos don't fail before their
 default branch exists.
 
-Imports needed on first apply (declared in the `rulesets-*.tf` files
-via `import` blocks, executed automatically by `tofu apply`):
+The existing flat-config workspace (`config_org = ""`) adopts its live
+rulesets through these `import` blocks. Workspaces using per-org configuration
+skip them because those IDs belong to the existing organization:
 
 - `org_branch_protection` ← the live ruleset originally named `main`
 - `markdown_lint` ← the live disabled required-workflow ruleset
 - `required_signatures` ← the live all-branch signature ruleset
 
-After successful apply, the `import` blocks can be removed in a follow-up
-PR (they're idempotent but only useful once).
-
-Next up (separate PRs): org Actions permissions, org-level settings, org
-variables, LICENSE files via `for_each`. CodeQL
-default-setup across every public org repo is staged in
-`code_scanning.tf` as a commented-out resource block pending upstream
-[integrations/terraform-provider-github#3315](https://github.com/integrations/terraform-provider-github/pull/3315);
-uncomment + bump the provider version when that PR ships.
+Org Actions variables and secrets are configured in the secret manager and
+synced to GitHub; this root does not manage them (`ai-variables.tf`). CodeQL
+default setup is not an active Terraform resource here; see `code_scanning.tf`.
 
 ## Layout
 
@@ -110,7 +117,7 @@ versions.tf       # tofu + provider pins, Terrakube cloud backend
 providers.tf      # github provider, token minted per run (ephemeral)
 variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
-locals.tf         # config/*.yml decoded into named locals for the rulesets-*.tf files
+locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
 rulesets-branch-protection.tf   # org_branch_protection, required_signatures, org_review_gate + import blocks
 rulesets-required-workflows.tf  # markdown_lint, conventions + import blocks
@@ -119,27 +126,30 @@ release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
 main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
-config/           # YAML thresholds + lists consumed via yamldecode(file(...))
+config/           # shared policy defaults and the existing flat per-org config
+config/orgs/      # selected per-org config directories
 ```
 
-CODEOWNERS is deliberately NOT committed in this repo. CODEOWNERS files
-for every dryvist repo (this one included) are materialized at apply time
-by a `github_repository_file` resource in a follow-up PR, with the owner
-identity supplied as a Terraform variable. Keeping a static
-`.github/CODEOWNERS` here would bake a specific identity into the source
-tree, which the no-identity-in-code rule forbids.
+CODEOWNERS is not committed or managed in this repo. A static
+`.github/CODEOWNERS` would bake a specific identity into the source tree.
 
-`config/` holds plain-data thresholds, extension lists, label sets — read
-into Terraform via `yamldecode(file(...))` and exposed as locals, never
-inlined as `.tf` literals. `data.tf` holds live lookups (repo IDs, org
-metadata, future repo enumerations) so no specific identity values are
-baked into the code. Canonical text the org doesn't author — MIT LICENSE
-body, CODE_OF_CONDUCT, etc. — is fetched at apply time from a trustworthy
-upstream via `data "http"`, not committed as a local template.
+`config/` holds shared ruleset defaults and the existing flat per-org YAML
+files. Each workspace selects the organization with `github_owner`, the token
+permission set with `github_token_permission_set`, and the per-org files with
+`config_org`; defaults preserve the existing workspace. Set `config_org` to
+read per-org files from
+`config/orgs/<config_org>/`; an empty value keeps using the files directly in
+`config/`. `config/commit-message-pattern.txt` and
+`config/rulesets-defaults.yml` remain shared. The org's label set is read from
+`.github/labels.yml` in that org's `.github` repository by `data.tf` and
+applied by `labels.tf`; label sets are not stored in `config/`. Canonical text
+the org doesn't author — MIT LICENSE body, CODE_OF_CONDUCT, etc. — is fetched
+at apply time from a trustworthy upstream via `data "http"`, not committed as
+a local template.
 
 ## Installation
 
-- **OpenTofu** (>= 1.10; local pin in `.opentofu-version`) and the
+- **OpenTofu** (>= 1.11; local pin 1.12.2 in `.opentofu-version`) and the
   `integrations/github` provider, pinned in `versions.tf`. Dev shell via
   direnv:
 

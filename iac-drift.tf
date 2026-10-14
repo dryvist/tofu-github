@@ -1,8 +1,8 @@
 # Per-repo opt-in for deterministic (no-AI) IaC drift detection.
 #
-# For each repo flagged `enabled: true` in config/iac-drift.yml, set the Actions
-# variable IAC_DRIFT_ENABLED=true — the gate the ai-workflows drift caller checks
-# (`vars.IAC_DRIFT_ENABLED == 'true'`). Mirrors the ai-variables.tf opt-in shape:
+# For each repo flagged `enabled: true` in the selected per-org iac-drift.yml,
+# set the Actions variable IAC_DRIFT_ENABLED=true. The ai-workflows drift caller
+# gates on (`vars.IAC_DRIFT_ENABLED == 'true'`). Mirrors the ai-variables.tf opt-in shape:
 # one YAML source of truth, decoded in locals.tf, fanned out to one resource here.
 locals {
   iac_drift_repos = {
