@@ -4,7 +4,5 @@
 #   prefixes: a repo whose name starts with one of these is manual.
 #   repos:    exact repo names that are manual.
 manual:
-  prefixes:
-    - ansible-
-  repos:
-    - nix-ai
+  prefixes: []
+  repos: []
