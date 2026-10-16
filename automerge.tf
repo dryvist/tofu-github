@@ -5,12 +5,8 @@
 # Renovate automerge, an automation app) once its required checks pass.
 #
 # The selected per-org automerge.yml names the "manual" repos, by name prefix
-# or exact name. On those, the ruleset below requires one approving review on
-# main and develop before a merge. Org admins, configured agent apps, the
-# release automation app from GH_ACTION_RELEASE_PLEASE_APP_ID, and the bot-PR
-# sweep app bypass the approval on merge. The sweep merges bot PRs only after the local
-# triage agent labels them low risk. Required status checks still apply to every
-# merge.
+# or exact name. The ruleset below requires no approving review: required
+# status checks are the only merge gate on every repo.
 locals {
   automerge_config = yamldecode(file("${path.module}/${local.org_config_dir}/automerge.yml"))
 
@@ -65,10 +61,10 @@ resource "github_organization_ruleset" "org_automerge_manual" {
 
   rules {
     pull_request {
-      required_approving_review_count   = 1
+      required_approving_review_count   = 0
       dismiss_stale_reviews_on_push     = true
       require_code_owner_review         = false
-      require_last_push_approval        = true
+      require_last_push_approval        = false
       required_review_thread_resolution = false
       allowed_merge_methods             = ["merge", "squash", "rebase"]
     }

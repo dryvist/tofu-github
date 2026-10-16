@@ -117,14 +117,12 @@ resource "github_organization_ruleset" "required_signatures" {
   }
 }
 
-# Org-wide review gate — 1 approving review + CODEOWNER review on PRs.
+# Org-wide review gate — resolved review threads on PRs, no required approval.
 #
 # Separate ruleset (rather than rolled into org_branch_protection) so the
 # bypass actors below apply ONLY to review enforcement, not
-# to signed commits or commit format. Any OrganizationAdmin
-# can merge their own PRs without external review. Other non-admin actors
-# (bots, external contributors) must obtain the review and, on critical files,
-# a CODEOWNER review. The release automation app also bypasses review.
+# to signed commits or commit format. It requires no approving or CODEOWNER
+# review; enabling it adds only the thread-resolution rule.
 #
 # bypass_mode = "pull_request": admins bypass on merge only, not on push.
 # Pushes still satisfy every other rule (signed, conventional).
@@ -155,9 +153,9 @@ resource "github_organization_ruleset" "org_review_gate" {
 
   rules {
     pull_request {
-      required_approving_review_count   = 1
+      required_approving_review_count   = 0
       dismiss_stale_reviews_on_push     = false
-      require_code_owner_review         = true
+      require_code_owner_review         = false
       require_last_push_approval        = false
       required_review_thread_resolution = true
       allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods

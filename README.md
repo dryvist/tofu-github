@@ -58,17 +58,13 @@ org ruleset without narrowing its all-branch coverage.
 
 ### Review gate
 
-Review gate on every default branch: 1 approving review + CODEOWNER
-review on PRs. OrganizationAdmin and the release automation app bypass review
-in `pull_request` mode; other bots and contributors must obtain the review.
+Review gate on every default branch: resolved review threads on PRs, with no
+required approving or CODEOWNER review. Disabled by default.
 
 ### Manual-repo approval
 
-Requires one approving review on main and develop for repos with the
-`automerge: manual` property. OrganizationAdmin, configured agent apps, the
-release automation app from `GH_ACTION_RELEASE_PLEASE_APP_ID`, and configured
-triage apps bypass the review on pull requests. Required status checks still
-apply.
+Applies to repos with the `automerge: manual` property, and requires no
+approving review. Required status checks are the only merge gate.
 
 ### Documentation publisher
 
