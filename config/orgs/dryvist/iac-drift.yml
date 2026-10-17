@@ -6,9 +6,8 @@
 # is unset the caller emits a ::notice and skips, so drift is off intentionally
 # rather than silently. Repos not listed here (or set to false) never run it.
 #
-# The consumer caller to drop in each opted-in repo lives at:
-#   dryvist/ai-workflows -> examples/iac-drift-caller.yml
-# which calls the reusable dryvist/ai-workflows/.github/workflows/_iac-drift.yml.
+# Each opted-in repository supplies its own consumer caller under
+# .github/workflows and gates it on vars.IAC_DRIFT_ENABLED.
 repos:
   tofu-proxmox:
     enabled: true

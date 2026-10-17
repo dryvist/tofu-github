@@ -6,14 +6,14 @@
 # caller shape:
 #
 #   gate:  `gate / Merge Gate` — the canonical thin caller (`jobs: gate:`
-#          calling dryvist/.github `_ci-gate.yml`). All new adopters land here.
+#          calling JacobPEvans/.github `_ci-gate.yml`). All new adopters land here.
 #   bare:  `Merge Gate` — the older inline ci-gate.yml pattern, where the
 #          alls-green summary job is a top-level job. These repos migrate to
 #          the thin caller over time; move each to `gate` when it does.
 #
 # A repo whose required check is NOT the org Merge Gate gets its own bucket:
 #
-#   canary:      `Canary` — dryvist/.github's caller-contract canary summary
+#   canary:      `Canary` — JacobPEvans/.github's caller-contract canary summary
 #                (canary.yml `canary-summary` job). It reports on every PR and
 #                passes with a notice on Markdown-only changes.
 #
