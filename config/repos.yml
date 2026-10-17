@@ -283,7 +283,7 @@ repos:
   #     needs no one-shot import block (unlike llm-prompt-evals, which arrived
   #     already running git-flow out of band).
   #   - release-please keeps working across the default-branch flip: the
-  #     shared dryvist/.github/_release-please.yml this repo already calls
+  #     shared JacobPEvans/.github/_release-please.yml this repo already calls
   #     hardcodes `target-branch: main`, so the release PR keeps targeting main
   #     rather than following the default branch to develop.
   #   - Topics were empty on GitHub, so this sets them rather than blanking.

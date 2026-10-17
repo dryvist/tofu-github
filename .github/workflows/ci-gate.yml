@@ -1,7 +1,7 @@
 # CI Gate — thin wrapper over the org reusable gate.
 #
 # `shared-gate` runs markdown lint, file size, and fmt/init/validate/tflint
-# (`tofu_ci`, gated on the `terraform` filter) from dryvist/.github. The
+# (`tofu_ci`, gated on the `terraform` filter) from JacobPEvans/.github. The
 # local `gate` job keeps the bare `Merge Gate` context this repo's ruleset
 # requires; it aggregates the shared gate's result.
 #
@@ -32,7 +32,7 @@ jobs:
       # actions: write must be granted here or the run fails at graph
       # validation (startup_failure).
       actions: write
-    uses: dryvist/.github/.github/workflows/_ci-gate.yml@1f09b25303a04bf276087348059671728ffea50a # v1.13.2
+    uses: JacobPEvans/.github/.github/workflows/_ci-gate.yml@v1
     with:
       profile: tofu
       tofu_ci: true
