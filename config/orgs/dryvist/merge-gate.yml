@@ -13,10 +13,6 @@
 #
 # A repo whose required check is NOT the org Merge Gate gets its own bucket:
 #
-#   canary:      `Canary` — JacobPEvans/.github's caller-contract canary summary
-#                (canary.yml `canary-summary` job). It reports on every PR and
-#                passes with a notice on Markdown-only changes.
-#
 # Adding a repo to a list REQUIRES its check context to be live on every PR
 # first — a required check that never reports blocks every PR in the repo.
 # Verify with a recent PR's check-run names before editing. The rule targets
@@ -74,10 +70,6 @@ merge_gate:
         - tofu-github
         - tofu-proxmox
         - tofu-runs-on
-    canary:
-      context: "Canary"
-      repos:
-        - .github
     docs-secret-scan:
       context: "gitleaks (redacted)"
       repos:
