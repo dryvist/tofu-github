@@ -237,12 +237,6 @@ variable "dryvist_org_extras" {
   default     = true
 }
 
-variable "private_repo_overrides" {
-  description = "Protected workspace map keyed by repo name with the same fields as per-org repo entries. Optional merge_gate maps are keyed by gate name and contain a context string; their repository list is derived from the outer key."
-  type        = any
-  default     = {}
-}
-
 variable "org_automerge_manual_enforcement" {
   description = <<-EOT
     Enforces automerge=manual review: one approval on main/develop; OrganizationAdmin, configured agent, triage, and release apps bypass.

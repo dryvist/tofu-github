@@ -159,10 +159,11 @@ the org doesn't author — MIT LICENSE body, CODE_OF_CONDUCT, etc. — is fetche
 at apply time from a trustworthy upstream via `data "http"`, not committed as
 a local template.
 
-`private_repo_overrides` is the protected workspace map for repo metadata that
-must stay outside this public tree. Its optional `merge_gate` map carries
-required-check contexts for those repositories; the repo list is derived from
-each outer repo key.
+`private_repo_overrides` is read from the protected OpenBao KV v2 document at
+`secret/infrastructure/tofu-github/private-overrides` for orgs whose merge-gate config
+requires private repos. Its optional `merge_gate` map carries required-check
+contexts for those repositories; the repo list is derived from each outer repo
+key.
 
 ## Installation
 

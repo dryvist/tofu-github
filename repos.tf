@@ -11,8 +11,8 @@
 
 locals {
   # Per-repo overrides, keyed by repo name: the committed file plus the
-  # private-repo overrides supplied by the workspace.
-  repos = merge(try(local.repos_config.repos, {}), var.private_repo_overrides)
+  # private-repo overrides read from OpenBao.
+  repos = merge(try(local.repos_config.repos, {}), local.private_repo_overrides)
 
   # Previous names of renamed repos (`renamed_from` in the selected per-org
   # repos.yml), kept out of the enumeration so the old live name never gets its

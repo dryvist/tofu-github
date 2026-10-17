@@ -46,7 +46,30 @@ mock_provider "github" {
   }
 }
 
-mock_provider "vault" {}
+mock_provider "vault" {
+  mock_data "vault_kv_secret_v2" {
+    defaults = {
+      data_json = <<-JSON
+        {
+          "private_repo_overrides": {
+            "example-a": {
+              "description": "",
+              "topics": [],
+              "visibility": "private",
+              "merge_gate": { "gate": { "context": "gate / Merge Gate" } }
+            },
+            "example-b": {
+              "description": "",
+              "topics": [],
+              "visibility": "private",
+              "merge_gate": { "gate": { "context": "gate / Merge Gate" } }
+            }
+          }
+        }
+        JSON
+    }
+  }
+}
 
 mock_provider "restapi" {}
 
@@ -73,6 +96,11 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   assert {
     condition     = length(local.repos) == 0 && length(local.ruleset_imports) == 0
     error_message = "An owner with no YAML overrides must use empty repo data and skip org-specific imports."
+  }
+
+  assert {
+    condition     = local.private_repo_overrides == {}
+    error_message = "An org without private merge-gate config must not read private repo overrides."
   }
 
   assert {
@@ -130,15 +158,6 @@ run "derives_ci_gate_property_from_default_branch_workflow_call" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
-    private_repo_overrides = {
-      without-gate = {
-        description         = ""
-        topics              = []
-        visibility          = "private"
-        archived            = false
-        allow_update_branch = false
-      }
-    }
   }
 
   override_data {
@@ -176,11 +195,8 @@ run "derives_ci_gate_property_from_default_branch_workflow_call" {
   }
 
   assert {
-    condition = (
-      github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["true"]) &&
-      github_repository_custom_property.ci_gate["without-gate"].property_value == toset(["false"])
-    )
-    error_message = "The shared gate caller must set ci_gate=true on its repo, false without a caller, and no org schema."
+    condition     = github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["true"])
+    error_message = "The shared gate caller must set ci_gate=true on its repo."
   }
 }
 
@@ -191,15 +207,6 @@ run "derives_ci_gate_from_sha_pinned_org_home_caller" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
-    private_repo_overrides = {
-      without-gate = {
-        description         = ""
-        topics              = []
-        visibility          = "private"
-        archived            = false
-        allow_update_branch = false
-      }
-    }
   }
 
   override_data {
@@ -237,11 +244,8 @@ run "derives_ci_gate_from_sha_pinned_org_home_caller" {
   }
 
   assert {
-    condition = (
-      github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["true"]) &&
-      github_repository_custom_property.ci_gate["without-gate"].property_value == toset(["false"])
-    )
-    error_message = "The shared gate caller must set ci_gate=true on its repo, false without a caller, and no org schema."
+    condition     = github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["true"])
+    error_message = "The shared gate caller must set ci_gate=true on its repo."
   }
 }
 
@@ -252,15 +256,6 @@ run "ignores_ci_gate_caller_under_other_job_id" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
-    private_repo_overrides = {
-      without-gate = {
-        description         = ""
-        topics              = []
-        visibility          = "private"
-        archived            = false
-        allow_update_branch = false
-      }
-    }
   }
 
   override_data {
@@ -298,10 +293,7 @@ run "ignores_ci_gate_caller_under_other_job_id" {
   }
 
   assert {
-    condition = (
-      github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["false"]) &&
-      github_repository_custom_property.ci_gate["without-gate"].property_value == toset(["false"])
-    )
+    condition     = github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["false"])
     error_message = "Only a `gate` job yields the required \"gate / Merge Gate\" context."
   }
 }
@@ -310,26 +302,9 @@ run "private_merge_gate_repos_share_one_gate" {
   command = plan
 
   variables {
-    github_owner              = "JacobPEvans"
+    github_owner              = "tofu-test-fixture"
+    dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
-    private_repo_overrides = {
-      example-a = {
-        description         = ""
-        topics              = []
-        visibility          = "private"
-        archived            = false
-        allow_update_branch = false
-        merge_gate          = { gate = { context = "gate / Merge Gate" } }
-      }
-      example-b = {
-        description         = ""
-        topics              = []
-        visibility          = "private"
-        archived            = false
-        allow_update_branch = false
-        merge_gate          = { gate = { context = "gate / Merge Gate" } }
-      }
-    }
   }
 
   override_data {
@@ -340,8 +315,12 @@ run "private_merge_gate_repos_share_one_gate" {
   }
 
   assert {
-    condition     = jsonencode(local.merge_gate_contexts["gate"].repos) == jsonencode(["example-a", "example-b"]) && local.merge_gate_contexts["gate"].context == "gate / Merge Gate"
-    error_message = "Private repos on the same gate must all be listed in that gate's ruleset."
+    condition = (
+      length(setintersection(toset(keys(local.repos)), toset(["example-a", "example-b"]))) == 2 &&
+      length(setintersection(toset(local.merge_gate_contexts["gate"].repos), toset(["example-a", "example-b"]))) == 2 &&
+      local.merge_gate_contexts["gate"].context == "gate / Merge Gate"
+    )
+    error_message = "OpenBao repo metadata and merge-gate contexts must be merged into org config."
   }
 }
 
