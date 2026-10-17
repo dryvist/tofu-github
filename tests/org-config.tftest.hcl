@@ -1,10 +1,8 @@
 mock_provider "github" {
   mock_data "github_repository" {
     defaults = {
-      description    = "Mock repository metadata"
       default_branch = "main"
       full_name      = "JacobPEvans/.github"
-      name           = ".github"
       repo_id        = 1
       topics         = []
       visibility     = "public"
@@ -35,8 +33,8 @@ mock_provider "vault" {}
 run "empty_non_dryvist_config_plans_from_live_repo_data" {
   command = plan
 
-  variables = {
-    github_owner                 = "JacobPEvans"
+  variables {
+    github_owner                = "JacobPEvans"
     github_token_permission_set = "JacobPEvans-full-automation"
     automation_bypass_app_ids   = [1]
   }
@@ -69,7 +67,7 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
-    condition     = length(local.managed_repos) == 1 && local.managed_repos["sample"].description == "Mock repository metadata"
+    condition     = length(local.managed_repos) == 1 && local.managed_repos["sample"].visibility == "public"
     error_message = "Repository metadata must be enumerated from GitHub when the org repo config is empty."
   }
 
