@@ -23,7 +23,7 @@ mock_provider "github" {
 
   mock_data "github_repository_file" {
     defaults = {
-      content = "{}"
+      content = "[]"
     }
   }
 }
