@@ -79,9 +79,9 @@ default to read-only, and workflows cannot approve pull requests.
 ### Runner groups
 
 The homelab runner role cannot use public repositories. The PR-Agent runner
-role allows public repositories and is limited to the selected workflow. It is
-created only for owners whose optional `runner-groups.yml` enables self-hosted
-runners.
+role allows public repositories and is limited to the shared PR-Agent workflow.
+It is created for every owner by default; an owner's `runner-groups.yml` can
+set `self_hosted_runners: false` to disable it.
 
 ### Manual-repo approval
 

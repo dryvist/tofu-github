@@ -21,5 +21,5 @@ resource "github_actions_runner_group" "pr_agent" {
   visibility                 = "all"
   allows_public_repositories = true
   restricted_to_workflows    = true
-  selected_workflows         = try(local.runner_group_config.selected_workflows, [])
+  selected_workflows         = local.runner_group_selected_workflows
 }

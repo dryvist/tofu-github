@@ -1,8 +1,5 @@
-# Default thresholds and value sets for org-wide rulesets defined in
-# rulesets.tf. Read with yamldecode(file(...)) and expose as locals. No
-# literal numbers, lists, or thresholds in any .tf file — keep them here so
-# they're tunable without editing Terraform code, and reviewable in a single
-# place.
+# Shared org-wide policy defaults. Read with yamldecode(file(...)) and expose
+# as locals so organization resources use values from config/.
 
 # Consumed by github_organization_ruleset.org_push_protection. Native GitHub
 # push rules — enforced at the git layer without any workflow involvement.
@@ -82,3 +79,10 @@ actions:
   sha_pinning_required: false
   default_workflow_permissions: read
   can_approve_pull_request_reviews: false
+
+# Consumed by github_actions_runner_group.pr_agent in runner-groups.tf.
+# Organizations can override these values in runner-groups.yml.
+runner_groups:
+  self_hosted_runners: true
+  selected_workflows:
+    - JacobPEvans/.github-ai/.github/workflows/pr-agent.yml@v1
