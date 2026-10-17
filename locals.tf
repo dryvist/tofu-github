@@ -43,10 +43,12 @@ locals {
       )))
     }
   }
-  copilot_review_targets = try(yamldecode(file("${local.org_config_dir}/copilot-review.yml")).copilot_review, {})
-  iac_drift              = try(yamldecode(file("${local.org_config_dir}/iac-drift.yml")), { repos = {} })
-  runner_group_config    = try(yamldecode(file("${local.org_config_dir}/runner-groups.yml")), {})
-  self_hosted_runners    = try(local.runner_group_config.self_hosted_runners, false)
+  copilot_review_targets          = try(yamldecode(file("${local.org_config_dir}/copilot-review.yml")).copilot_review, {})
+  iac_drift                       = try(yamldecode(file("${local.org_config_dir}/iac-drift.yml")), { repos = {} })
+  runner_group_defaults           = local.rulesets_defaults.runner_groups
+  runner_group_config             = try(yamldecode(file("${local.org_config_dir}/runner-groups.yml")), {})
+  self_hosted_runners             = try(local.runner_group_config.self_hosted_runners, local.runner_group_defaults.self_hosted_runners)
+  runner_group_selected_workflows = try(local.runner_group_config.selected_workflows, local.runner_group_defaults.selected_workflows)
 
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection

@@ -109,8 +109,8 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
-    condition     = !local.self_hosted_runners
-    error_message = "An org without runner-group data must not create the public workflow runner role."
+    condition     = local.self_hosted_runners && local.runner_group_selected_workflows == ["JacobPEvans/.github-ai/.github/workflows/pr-agent.yml@v1"]
+    error_message = "An org without runner-group overrides must receive the shared PR-Agent runner group default."
   }
 
   assert {
@@ -321,6 +321,11 @@ run "private_merge_gate_repos_share_one_gate" {
       local.merge_gate_contexts["gate"].context == "gate / Merge Gate"
     )
     error_message = "OpenBao repo metadata and merge-gate contexts must be merged into org config."
+  }
+
+  assert {
+    condition     = !local.self_hosted_runners && length(github_actions_runner_group.pr_agent) == 0
+    error_message = "An org can opt out of the shared PR-Agent runner group in runner-groups.yml."
   }
 }
 
