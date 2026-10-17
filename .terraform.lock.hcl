@@ -91,6 +91,7 @@ provider "registry.opentofu.org/mastercard/restapi" {
     "h1:oAsWuzvw6ONMJeQeeiwRJ62/TV8o7bZVkmOfUPFPH3E=",
     "h1:y1I3azDHOqRySTyDHsb3Xh1waP/99KfykZRagbRx1qI=",
     "zh:0b63bd3c25a31f090a41933f90b7dd6e984add1c4261d8f5caa73f4d5aa065a4",
+    "zh:1c3e89cf19118fc07d7b04257251fc9897e722c16e0a0df7b07fcd261f8c12e7",
     "zh:2d31f322454d271eb328c2d3b3d41f426df98503982788be347799ddf68bf9bf",
     "zh:47dd97e3f43bb89ae4254bba90ffbc6d521338554a1f94961e21214dd801b81b",
     "zh:49636b072b9a30d15916468857bce91d39bc87bbba1c99fb3894fafa9409b8b4",

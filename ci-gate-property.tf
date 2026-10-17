@@ -19,7 +19,8 @@ data "github_tree" "ci_gate" {
 }
 
 locals {
-  ci_gate_reusable_workflow = "${local.central.labels.repository}/.github/workflows/_ci-gate.yml@v1"
+  # Any org's `.github` home at any ref; the job id fixes the required context to "gate / Merge Gate".
+  ci_gate_reusable_workflow = "^[^/]+/\\.github/\\.github/workflows/_ci-gate\\.yml@"
 
   ci_gate_workflow_files = {
     for workflow in flatten([
@@ -37,8 +38,8 @@ locals {
   ci_gate_repos = toset(distinct([
     for key, workflow in local.ci_gate_workflow_files : workflow.repository
     if try(anytrue([
-      for job in values(yamldecode(data.github_repository_file.ci_gate[key].content).jobs) :
-      try(job.uses, "") == local.ci_gate_reusable_workflow
+      for id, job in yamldecode(data.github_repository_file.ci_gate[key].content).jobs :
+      id == "gate" && can(regex(local.ci_gate_reusable_workflow, try(job.uses, "")))
     ]), false)
   ]))
 }
