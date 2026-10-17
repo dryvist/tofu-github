@@ -5,6 +5,7 @@ resource "github_actions_organization_permissions" "org" {
 }
 
 resource "github_actions_organization_workflow_permissions" "org" {
-  default_workflow_permissions         = local.actions_defaults.default_workflow_permissions
-  can_approve_pull_request_reviews     = local.actions_defaults.can_approve_pull_request_reviews
+  organization_slug                = local.org
+  default_workflow_permissions     = local.actions_defaults.default_workflow_permissions
+  can_approve_pull_request_reviews = local.actions_defaults.can_approve_pull_request_reviews
 }
