@@ -7,13 +7,13 @@ removed {
 }
 
 import {
-  for_each = try(local.ruleset_imports.docs_publisher, null) == null ? {} : { existing = local.ruleset_imports.docs_publisher }
+  for_each = !var.dryvist_org_extras || try(local.ruleset_imports.docs_publisher, null) == null ? {} : { existing = local.ruleset_imports.docs_publisher }
   to       = restapi_object.docs_publisher[0]
   id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
 }
 
 resource "restapi_object" "docs_publisher" {
-  count        = try(local.docs_publisher.repository, null) == null ? 0 : 1
+  count        = var.dryvist_org_extras && try(local.docs_publisher.repository, null) != null ? 1 : 0
   path         = "/orgs/${var.github_owner}/rulesets"
   id_attribute = "id"
   # Fields GitHub adds to a ruleset response; they never appear in the request body.
@@ -68,10 +68,16 @@ resource "restapi_object" "docs_publisher" {
 # every module.repo_settings create. The provider has no attribute for that
 # flag and omits it on write, which resets it to off.
 resource "github_organization_custom_properties" "docs" {
+  count              = var.dryvist_org_extras ? 1 : 0
   property_name      = "docs"
   value_type         = "single_select"
   required           = true
   default_value      = "private"
   allowed_values     = ["private", "public"]
   values_editable_by = "org_and_repo_actors"
+}
+
+moved {
+  from = github_organization_custom_properties.docs
+  to   = github_organization_custom_properties.docs[0]
 }

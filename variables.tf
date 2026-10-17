@@ -192,6 +192,12 @@ variable "github_owner" {
   }
 }
 
+variable "dryvist_org_extras" {
+  description = "Enable organization-specific opt-in policies."
+  type        = bool
+  default     = true
+}
+
 variable "private_repo_overrides" {
   description = "Protected workspace map keyed by repo name with the same fields as per-org repo entries. Optional merge_gate maps are keyed by gate name and contain a context string; their repository list is derived from the outer key."
   type        = any

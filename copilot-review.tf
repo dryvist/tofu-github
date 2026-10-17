@@ -7,7 +7,7 @@
 # review_on_push = false caps spend at ~1 review per PR regardless of push
 # count.
 resource "github_organization_ruleset" "org_copilot_review" {
-  for_each = local.copilot_review_targets
+  for_each = var.dryvist_org_extras ? local.copilot_review_targets : {}
 
   name        = "org-copilot-review-${each.key}"
   target      = "branch"

@@ -3,9 +3,7 @@
 locals {
   org_config_dir = "${path.module}/config/orgs/${var.github_owner}"
 
-  # The org login, recovered from the `.github` repo's full_name rather than
-  # written down. The provider's `owner` decides which org that resolves to.
-  org = split("/", data.github_repository.dot_github.full_name)[0]
+  org = var.github_owner
 
   release_app_ids = [
     for variable in data.github_actions_organization_variables.org.variables : tonumber(trimspace(variable.value))

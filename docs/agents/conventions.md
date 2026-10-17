@@ -9,9 +9,9 @@
   `config/orgs/<github_owner>/` files (parsed via `yamldecode(file(...))` into a
   local). For identifiers that GitHub already knows about — repo IDs and
   account IDs — use a `data` source in `data.tf` and reference the live value
-  at apply time. The canonical example is `data.github_repository.dot_github`:
-  it looks up the selected org's `.github` repo by name and exposes its
-  numeric `repo_id` to org rulesets.
+  at apply time. The canonical example is
+  `data.github_actions_organization_variables.org`: it reads the release App
+  ID from the org instead of writing it down.
 - **Organization selection is workspace-scoped.** `var.github_owner` selects
   the provider owner and the optional `config/orgs/<github_owner>/` directory.
   A missing directory or file means defaults or no opt-in. The ruleset
