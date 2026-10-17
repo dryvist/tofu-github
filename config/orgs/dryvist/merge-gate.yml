@@ -26,6 +26,8 @@
 # develop already requires a PR (org-gitflow-develop), so nothing that reached
 # it by direct push is lost.
 merge_gate:
+  # Private repos join these gates from the private overrides; a plan without them fails.
+  requires_private_repos: true
   contexts:
     gate:
       context: "gate / Merge Gate"

@@ -22,6 +22,8 @@ locals {
   docs_publisher = try(yamldecode(file("${local.org_config_dir}/docs-publisher.yml")), {})
 
   org_merge_gate_contexts = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts, {})
+  # An org whose gates include private repos fails its plan when the private overrides are missing.
+  merge_gate_requires_private_repos = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.requires_private_repos, false)
   # One entry per (private repo, gate); concatenated into the org gate of the same key below.
   private_merge_gate_entries = flatten([
     for repo, cfg in var.private_repo_overrides : [
