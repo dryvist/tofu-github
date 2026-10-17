@@ -36,9 +36,8 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   command = plan
 
   variables {
-    github_owner                = "JacobPEvans"
-    github_token_permission_set = "JacobPEvans-full-automation"
-    automation_bypass_app_ids   = [1]
+    github_owner              = "JacobPEvans"
+    automation_bypass_app_ids = [1]
   }
 
   override_data {
@@ -110,9 +109,8 @@ run "private_merge_gate_repos_share_one_gate" {
   command = plan
 
   variables {
-    github_owner                = "JacobPEvans"
-    github_token_permission_set = "JacobPEvans-full-automation"
-    automation_bypass_app_ids   = [1]
+    github_owner              = "JacobPEvans"
+    automation_bypass_app_ids = [1]
     private_repo_overrides = {
       example-a = {
         description         = ""

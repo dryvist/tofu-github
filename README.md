@@ -147,11 +147,10 @@ config/orgs/      # selected by github_owner; files are optional
 CODEOWNERS is not committed or managed in this repo. A static
 `.github/CODEOWNERS` would bake a specific identity into the source tree.
 
-`config/` holds shared ruleset defaults. Each workspace selects the organization
-with `github_owner` and the token permission set with
-`github_token_permission_set`; the owner also selects
-`config/orgs/<github_owner>/`. Missing per-org files mean defaults or no
-opt-in, and repository metadata comes from GitHub data sources.
+`config/` holds shared ruleset defaults. Each workspace selects its organization
+through `github_owner`, which also selects `config/orgs/<github_owner>/` when
+present. A missing org directory or config file means defaults or no opt-in,
+and repository metadata comes from GitHub data sources.
 `config/commit-message-pattern.txt` and `config/rulesets-defaults.yml` remain
 shared. The label set is read from
 the central label file named in `config/central.yml` by `data.tf` and
