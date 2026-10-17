@@ -79,8 +79,8 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
-    condition     = local.gitflow_defaults.main_allowed_merge_methods == ["merge"] && local.gitflow_defaults.develop_allowed_merge_methods == ["squash"]
-    error_message = "Git-flow main must remain merge-only and develop must be squash-only."
+    condition     = local.gitflow_defaults.main_allowed_merge_methods == ["merge"] && local.gitflow_defaults.develop_allowed_merge_methods == ["merge", "squash", "rebase"]
+    error_message = "Git-flow main must remain merge-only and develop must allow merge, squash and rebase."
   }
 
   assert {

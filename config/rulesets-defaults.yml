@@ -57,9 +57,11 @@ gitflow:
   main_allowed_merge_methods:
     - merge
 
-  # Feature PRs use squash merges on the integration branch.
+  # Integration branch merge methods, in the order the API returns them.
   develop_allowed_merge_methods:
+    - merge
     - squash
+    - rebase
 
 # Consumed by restapi_object.org_upstream_fork_protection
 # (upstream-forks.tf) for repos opted in via `upstream_fork: true` in
