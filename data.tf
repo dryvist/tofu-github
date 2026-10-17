@@ -5,6 +5,13 @@ data "github_repositories" "org" {
   query = "org:${local.org} fork:true archived:false"
 }
 
+# Private repo metadata is read only for orgs whose merge-gate config requires it.
+data "vault_kv_secret_v2" "private_repo_overrides" {
+  count = local.merge_gate_requires_private_repos ? 1 : 0
+  mount = "secret"
+  name  = "infrastructure/tofu-github/private-overrides"
+}
+
 # Read the release automation App ID from the org Actions variable so rulesets
 # can grant its pull-request review bypass without storing the ID in this repo.
 data "github_actions_organization_variables" "org" {}

@@ -1,0 +1,4 @@
+# Test fixture for tests/org-config.tftest.hcl; not a managed organization.
+merge_gate:
+  requires_private_repos: true
+  contexts: {}
