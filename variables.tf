@@ -1,46 +1,7 @@
 # Enforcement inputs accept disabled, evaluate, or active.
-variable "markdown_lint_enforcement" {
-  description = <<-EOT
-    Org markdown-lint enforcement. Evaluate reports in Insights without blocking; activate when the fleet is green.
-  EOT
-  type        = string
-  default     = "evaluate"
-
-  validation {
-    condition     = contains(["disabled", "evaluate", "active"], var.markdown_lint_enforcement)
-    error_message = "markdown_lint_enforcement must be one of: disabled, evaluate, active."
-  }
-}
-
-variable "conventions_enforcement" {
-  description = <<-EOT
-    Org repo-conventions presence checks: LICENSE, AGENTS.md, Nix dev shell, release-please config. Evaluate reports without blocking; workflow defaults to WARN (exit 0). CONVENTIONS_STRICT repo variable opts repos into failure; activate when Insights shows the fleet is green.
-  EOT
-  type        = string
-  default     = "evaluate"
-
-  validation {
-    condition     = contains(["disabled", "evaluate", "active"], var.conventions_enforcement)
-    error_message = "conventions_enforcement must be one of: disabled, evaluate, active."
-  }
-}
-
-variable "ai_review_enforcement" {
-  description = <<-EOT
-    Org-wide AI review injects .github/ai-review.yml into every repo's PRs and runs PR-Agent on the model router. Evaluate reports without gating; active waits through a router outage, then fails and blocks merges.
-  EOT
-  type        = string
-  default     = "evaluate"
-
-  validation {
-    condition     = contains(["disabled", "evaluate", "active"], var.ai_review_enforcement)
-    error_message = "ai_review_enforcement must be one of: disabled, evaluate, active."
-  }
-}
-
 variable "docs_publisher_enforcement" {
   description = <<-EOT
-    Public-docs publisher requires the org provenance workflow and configured approval count; release and triage apps bypass PRs.
+    Documentation publisher requires its configured approval count; release and triage apps bypass PRs.
   EOT
   type        = string
   default     = "active"
@@ -118,7 +79,7 @@ variable "org_gitflow_main_enforcement" {
 
 variable "org_gitflow_develop_enforcement" {
   description = <<-EOT
-    Git-flow develop applies only to local.gitflow_repos: PRs (no direct pushes), squash/merge/rebase. Its only rule is the Conventional-Commits-or-merge message pattern, so main back-merges and conventional feature-squash subjects pass; signatures are enforced by org-gitflow-base and org-wide rulesets.
+    Git-flow develop applies only to local.gitflow_repos: PRs (no direct pushes), squash-only merges. Its only rule is the Conventional-Commits-or-merge message pattern, so main back-merges and conventional feature-squash subjects pass; signatures are enforced by org-gitflow-base and org-wide rulesets.
   EOT
   type        = string
   default     = "active"
@@ -242,19 +203,8 @@ variable "github_token_permission_set" {
   }
 }
 
-variable "config_org" {
-  description = "Org config directory under config/orgs/; empty uses files in config/; otherwise letters, digits, underscores, or hyphens."
-  type        = string
-  default     = ""
-
-  validation {
-    condition     = var.config_org == "" || can(regex("^[A-Za-z0-9_-]+$", var.config_org))
-    error_message = "config_org must be empty or contain only letters, numbers, underscores, and hyphens."
-  }
-}
-
 variable "private_repo_overrides" {
-  description = "Workspace overrides keyed by repo name and shaped like repos.yml's repos map, keeping private repo names out of this public repo."
+  description = "Protected workspace map keyed by repo name with the same fields as per-org repo entries. Optional merge_gate maps are keyed by gate name and contain a context string; their repository list is derived from the outer key."
   type        = any
   default     = {}
 }
@@ -270,22 +220,6 @@ variable "org_automerge_manual_enforcement" {
     condition     = contains(["disabled", "evaluate", "active"], var.org_automerge_manual_enforcement)
     error_message = "org_automerge_manual_enforcement must be one of: disabled, evaluate, active."
   }
-}
-
-variable "agent_bypass_app_ids" {
-  description = <<-EOT
-    AI agent App IDs bypass manual-repo approval in addition to local.automerge_agent_app_ids; release uses GH_ACTION_RELEASE_PLEASE_APP_ID, while dependency-update apps use triage, not direct bypass.
-  EOT
-  type        = list(number)
-  default     = [2956476, 1236702, 4241562, 4952939, 1144995, 1210556, 5274352]
-}
-
-variable "triage_merge_app_ids" {
-  description = <<-EOT
-    Bot-merge App IDs for manual repos; local triage must label the PR low risk first. These apps bypass approval.
-  EOT
-  type        = list(number)
-  default     = [3923580]
 }
 
 # Hermes PR-review webhook sends pull_request events; created only when both

@@ -81,8 +81,7 @@ resource "github_organization_ruleset" "org_gitflow_main" {
 # Git-flow `develop` protection — the integration branch on opted-in repos.
 #
 # Binds only local.gitflow_repos on the literal refs/heads/develop. develop is
-# the integration branch: PRs required to enforce merge methods (squash, merge,
-# rebase). The single commit rule is the
+# the integration branch: PRs are squash-only. The single commit rule is the
 # Conventional-Commits-or-merge message pattern, keeping subject quality without
 # rejecting "Merge branch ..." commits. Signatures come from the org-gitflow-base
 # ruleset.

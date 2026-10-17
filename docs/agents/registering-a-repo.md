@@ -7,10 +7,15 @@ block). An unlisted repo inherits its live description, topics and visibility,
 and is git-flow when its default branch is `develop`. A new repo is adopted on
 the next apply.
 
-`config/repos.yml` holds per-repo overrides only. List a repo to override the
-enumerated values (an entry replaces them wholesale), to set `gitflow` or
-`upstream_fork`, to keep an archived repo managed, or to create a repo that
-does not exist yet.
+`config/orgs/<github_owner>/repos.yml` holds per-repo overrides only. List a
+repo to override the enumerated values (an entry replaces them wholesale), to
+set `gitflow` or `upstream_fork`, to keep an archived repo managed, or to
+create a repo that does not exist yet. The file is optional when the org has no
+overrides.
+
+Repository names and metadata that must stay outside this public source belong
+in the protected `private_repo_overrides` workspace input. Optional
+`merge_gate` entries there carry check contexts for the outer repository key.
 
 The full creation-to-registration path lives in the org `.github` repo's
 `AGENTS.md` under **New repo checklist** — that is the canonical standard and

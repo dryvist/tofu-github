@@ -8,17 +8,10 @@
 # or exact name. The ruleset below requires no approving review: required
 # status checks are the only merge gate on every repo.
 locals {
-  automerge_config = yamldecode(file("${path.module}/${local.org_config_dir}/automerge.yml"))
-
-  # Agent apps that always bypass the review on "manual" repos: jacobpevans-claude
-  # and JacobPEvans-claude-admin. Committed so an empty workspace variable cannot
-  # drop them.
-  automerge_agent_app_ids = [2956476, 5274352]
-
   automerge_manual_repos = [
     for name in data.github_repositories.org.names : name
-    if contains(local.automerge_config.manual.repos, name) ||
-    anytrue([for p in local.automerge_config.manual.prefixes : startswith(name, p)])
+    if contains(try(local.automerge_config.manual.repos, []), name) ||
+    anytrue([for p in try(local.automerge_config.manual.prefixes, []) : startswith(name, p)])
   ]
 }
 
@@ -77,7 +70,11 @@ resource "github_organization_ruleset" "org_automerge_manual" {
   }
 
   dynamic "bypass_actors" {
-    for_each = toset(concat(local.automerge_agent_app_ids, var.agent_bypass_app_ids, var.triage_merge_app_ids, local.release_app_ids))
+    for_each = toset(concat(
+      try(local.automerge_config.agent_bypass_app_ids, []),
+      try(local.automerge_config.triage_merge_app_ids, []),
+      local.release_app_ids,
+    ))
     content {
       actor_id    = bypass_actors.value
       actor_type  = "Integration"

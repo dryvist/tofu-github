@@ -13,21 +13,14 @@
 #
 # A repo whose required check is NOT the org Merge Gate gets its own bucket:
 #
-#   astro-build: `Build & deploy` — docs-private's bespoke Astro build
-#                (ci.yml `build` job). It is a top-level job, so it reports a
-#                bare job-name context with no workflow prefix — same shape as
-#                `bare` above, NOT `CI / Build & deploy` (that prefix form only
-#                appears when a job CALLS a reusable workflow). Required so a
-#                red build can no longer auto-merge (incident: #130).
 #   canary:      `Canary` — JacobPEvans/.github's caller-contract canary summary
 #                (canary.yml `canary-summary` job). It reports on every PR and
 #                passes with a notice on Markdown-only changes.
+#
 # Adding a repo to a list REQUIRES its check context to be live on every PR
 # first — a required check that never reports blocks every PR in the repo.
-# Verify with a recent PR's check-run names before editing. Org rulesets apply
-# to dryvist private repos too — docs-private is the first private entry
-# (astro-build); the paid-feature gate is on secret scanning / push
-# protection, not on required-check rulesets. The rule targets main AND
+# Verify with a recent PR's check-run names before editing. The rule targets
+# main AND
 # develop: every git-flow repo's gate workflow triggers on `pull_request`
 # without a base filter, so the same context reports on develop PRs, and
 # develop already requires a PR (org-gitflow-develop), so nothing that reached
@@ -48,25 +41,19 @@ merge_gate:
         - claude-code-best-practice
         - claude-code-plugins
         - claude-code-routines
-        - cribl-migration
         - docs
-        - docs-private
         - grafana-dashboards
         - homelab-contracts
         - iac-platform
-        - int_homelab
         - nix-ai-open-harness
         - nix-claude-code
         - nix-devenv
         - nix-hermes
-        - nix-mac-performance
         - nix-pi
         - nix-pxe-bootstrap
-        - nix-screenpipe
         - nixos-ai
         - python-template
         - raycast-smart-issue
-        - splunk-app-2-cribl-pack
         - tofu-aws-templates
         - tofu-splunk-aws
         - tofu-unifi
@@ -77,7 +64,6 @@ merge_gate:
         - ansible-proxmox
         - ansible-proxmox-ai
         - ansible-proxmox-apps
-        - ansible-servarr
         - ansible-splunk
         - mlx-benchmarks
         - nix-ai
@@ -86,10 +72,6 @@ merge_gate:
         - tofu-github
         - tofu-proxmox
         - tofu-runs-on
-    astro-build:
-      context: "Build & deploy"
-      repos:
-        - docs-private
     canary:
       context: "Canary"
       repos:

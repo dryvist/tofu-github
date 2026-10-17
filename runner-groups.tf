@@ -7,3 +7,13 @@ resource "github_actions_runner_group" "homelab" {
   visibility                 = "all"
   allows_public_repositories = false
 }
+
+resource "github_actions_runner_group" "pr_agent" {
+  count = local.self_hosted_runners ? 1 : 0
+
+  name                       = "pr-agent"
+  visibility                 = "all"
+  allows_public_repositories = true
+  restricted_to_workflows    = true
+  selected_workflows         = try(local.runner_group_config.selected_workflows, [])
+}

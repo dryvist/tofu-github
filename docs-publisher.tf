@@ -1,4 +1,5 @@
 resource "github_organization_ruleset" "docs_publisher" {
+  count       = try(local.docs_publisher.repository, null) == null ? 0 : 1
   name        = "docs-publisher"
   target      = "branch"
   enforcement = var.docs_publisher_enforcement
@@ -15,16 +16,6 @@ resource "github_organization_ruleset" "docs_publisher" {
   }
 
   rules {
-    required_workflows {
-      do_not_enforce_on_create = true
-
-      required_workflow {
-        repository_id = data.github_repository.dot_github.repo_id
-        path          = local.docs_publisher.required_workflow.path
-        ref           = local.docs_publisher.required_workflow.ref
-      }
-    }
-
     pull_request {
       required_approving_review_count   = local.docs_publisher.pull_request.required_approvals
       dismiss_stale_reviews_on_push     = true
@@ -36,13 +27,18 @@ resource "github_organization_ruleset" "docs_publisher" {
   }
 
   dynamic "bypass_actors" {
-    for_each = toset(concat(var.triage_merge_app_ids, local.release_app_ids))
+    for_each = toset(concat(try(local.automerge_config.triage_merge_app_ids, []), local.release_app_ids))
     content {
       actor_id    = bypass_actors.value
       actor_type  = "Integration"
       bypass_mode = "pull_request"
     }
   }
+}
+
+moved {
+  from = github_organization_ruleset.docs_publisher
+  to   = github_organization_ruleset.docs_publisher[0]
 }
 
 # Org custom property classifying each repo's documentation as private (the

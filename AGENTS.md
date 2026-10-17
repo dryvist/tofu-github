@@ -3,10 +3,10 @@ skill-groups: [core, git, homelab]
 ---
 # AI Agents Configuration
 
-`dryvist` organization governance as code: GitHub org-level rulesets, required
-workflows, and (over time) org/repo settings — defined once and applied to
-every repo in the org via the `integrations/github` provider, instead of
-click-ops scattered across the fleet.
+GitHub organization governance as code: org-level rulesets and repository
+settings are defined once and applied to the workspace-selected org through
+the `integrations/github` provider, instead of click-ops scattered across the
+fleet.
 
 This repo's META / quality / CI conventions are mirrored from
 [terraform-proxmox](https://github.com/dryvist/terraform-proxmox), which is the
@@ -16,7 +16,7 @@ tooling, not its Proxmox domain content.
 Full docs live under `docs/agents/`, one topic per page:
 
 - [Registering a repo](docs/agents/registering-a-repo.md) — every unarchived
-  repo is governed by default, `config/repos.yml` as per-repo overrides, and
+  repo is governed by default, `config/orgs/<owner>/repos.yml` as per-repo overrides, and
   the gotchas when adding an entry.
 - [Conventions](docs/agents/conventions.md) — no personal-account references,
   no magic numbers or identities in `.tf`, org-agnostic code, `config/`

@@ -1,7 +1,7 @@
-# Shared defaults and per-org policy config are decoded into named locals so
-# resources read Terraform values rather than scattering file reads in bodies.
+# Shared defaults and optional organization config are decoded into named
+# locals so resources read Terraform values rather than scattering file reads.
 locals {
-  org_config_dir = var.config_org == "" ? "config" : "config/orgs/${var.config_org}"
+  org_config_dir = "${path.module}/config/orgs/${var.github_owner}"
 
   # The org login, recovered from the `.github` repo's full_name rather than
   # written down. The provider's `owner` decides which org that resolves to.
@@ -13,9 +13,35 @@ locals {
   ]
 
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
-  docs_publisher    = yamldecode(file("${path.module}/${local.org_config_dir}/docs-publisher.yml"))
+  ruleset_imports   = try(yamldecode(file("${local.org_config_dir}/ruleset-imports.yml")).imports, {})
+  actions_defaults  = local.rulesets_defaults.actions
+  repos_config      = try(yamldecode(file("${local.org_config_dir}/repos.yml")), {})
+  automerge_config = try(yamldecode(file("${local.org_config_dir}/automerge.yml")), {
+    manual = { prefixes = [], repos = [] }
+  })
+  docs_publisher = try(yamldecode(file("${local.org_config_dir}/docs-publisher.yml")), {})
 
-  ruleset_imports            = local.rulesets_defaults.imports
+  org_merge_gate_contexts = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts, {})
+  # One entry per (private repo, gate); concatenated into the org gate of the same key below.
+  private_merge_gate_entries = flatten([
+    for repo, cfg in var.private_repo_overrides : [
+      for key, gate in try(cfg.merge_gate, {}) : { key = key, context = gate.context, repo = repo }
+    ]
+  ])
+  merge_gate_contexts = {
+    for key in distinct(concat(keys(local.org_merge_gate_contexts), local.private_merge_gate_entries[*].key)) : key => {
+      context = try(local.org_merge_gate_contexts[key].context, [for e in local.private_merge_gate_entries : e.context if e.key == key][0])
+      repos = sort(distinct(concat(
+        try(local.org_merge_gate_contexts[key].repos, []),
+        [for e in local.private_merge_gate_entries : e.repo if e.key == key],
+      )))
+    }
+  }
+  copilot_review_targets = try(yamldecode(file("${local.org_config_dir}/copilot-review.yml")).copilot_review, {})
+  iac_drift              = try(yamldecode(file("${local.org_config_dir}/iac-drift.yml")), { repos = {} })
+  runner_group_config    = try(yamldecode(file("${local.org_config_dir}/runner-groups.yml")), {})
+  self_hosted_runners    = try(local.runner_group_config.self_hosted_runners, false)
+
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection
   gitflow_defaults           = local.rulesets_defaults.gitflow
@@ -31,16 +57,4 @@ locals {
   # "Merge pull request ..." subjects, so a leading "Merge " alternation wraps
   # the same pattern.
   gitflow_commit_message_pattern = "^(Merge .+|${trimprefix(local.commit_message_pattern, "^")})"
-
-  # Merge Gate required-check inventory: check context per repo group, decoded
-  # from the selected per-org merge-gate.yml and consumed by merge-gate.tf.
-  merge_gate_contexts = yamldecode(file("${path.module}/${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts
-
-  # Copilot code-review pilot targets: branch -> explicit repo list, decoded
-  # from the selected per-org copilot-review.yml and consumed by copilot-review.tf.
-  copilot_review_targets = yamldecode(file("${path.module}/${local.org_config_dir}/copilot-review.yml")).copilot_review
-
-  # IaC drift-detection opt-in: repos flagged enabled get IAC_DRIFT_ENABLED=true.
-  # Consumed by iac-drift.tf. See the selected per-org iac-drift.yml.
-  iac_drift = yamldecode(file("${path.module}/${local.org_config_dir}/iac-drift.yml"))
 }

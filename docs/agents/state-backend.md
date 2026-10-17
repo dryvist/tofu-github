@@ -20,10 +20,10 @@ the AWS design is preserved in git before this migration; do not resurrect
 it. Fleet siblings still on S3 migrate via `tofu init` state migration,
 NOT by re-bootstrapping AWS.
 
-The existing workspace adopts its live rulesets through import blocks in
+The existing org adopts its live rulesets through import blocks in
 `rulesets-branch-protection.tf` (`org_branch_protection` and
-`required_signatures`) and `rulesets-required-workflows.tf` (`markdown_lint`),
-using GitHub-assigned IDs in `config/rulesets-defaults.yml`. Those blocks run
-only when `config_org` is empty; per-org workspaces skip the existing
-organization's IDs. The existing workspace's first plan must show imports or
-no-op updates, never create-or-destroy actions for those rulesets.
+`required_signatures`), using GitHub-assigned IDs in its
+`config/orgs/<github_owner>/ruleset-imports.yml`.
+Other org directories omit that optional file, so those imports are skipped.
+The existing org's first plan must show imports or no-op updates, never
+create-or-destroy actions for those rulesets.

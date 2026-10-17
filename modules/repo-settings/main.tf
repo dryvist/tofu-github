@@ -1,10 +1,11 @@
 # Per-repo settings — the repository-settings half of the retired
-# `.github-tofu` nix-repo module. Baseline established on the nix-* family:
-# all merge methods enabled, auto-merge on, branch deleted
-# on merge, wiki off. Web commit signoff is an org-level policy, not set here.
+# `.github-tofu` nix-repo module. Repository-level merge options stay enabled
+# for all managed repos; the org-level branch rulesets narrow methods by
+# target. Auto-merge and branch deletion are enabled, and wiki is off. Web
+# commit signoff is an org-level policy, not set here.
 #
 # Per-repo rulesets are intentionally NOT ported: the org-level rulesets in
-# ../../rulesets.tf already enforce signed commits and
+# the root ruleset files already enforce signed commits and
 # Conventional Commits on every repo. Porting the source module's per-repo
 # `all` ruleset would duplicate that org-level coverage.
 #
@@ -15,7 +16,7 @@ resource "github_repository" "this" {
   # checkov:skip=CKV_GIT_1: These repos are intentionally public. The org cost
   # policy (see AGENTS.md) depends on public visibility to keep secret scanning
   # free; forcing private would invert the design and incur GHAS charges. The
-  # visibility variable is validated and per-repo in config/repos.yml.
+  # visibility variable is validated and per-repo in the selected org config.
   # checkov:skip=CKV2_GIT_1: Branch protection is associated at the ORG level via
   # the github_organization_ruleset resources in ../../rulesets.tf (signed
   # commits, Conventional Commits on every repo's default
@@ -33,7 +34,7 @@ resource "github_repository" "this" {
   has_projects    = true
   has_discussions = false
 
-  # All merge methods are enabled by default for all repositories.
+  # The org rulesets apply the branch-specific merge-method policy.
   allow_merge_commit     = true
   allow_squash_merge     = true
   allow_rebase_merge     = true
