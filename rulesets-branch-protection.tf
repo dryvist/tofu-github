@@ -82,7 +82,7 @@ resource "restapi_object" "org_branch_protection" {
           dismiss_stale_reviews_on_push     = false
           require_code_owner_review         = false
           require_last_push_approval        = false
-          required_review_thread_resolution = true
+          required_review_thread_resolution = false
           allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
         })
       },
@@ -230,7 +230,7 @@ resource "restapi_object" "org_review_gate" {
         dismiss_stale_reviews_on_push     = false
         require_code_owner_review         = false
         require_last_push_approval        = false
-        required_review_thread_resolution = true
+        required_review_thread_resolution = false
         allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
       })
     }]

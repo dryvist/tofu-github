@@ -87,7 +87,7 @@ resource "restapi_object" "org_gitflow_main" {
           dismiss_stale_reviews_on_push     = false
           require_code_owner_review         = false
           require_last_push_approval        = false
-          required_review_thread_resolution = true
+          required_review_thread_resolution = false
           allowed_merge_methods             = local.gitflow_defaults.main_allowed_merge_methods
         })
       },
@@ -167,7 +167,7 @@ resource "restapi_object" "org_gitflow_develop" {
           dismiss_stale_reviews_on_push     = false
           require_code_owner_review         = false
           require_last_push_approval        = false
-          required_review_thread_resolution = true
+          required_review_thread_resolution = false
           allowed_merge_methods             = local.gitflow_defaults.develop_allowed_merge_methods
         })
       },
