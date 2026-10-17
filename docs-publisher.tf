@@ -29,11 +29,12 @@ resource "restapi_object" "docs_publisher" {
         exclude = []
       }
       repository_name = {
-        include = [local.docs_publisher.repository]
-        exclude = []
+        include   = [local.docs_publisher.repository]
+        exclude   = []
+        protected = false
       }
     }
-    rules = [{
+    rules = concat([{
       type = "pull_request"
       parameters = merge(local.pull_request_rule_base, {
         required_approving_review_count   = local.docs_publisher.pull_request.required_approvals
@@ -43,7 +44,13 @@ resource "restapi_object" "docs_publisher" {
         required_review_thread_resolution = true
         allowed_merge_methods             = local.docs_publisher.pull_request.allowed_merge_methods
       })
-    }]
+      }], try(local.docs_publisher.provenance_workflow, null) == null ? [] : [{
+      type = "workflows"
+      parameters = {
+        do_not_enforce_on_create = true
+        workflows                = [local.docs_publisher.provenance_workflow]
+      }
+    }])
     bypass_actors = [
       for actor_id in toset(concat(try(local.automerge_config.triage_merge_app_ids, []), local.release_app_ids)) : {
         actor_id    = actor_id

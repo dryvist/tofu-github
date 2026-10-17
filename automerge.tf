@@ -82,9 +82,9 @@ resource "restapi_object" "org_automerge_manual" {
         allowed_merge_methods             = ["merge", "squash", "rebase"]
       })
     }]
-    # OrganizationAdmin has no actor_id. The tuple keeps its object without an actor_id key.
+    # OrganizationAdmin has no actor_id; the API reads it back as null.
     bypass_actors = concat(
-      [{ actor_type = "OrganizationAdmin", bypass_mode = "pull_request" }],
+      [{ actor_id = null, actor_type = "OrganizationAdmin", bypass_mode = "pull_request" }],
       [for actor_id in toset(concat(
         try(local.automerge_config.agent_bypass_app_ids, []),
         try(local.automerge_config.triage_merge_app_ids, []),

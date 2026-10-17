@@ -47,9 +47,10 @@ resource "restapi_object" "org_upstream_fork_protection" {
   ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
 
   data = jsonencode({
-    name        = "org-upstream-fork-protection"
-    target      = "branch"
-    enforcement = var.org_upstream_fork_protection_enforcement
+    name          = "org-upstream-fork-protection"
+    target        = "branch"
+    enforcement   = var.org_upstream_fork_protection_enforcement
+    bypass_actors = []
     conditions = {
       ref_name = {
         include = ["~DEFAULT_BRANCH"]
@@ -66,16 +67,6 @@ resource "restapi_object" "org_upstream_fork_protection" {
     }
     rules = [
       { type = "deletion" },
-      { type = "non_fast_forward" },
-      {
-        type = "branch_name_pattern"
-        parameters = {
-          operator = local.branch_protection_defaults.branch_name_operator
-          pattern  = local.branch_protection_defaults.branch_name_pattern
-          negate   = false
-          name     = ""
-        }
-      },
       {
         type = "pull_request"
         parameters = merge(local.pull_request_rule_base, {
@@ -86,6 +77,16 @@ resource "restapi_object" "org_upstream_fork_protection" {
           required_review_thread_resolution = true
           allowed_merge_methods             = local.upstream_fork_defaults.allowed_merge_methods
         })
+      },
+      { type = "non_fast_forward" },
+      {
+        type = "branch_name_pattern"
+        parameters = {
+          operator = local.branch_protection_defaults.branch_name_operator
+          pattern  = local.branch_protection_defaults.branch_name_pattern
+          negate   = false
+          name     = ""
+        }
       },
     ]
   })

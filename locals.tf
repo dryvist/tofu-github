@@ -49,8 +49,10 @@ locals {
   branch_protection_defaults = local.rulesets_defaults.branch_protection
   gitflow_defaults           = local.rulesets_defaults.gitflow
   upstream_fork_defaults     = local.rulesets_defaults.upstream_fork
+  # required_reviewers matches the server's default so plans stay empty.
   pull_request_rule_base = {
     require_extra_approval_for_unattributed_changes = false
+    required_reviewers                              = []
   }
 
   # Strict Conventional Commits regex on the subject line: the v1.0.0 type
