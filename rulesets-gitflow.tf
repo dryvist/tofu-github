@@ -61,9 +61,10 @@ resource "restapi_object" "org_gitflow_main" {
   ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
 
   data = jsonencode({
-    name        = "org-gitflow-main"
-    target      = "branch"
-    enforcement = var.org_gitflow_main_enforcement
+    name          = "org-gitflow-main"
+    target        = "branch"
+    enforcement   = var.org_gitflow_main_enforcement
+    bypass_actors = []
     conditions = {
       ref_name = {
         include = ["refs/heads/main"]
@@ -80,15 +81,6 @@ resource "restapi_object" "org_gitflow_main" {
     }
     rules = [
       {
-        type = "commit_message_pattern"
-        parameters = {
-          name     = "conventional-commits-or-merge"
-          operator = "regex"
-          pattern  = local.gitflow_commit_message_pattern
-          negate   = false
-        }
-      },
-      {
         type = "pull_request"
         parameters = merge(local.pull_request_rule_base, {
           required_approving_review_count   = 0
@@ -98,6 +90,15 @@ resource "restapi_object" "org_gitflow_main" {
           required_review_thread_resolution = true
           allowed_merge_methods             = local.gitflow_defaults.main_allowed_merge_methods
         })
+      },
+      {
+        type = "commit_message_pattern"
+        parameters = {
+          name     = "conventional-commits-or-merge"
+          operator = "regex"
+          pattern  = local.gitflow_commit_message_pattern
+          negate   = false
+        }
       },
     ]
   })
@@ -131,9 +132,10 @@ resource "restapi_object" "org_gitflow_develop" {
   ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
 
   data = jsonencode({
-    name        = "org-gitflow-develop"
-    target      = "branch"
-    enforcement = var.org_gitflow_develop_enforcement
+    name          = "org-gitflow-develop"
+    target        = "branch"
+    enforcement   = var.org_gitflow_develop_enforcement
+    bypass_actors = []
     conditions = {
       ref_name = {
         include = ["refs/heads/develop"]

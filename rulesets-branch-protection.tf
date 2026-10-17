@@ -34,9 +34,10 @@ resource "restapi_object" "org_branch_protection" {
   ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
 
   data = jsonencode({
-    name        = "org-branch-protection"
-    target      = "branch"
-    enforcement = var.org_branch_protection_enforcement
+    name          = "org-branch-protection"
+    target        = "branch"
+    enforcement   = var.org_branch_protection_enforcement
+    bypass_actors = []
     conditions = {
       ref_name = {
         include = ["~DEFAULT_BRANCH"]
@@ -65,8 +66,6 @@ resource "restapi_object" "org_branch_protection" {
     }
     rules = [
       { type = "required_signatures" },
-      { type = "deletion" },
-      { type = "non_fast_forward" },
       {
         type = "branch_name_pattern"
         parameters = {
@@ -74,15 +73,6 @@ resource "restapi_object" "org_branch_protection" {
           pattern  = local.branch_protection_defaults.branch_name_pattern
           negate   = false
           name     = ""
-        }
-      },
-      {
-        type = "commit_message_pattern"
-        parameters = {
-          name     = "conventional-commits"
-          operator = "regex"
-          pattern  = local.commit_message_pattern
-          negate   = false
         }
       },
       {
@@ -96,6 +86,17 @@ resource "restapi_object" "org_branch_protection" {
           allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
         })
       },
+      {
+        type = "commit_message_pattern"
+        parameters = {
+          name     = "conventional-commits"
+          operator = "regex"
+          pattern  = local.commit_message_pattern
+          negate   = false
+        }
+      },
+      { type = "deletion" },
+      { type = "non_fast_forward" },
     ]
   })
 }
@@ -233,10 +234,9 @@ resource "restapi_object" "org_review_gate" {
         allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
       })
     }]
-    # OrganizationAdmin is an ID-less actor type: the API ignores actor_id for it.
-    # The tuple keeps its object without an actor_id key.
+    # OrganizationAdmin is an ID-less actor type: the API reads actor_id back as null.
     bypass_actors = concat(
-      [{ actor_type = "OrganizationAdmin", bypass_mode = "pull_request" }],
+      [{ actor_id = null, actor_type = "OrganizationAdmin", bypass_mode = "pull_request" }],
       [for actor_id in toset(local.release_app_ids) : { actor_id = actor_id, actor_type = "Integration", bypass_mode = "pull_request" }],
     )
   })
