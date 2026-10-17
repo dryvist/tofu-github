@@ -178,6 +178,128 @@ run "derives_ci_gate_property_from_default_branch_workflow_call" {
   }
 }
 
+run "derives_ci_gate_from_sha_pinned_org_home_caller" {
+  command = plan
+
+  variables {
+    github_owner              = "example-org"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    private_repo_overrides = {
+      without-gate = {
+        description         = ""
+        topics              = []
+        visibility          = "private"
+        archived            = false
+        allow_update_branch = false
+      }
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = ["with-gate"]
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_tree.ci_gate
+    values = {
+      entries = [{
+        mode = "100644"
+        path = ".github/workflows/ci.yml"
+        sha  = "with-gate-workflow"
+        size = 1
+        type = "blob"
+      }]
+    }
+  }
+
+  override_data {
+    target = data.github_repository_file.ci_gate
+    values = {
+      content = "name: CI\non: pull_request\njobs:\n  gate:\n    uses: dryvist/.github/.github/workflows/_ci-gate.yml@1f09b25303a04bf276087348059671728ffea50a # v1.13.2\n"
+    }
+  }
+
+  assert {
+    condition = (
+      github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["true"]) &&
+      github_repository_custom_property.ci_gate["without-gate"].property_value == toset(["false"])
+    )
+    error_message = "The shared gate caller must set ci_gate=true on its repo, false without a caller, and no org schema."
+  }
+}
+
+run "ignores_ci_gate_caller_under_other_job_id" {
+  command = plan
+
+  variables {
+    github_owner              = "example-org"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    private_repo_overrides = {
+      without-gate = {
+        description         = ""
+        topics              = []
+        visibility          = "private"
+        archived            = false
+        allow_update_branch = false
+      }
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = ["with-gate"]
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_tree.ci_gate
+    values = {
+      entries = [{
+        mode = "100644"
+        path = ".github/workflows/ci.yml"
+        sha  = "with-gate-workflow"
+        size = 1
+        type = "blob"
+      }]
+    }
+  }
+
+  override_data {
+    target = data.github_repository_file.ci_gate
+    values = {
+      content = "name: CI\non: pull_request\njobs:\n  ci:\n    uses: JacobPEvans/.github/.github/workflows/_ci-gate.yml@v1\n"
+    }
+  }
+
+  assert {
+    condition = (
+      github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["false"]) &&
+      github_repository_custom_property.ci_gate["without-gate"].property_value == toset(["false"])
+    )
+    error_message = "Only a `gate` job yields the required \"gate / Merge Gate\" context."
+  }
+}
+
 run "private_merge_gate_repos_share_one_gate" {
   command = plan
 
