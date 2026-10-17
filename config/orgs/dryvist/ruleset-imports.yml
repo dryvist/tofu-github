@@ -1,5 +1,4 @@
 # GitHub-assigned IDs for existing rulesets in this organization.
 imports:
   org_branch_protection: "15555419"
-  markdown_lint: "17062292"
   required_signatures: "17916554"

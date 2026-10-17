@@ -16,10 +16,6 @@
 #   canary:      `Canary` — dryvist/.github's caller-contract canary summary
 #                (canary.yml `canary-summary` job). It reports on every PR and
 #                passes with a notice on Markdown-only changes.
-#   flake-lock-fresh: `Flake Lock Fresh / Flake inputs at branch head` — repos
-#                without the org Merge Gate that call dryvist/.github
-#                `_flake-lock-fresh.yml` from a `fresh` job (workflow name
-#                `Flake Lock Fresh`), so the context carries that prefix.
 #
 # Adding a repo to a list REQUIRES its check context to be live on every PR
 # first — a required check that never reports blocks every PR in the repo.
@@ -86,11 +82,6 @@ merge_gate:
       context: "Canary"
       repos:
         - .github
-    flake-lock-fresh:
-      context: "Flake Lock Fresh / Flake inputs at branch head"
-      repos:
-        - iac-enforcer
-        - nix-darwin-host
     docs-secret-scan:
       context: "gitleaks (redacted)"
       repos:

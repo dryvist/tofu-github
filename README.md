@@ -6,10 +6,9 @@ state and per-org configuration.
 
 ## Why this exists
 
-Organization-level rulesets, required workflows, repository settings, and
-labels apply common policy across an organization's repositories. This root
-defines that policy once, and each workspace selects one organization and its
-own configuration.
+Organization-level rulesets, repository settings, and labels apply common
+policy across an organization's repositories. This root defines that policy
+once, and each workspace selects one organization and its own configuration.
 
 ## What it manages today
 
@@ -25,9 +24,6 @@ own configuration.
 | `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
 | `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
-| `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) | `rulesets-required-workflows.tf` |
-| `github_organization_ruleset.conventions` | Repo-conventions required workflow | `rulesets-required-workflows.tf` |
-| `github_organization_ruleset.ai_review` | AI-review required workflow | `rulesets-required-workflows.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
 | `github_organization_ruleset.org_gitflow_*` | Git-flow branch rulesets | `rulesets-gitflow.tf` |
 | `github_organization_ruleset.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
@@ -74,9 +70,9 @@ approving review. Required status checks are the only merge gate.
 
 ### Documentation publisher
 
-Requires the org provenance workflow and the configured approval count for
-projected public documentation pull requests. The release automation and
-configured triage apps bypass review in `pull_request` mode.
+Requires the configured approval count for documentation pull requests. The
+release automation and configured triage apps bypass review in
+`pull_request` mode.
 
 ### Release freeze
 
@@ -92,20 +88,11 @@ can open and merge pull requests into `main` but cannot push or create
 any other branch. The list is a required workspace variable with no
 default.
 
-### Markdown lint
-
-Requires the markdownlint workflow in the org's `.github` repo to pass
-on every ref of every repo. Single source of truth: the workflow +
-`.markdownlint-cli2.yaml` both live in `.github`.
-`do_not_enforce_on_create` so brand-new repos don't fail before their
-default branch exists.
-
 The existing org adopts its live rulesets through these `import` blocks. The
 IDs live in `config/orgs/<github_owner>/ruleset-imports.yml`; other orgs omit
 that optional file:
 
 - `org_branch_protection` ← the live ruleset originally named `main`
-- `markdown_lint` ← the live disabled required-workflow ruleset
 - `required_signatures` ← the live all-branch signature ruleset
 
 Org Actions variables and secrets are configured in the secret manager and
@@ -122,7 +109,6 @@ data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
 rulesets-branch-protection.tf   # org_branch_protection, required_signatures, commit_subject_branches, org_review_gate + import blocks
-rulesets-required-workflows.tf  # markdown_lint, conventions + import blocks
 rulesets-gitflow.tf             # org_gitflow_*
 release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
@@ -204,18 +190,8 @@ Validation only (no backend, no credentials):
 tofu init -backend=false && tofu validate
 ```
 
-**Rolling out a rule safely.** Org-wide enforcement can block merges everywhere
-at once. For `markdown_lint_enforcement` (legacy default `evaluate`), use the
-dry-run gate before enforcing:
-
-```bash
-tofu apply                                          # evaluate (legacy default)
-tofu apply -var markdown_lint_enforcement=active    # enforce
-```
-
-**New rulesets default to `active`.** The `evaluate` dry-run gate above is
-specific to `markdown_lint_enforcement`'s legacy default. Rulesets added going
-forward — push protection, branch protection, commit format, etc. — default
+**New rulesets default to `active`.** Rulesets added going forward — push
+protection, branch protection, commit format, etc. — default
 their `<name>_enforcement` variable to `"active"` and are applied enabled
 directly. The variable still exists so a misbehaving rule can be disabled with
 `-var <name>_enforcement=disabled` without a code change.

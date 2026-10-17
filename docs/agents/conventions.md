@@ -33,14 +33,12 @@
   Account identities that must materialize at apply time, such as CODEOWNERS
   entries, come from an operator-supplied Terraform variable, not a hardcoded
   value. The same root must work for each workspace-selected org.
-- **No local markdownlint config.** This repo *defines* the org-wide
-  markdownlint ruleset (`github_organization_ruleset.markdown_lint`), whose
-  single source of truth is the workflow + `.markdownlint-cli2.yaml` in the
-  org's `.github` repo. Adding a local `.markdownlint*` file here would create the
-  exact per-repo drift this repo exists to eliminate — never add one.
+- **No local markdownlint config.** Enterprise rulesets own required-workflow
+  policy. Keep markdownlint's workflow and `.markdownlint-cli2.yaml` in the
+  org's `.github` repo; never add a local `.markdownlint*` file here.
 - **`terraform_docs` is intentionally omitted** from `.pre-commit-config.yaml`:
   it injects HTML-anchored tables into the README that trip the org markdownlint
-  ruleset this repo itself defines (MD033).
+  ruleset (MD033).
 - Conventional commits: `type(scope): description`.
 - All commits must be GPG-signed (signing key varies per machine; see local
   `git config user.signingkey`).
