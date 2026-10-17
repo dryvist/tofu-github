@@ -77,4 +77,9 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
     condition     = local.gitflow_defaults.main_allowed_merge_methods == ["merge"] && local.gitflow_defaults.develop_allowed_merge_methods == ["squash"]
     error_message = "Git-flow main must remain merge-only and develop must be squash-only."
   }
+
+  assert {
+    condition     = local.actions_defaults.enabled_repositories == "all" && local.actions_defaults.allowed_actions == "all" && !local.actions_defaults.sha_pinning_required && local.actions_defaults.default_workflow_permissions == "read" && !local.actions_defaults.can_approve_pull_request_reviews
+    error_message = "Shared Actions defaults must allow all actions, require no pinning, and use read-only workflow tokens without approval rights."
+  }
 }

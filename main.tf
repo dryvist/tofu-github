@@ -2,6 +2,7 @@
 # .tf files rather than concentrated here:
 #
 #   rulesets-push-protection.tf     — github_organization_ruleset.org_push_protection
+#   actions.tf                      — organization Actions permissions
 #   rulesets-branch-protection.tf   — github_organization_ruleset.{org_branch_protection,required_signatures,org_review_gate}
 #   rulesets-gitflow.tf             — github_organization_ruleset.org_gitflow_*
 #   upstream-forks.tf               — upstream_fork property + github_organization_ruleset.org_upstream_fork_protection
