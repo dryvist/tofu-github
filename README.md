@@ -143,8 +143,8 @@ with `github_owner` and the token permission set with
 `config/orgs/<github_owner>/`. Missing per-org files mean defaults or no
 opt-in, and repository metadata comes from GitHub data sources.
 `config/commit-message-pattern.txt` and `config/rulesets-defaults.yml` remain
-shared. The org's label set is read from
-`.github/labels.yml` in that org's `.github` repository by `data.tf` and
+shared. The label set is read from
+the central label file named in `config/central.yml` by `data.tf` and
 applied by `labels.tf`; label sets are not stored in `config/`. Canonical text
 the org doesn't author — MIT LICENSE body, CODE_OF_CONDUCT, etc. — is fetched
 at apply time from a trustworthy upstream via `data "http"`, not committed as

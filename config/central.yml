@@ -1,0 +1,7 @@
+# Shared content every org reads from its one central home, at plan time.
+
+# The enterprise-wide label set. A public repository, so any org's token can read it.
+labels:
+  repository: JacobPEvans/.github
+  branch: main
+  file: .github/labels.yml
