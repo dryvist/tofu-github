@@ -277,6 +277,23 @@ repos:
     topics: []
     archived: true
 
+  # Archived: superseded by JacobPEvans/.github-ai.
+  ai-workflows:
+    visibility: public
+    description: "Reusable AI agent workflows that run 24/7 — issue triage, code cleanup, multi-repo orchestration. Import-ready for GitHub Copilot Agentic Workflows."
+    topics:
+      - agentic-workflows
+      - ai-agents
+      - ai-automation
+      - automation
+      - code-quality
+      - devops
+      - github-actions
+      - github-copilot
+      - issue-management
+      - workflow-automation
+    archived: true
+
   # This config, governing itself. Enrolled and opted into git-flow in one
   # step, which is safe here only because the pieces line up:
   #   - No `develop` branch exists yet, so gitflow.tf CREATES it from main and
