@@ -15,18 +15,20 @@ once, and each workspace selects one organization and its own configuration.
 | Resource | Effect | Source |
 | --- | --- | --- |
 | `github_organization_ruleset.org_push_protection` | [Push protection](#push-protection) | `rulesets-push-protection.tf` |
-| `github_organization_ruleset.org_branch_protection` | [Branch protection](#branch-protection) | `rulesets-branch-protection.tf` |
+| `restapi_object.org_branch_protection` | [Branch protection](#branch-protection) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.commit_subject_branches` | [Branch commit subjects](#branch-commit-subjects) | `rulesets-branch-protection.tf` |
-| `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
-| `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
+| `restapi_object.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
+| `restapi_object.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
 | `github_organization_custom_properties.*` | Organization property schemas | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
 | `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
-| `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
+| `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
-| `github_organization_ruleset.org_gitflow_*` | Git-flow branch rulesets | `rulesets-gitflow.tf` |
-| `github_organization_ruleset.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
+| `github_organization_ruleset.org_gitflow_base` | Git-flow base branch ruleset | `rulesets-gitflow.tf` |
+| `restapi_object.org_gitflow_main` | Git-flow main branch ruleset | `rulesets-gitflow.tf` |
+| `restapi_object.org_gitflow_develop` | Git-flow develop branch ruleset | `rulesets-gitflow.tf` |
+| `restapi_object.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
 | `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
 | `github_actions_organization_permissions.org` | Allowed Actions and SHA policy | `actions.tf` |
@@ -37,6 +39,8 @@ once, and each workspace selects one organization and its own configuration.
 | `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
 | `github_actions_runner_group.pr_agent` | PR-Agent workflow runner role | `runner-groups.tf` |
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
+
+Pull-request rulesets use the REST provider because the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
 
 ### Push protection
 
@@ -109,6 +113,12 @@ IDs live in `config/orgs/<github_owner>/ruleset-imports.yml`; other orgs omit
 that optional file:
 
 - `org_branch_protection` ← the live ruleset originally named `main`
+- `org_review_gate` ← the live org review gate
+- `org_gitflow_main` ← the live git-flow main ruleset
+- `org_gitflow_develop` ← the live git-flow develop ruleset
+- `org_automerge_manual` ← the live manual-repository ruleset
+- `docs_publisher` ← the live documentation-publisher ruleset
+- `org_upstream_fork_protection` ← the live upstream-fork ruleset
 - `required_signatures` ← the live all-branch signature ruleset
 
 Org Actions variables and secrets are configured in the secret manager and
@@ -119,13 +129,13 @@ default setup is not an active Terraform resource here; see `code_scanning.tf`.
 
 ```text
 versions.tf       # tofu + provider pins, Terrakube cloud backend
-providers.tf      # github provider, token minted per run (ephemeral)
+providers.tf      # github + REST providers, token minted per run (ephemeral)
 variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
 rulesets-branch-protection.tf   # org_branch_protection, required_signatures, commit_subject_branches, org_review_gate + import blocks
-rulesets-gitflow.tf             # org_gitflow_*
+rulesets-gitflow.tf             # org_gitflow_base, org_gitflow_main, org_gitflow_develop
 release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
 main.tf           # multi-file entrypoint stub (resources organized by topic)

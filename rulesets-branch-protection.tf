@@ -15,69 +15,89 @@
 # Only the existing flat-config workspace adopts this organization-specific ID.
 import {
   for_each = try(local.ruleset_imports.org_branch_protection, null) == null ? {} : { existing = local.ruleset_imports.org_branch_protection }
-  to       = github_organization_ruleset.org_branch_protection
-  id       = each.value
+  to       = restapi_object.org_branch_protection
+  id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
 }
 
-resource "github_organization_ruleset" "org_branch_protection" {
-  name        = "org-branch-protection"
-  target      = "branch"
-  enforcement = var.org_branch_protection_enforcement
+removed {
+  from = github_organization_ruleset.org_branch_protection
 
-  conditions {
-    ref_name {
-      include = ["~DEFAULT_BRANCH"]
-      exclude = []
-    }
-    # Git-flow repos are excluded: their default branch is develop. Their main and
-    # develop protection comes from the org-gitflow-* rulesets below instead.
-    # Upstream forks are excluded: upstream history cannot satisfy the signature
-    # and commit-format rules. org-upstream-fork-protection (upstream-forks.tf)
-    # covers their default branch instead.
-    repository_property {
-      exclude = [
-        {
-          name            = "gitflow"
-          property_values = ["true"]
-          source          = "custom"
-        },
-        {
-          name            = github_organization_custom_properties.upstream_fork.property_name
-          property_values = ["true"]
-          source          = "custom"
-        },
-      ]
-    }
+  lifecycle {
+    destroy = false
   }
+}
 
-  rules {
-    required_signatures = true
-    deletion            = true
-    non_fast_forward    = true
+resource "restapi_object" "org_branch_protection" {
+  path         = "/orgs/${var.github_owner}/rulesets"
+  id_attribute = "id"
+  # Fields GitHub adds to a ruleset response; they never appear in the request body.
+  ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
 
-    branch_name_pattern {
-      operator = local.branch_protection_defaults.branch_name_operator
-      pattern  = local.branch_protection_defaults.branch_name_pattern
-      negate   = false
-      name     = ""
+  data = jsonencode({
+    name        = "org-branch-protection"
+    target      = "branch"
+    enforcement = var.org_branch_protection_enforcement
+    conditions = {
+      ref_name = {
+        include = ["~DEFAULT_BRANCH"]
+        exclude = []
+      }
+      # Git-flow repos are excluded: their default branch is develop. Their main and
+      # develop protection comes from the org-gitflow-* rulesets below instead.
+      # Upstream forks are excluded: upstream history cannot satisfy the signature
+      # and commit-format rules. org-upstream-fork-protection (upstream-forks.tf)
+      # covers their default branch instead.
+      repository_property = {
+        include = []
+        exclude = [
+          {
+            name            = "gitflow"
+            property_values = ["true"]
+            source          = "custom"
+          },
+          {
+            name            = github_organization_custom_properties.upstream_fork.property_name
+            property_values = ["true"]
+            source          = "custom"
+          },
+        ]
+      }
     }
-
-    commit_message_pattern {
-      name     = "conventional-commits"
-      operator = "regex"
-      pattern  = local.commit_message_pattern
-      negate   = false
-    }
-
-    pull_request {
-      required_approving_review_count   = 0
-      dismiss_stale_reviews_on_push     = false
-      require_code_owner_review         = false
-      require_last_push_approval        = false
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
-    }
-  }
+    rules = [
+      { type = "required_signatures" },
+      { type = "deletion" },
+      { type = "non_fast_forward" },
+      {
+        type = "branch_name_pattern"
+        parameters = {
+          operator = local.branch_protection_defaults.branch_name_operator
+          pattern  = local.branch_protection_defaults.branch_name_pattern
+          negate   = false
+          name     = ""
+        }
+      },
+      {
+        type = "commit_message_pattern"
+        parameters = {
+          name     = "conventional-commits"
+          operator = "regex"
+          pattern  = local.commit_message_pattern
+          negate   = false
+        }
+      },
+      {
+        type = "pull_request"
+        parameters = merge(local.pull_request_rule_base, {
+          required_approving_review_count   = 0
+          dismiss_stale_reviews_on_push     = false
+          require_code_owner_review         = false
+          require_last_push_approval        = false
+          required_review_thread_resolution = true
+          allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
+        })
+      },
+    ]
+  })
 }
 
 # Org-wide signature enforcement on every branch.
@@ -160,54 +180,64 @@ resource "github_organization_ruleset" "commit_subject_branches" {
 # Pushes still satisfy every other rule (signed, conventional).
 # Granting an additional account the OrganizationAdmin role extends this
 # bypass to them — review the role assignments before adding admins.
-resource "github_organization_ruleset" "org_review_gate" {
-  name        = "org-review-gate"
-  target      = "branch"
-  enforcement = var.org_review_gate_enforcement
+removed {
+  from = github_organization_ruleset.org_review_gate
 
-  conditions {
-    ref_name {
-      include = ["~DEFAULT_BRANCH"]
-      exclude = []
-    }
-    # Git-flow repos are excluded so the review gate never binds develop (their
-    # default branch), where direct pushes and back-merges must flow freely.
-    # A gated main on a git-flow repo would be re-added by an org-gitflow-main
-    # variant if/when this ruleset is enabled — today it is disabled by default.
-    repository_property {
-      exclude = [{
-        name            = "gitflow"
-        property_values = ["true"]
-        source          = "custom"
-      }]
-    }
+  lifecycle {
+    destroy = false
   }
+}
 
-  rules {
-    pull_request {
-      required_approving_review_count   = 0
-      dismiss_stale_reviews_on_push     = false
-      require_code_owner_review         = false
-      require_last_push_approval        = false
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
-    }
-  }
+import {
+  for_each = try(local.ruleset_imports.org_review_gate, null) == null ? {} : { existing = local.ruleset_imports.org_review_gate }
+  to       = restapi_object.org_review_gate
+  id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
+}
 
-  bypass_actors {
-    # OrganizationAdmin is an ID-less actor type: the Rulesets API ignores
-    # actor_id for it and reads back none, so the provider requires the
-    # attribute to be omitted. Every OrganizationAdmin bypasses review on merge.
-    actor_type  = "OrganizationAdmin"
-    bypass_mode = "pull_request"
-  }
+resource "restapi_object" "org_review_gate" {
+  path         = "/orgs/${var.github_owner}/rulesets"
+  id_attribute = "id"
+  # Fields GitHub adds to a ruleset response; they never appear in the request body.
+  ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
 
-  dynamic "bypass_actors" {
-    for_each = toset(local.release_app_ids)
-    content {
-      actor_id    = bypass_actors.value
-      actor_type  = "Integration"
-      bypass_mode = "pull_request"
+  data = jsonencode({
+    name        = "org-review-gate"
+    target      = "branch"
+    enforcement = var.org_review_gate_enforcement
+    conditions = {
+      ref_name = {
+        include = ["~DEFAULT_BRANCH"]
+        exclude = []
+      }
+      # Git-flow repos are excluded so the review gate never binds develop (their
+      # default branch), where direct pushes and back-merges must flow freely.
+      # A gated main on a git-flow repo would be re-added by an org-gitflow-main
+      # variant if/when this ruleset is enabled — today it is disabled by default.
+      repository_property = {
+        include = []
+        exclude = [{
+          name            = "gitflow"
+          property_values = ["true"]
+          source          = "custom"
+        }]
+      }
     }
-  }
+    rules = [{
+      type = "pull_request"
+      parameters = merge(local.pull_request_rule_base, {
+        required_approving_review_count   = 0
+        dismiss_stale_reviews_on_push     = false
+        require_code_owner_review         = false
+        require_last_push_approval        = false
+        required_review_thread_resolution = true
+        allowed_merge_methods             = local.branch_protection_defaults.allowed_merge_methods
+      })
+    }]
+    # OrganizationAdmin is an ID-less actor type: the API ignores actor_id for it.
+    # The tuple keeps its object without an actor_id key.
+    bypass_actors = concat(
+      [{ actor_type = "OrganizationAdmin", bypass_mode = "pull_request" }],
+      [for actor_id in toset(local.release_app_ids) : { actor_id = actor_id, actor_type = "Integration", bypass_mode = "pull_request" }],
+    )
+  })
 }

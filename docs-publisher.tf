@@ -1,44 +1,57 @@
-resource "github_organization_ruleset" "docs_publisher" {
-  count       = try(local.docs_publisher.repository, null) == null ? 0 : 1
-  name        = "docs-publisher"
-  target      = "branch"
-  enforcement = var.docs_publisher_enforcement
+removed {
+  from = github_organization_ruleset.docs_publisher
 
-  conditions {
-    ref_name {
-      include = ["refs/heads/main"]
-      exclude = []
-    }
-    repository_name {
-      include = [local.docs_publisher.repository]
-      exclude = []
-    }
-  }
-
-  rules {
-    pull_request {
-      required_approving_review_count   = local.docs_publisher.pull_request.required_approvals
-      dismiss_stale_reviews_on_push     = true
-      require_code_owner_review         = false
-      require_last_push_approval        = true
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.docs_publisher.pull_request.allowed_merge_methods
-    }
-  }
-
-  dynamic "bypass_actors" {
-    for_each = toset(concat(try(local.automerge_config.triage_merge_app_ids, []), local.release_app_ids))
-    content {
-      actor_id    = bypass_actors.value
-      actor_type  = "Integration"
-      bypass_mode = "pull_request"
-    }
+  lifecycle {
+    destroy = false
   }
 }
 
-moved {
-  from = github_organization_ruleset.docs_publisher
-  to   = github_organization_ruleset.docs_publisher[0]
+import {
+  for_each = try(local.ruleset_imports.docs_publisher, null) == null ? {} : { existing = local.ruleset_imports.docs_publisher }
+  to       = restapi_object.docs_publisher[0]
+  id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
+}
+
+resource "restapi_object" "docs_publisher" {
+  count        = try(local.docs_publisher.repository, null) == null ? 0 : 1
+  path         = "/orgs/${var.github_owner}/rulesets"
+  id_attribute = "id"
+  # Fields GitHub adds to a ruleset response; they never appear in the request body.
+  ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
+
+  data = jsonencode({
+    name        = "docs-publisher"
+    target      = "branch"
+    enforcement = var.docs_publisher_enforcement
+    conditions = {
+      ref_name = {
+        include = ["refs/heads/main"]
+        exclude = []
+      }
+      repository_name = {
+        include = [local.docs_publisher.repository]
+        exclude = []
+      }
+    }
+    rules = [{
+      type = "pull_request"
+      parameters = merge(local.pull_request_rule_base, {
+        required_approving_review_count   = local.docs_publisher.pull_request.required_approvals
+        dismiss_stale_reviews_on_push     = true
+        require_code_owner_review         = false
+        require_last_push_approval        = true
+        required_review_thread_resolution = true
+        allowed_merge_methods             = local.docs_publisher.pull_request.allowed_merge_methods
+      })
+    }]
+    bypass_actors = [
+      for actor_id in toset(concat(try(local.automerge_config.triage_merge_app_ids, []), local.release_app_ids)) : {
+        actor_id    = actor_id
+        actor_type  = "Integration"
+        bypass_mode = "pull_request"
+      }
+    ]
+  })
 }
 
 # Org custom property classifying each repo's documentation as private (the

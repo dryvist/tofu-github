@@ -6,6 +6,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    restapi = {
+      source  = "Mastercard/restapi"
+      version = "~> 2.0"
+    }
     vault = {
       source  = "hashicorp/vault"
       version = "~> 5.10"
