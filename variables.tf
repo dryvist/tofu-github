@@ -79,7 +79,7 @@ variable "org_gitflow_main_enforcement" {
 
 variable "org_gitflow_develop_enforcement" {
   description = <<-EOT
-    Git-flow develop applies only to local.gitflow_repos: PRs (no direct pushes), squash/merge/rebase. Its only rule is the Conventional-Commits-or-merge message pattern, so main back-merges and conventional feature-squash subjects pass; signatures are enforced by org-gitflow-base and org-wide rulesets.
+    Git-flow develop applies only to local.gitflow_repos: PRs (no direct pushes), squash-only merges. Its only rule is the Conventional-Commits-or-merge message pattern, so main back-merges and conventional feature-squash subjects pass; signatures are enforced by org-gitflow-base and org-wide rulesets.
   EOT
   type        = string
   default     = "active"
