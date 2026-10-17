@@ -243,7 +243,7 @@ variable "github_token_permission_set" {
 }
 
 variable "private_repo_overrides" {
-  description = "Workspace overrides keyed by repo name and shaped like repos.yml's repos map, keeping private repo names out of this public repo."
+  description = "Protected workspace map keyed by repo name with the same fields as per-org repo entries. Optional merge_gate maps are keyed by gate name and contain a context string; their repository list is derived from the outer key."
   type        = any
   default     = {}
 }

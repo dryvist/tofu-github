@@ -13,6 +13,10 @@ set `gitflow` or `upstream_fork`, to keep an archived repo managed, or to
 create a repo that does not exist yet. The file is optional when the org has no
 overrides.
 
+Repository names and metadata that must stay outside this public source belong
+in the protected `private_repo_overrides` workspace input. Optional
+`merge_gate` entries there carry check contexts for the outer repository key.
+
 The full creation-to-registration path lives in the org `.github` repo's
 `AGENTS.md` under **New repo checklist** — that is the canonical standard and
 the file agents already read. It is enforced from two sides: a PR-time
