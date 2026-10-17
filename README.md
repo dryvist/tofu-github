@@ -29,10 +29,13 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_ruleset.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
 | `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
+| `github_actions_organization_permissions.org` | Allowed Actions and SHA policy | `actions.tf` |
+| `github_actions_organization_workflow_permissions.org` | Default `GITHUB_TOKEN` permissions | `actions.tf` |
 | `module.repo_settings` | Repository settings | `repos.tf`, `modules/repo-settings/main.tf` |
 | `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
-| `github_actions_runner_group.homelab` | Private-repository runner group | `runner-groups.tf` |
+| `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
+| `github_actions_runner_group.pr_agent` | PR-Agent workflow runner role | `runner-groups.tf` |
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
 
 ### Push protection
@@ -62,6 +65,19 @@ Conventional Commit or a merge message. Upstream forks are excluded.
 
 Review gate on every default branch: resolved review threads on PRs, with no
 required approving or CODEOWNER review. Disabled by default.
+
+### Actions permissions
+
+All repositories and Actions are allowed. SHA pinning is not required so
+first-party references can use floating major-version tags. Workflow tokens
+default to read-only, and workflows cannot approve pull requests.
+
+### Runner groups
+
+The homelab runner role cannot use public repositories. The PR-Agent runner
+role allows public repositories and is limited to the selected workflow. It is
+created only for owners whose optional `runner-groups.yml` enables self-hosted
+runners.
 
 ### Manual-repo approval
 

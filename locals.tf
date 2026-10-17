@@ -30,9 +30,11 @@ locals {
       }
     }
   ]...)
-  merge_gate_contexts = merge(local.org_merge_gate_contexts, local.private_merge_gate_contexts)
+  merge_gate_contexts    = merge(local.org_merge_gate_contexts, local.private_merge_gate_contexts)
   copilot_review_targets = try(yamldecode(file("${local.org_config_dir}/copilot-review.yml")).copilot_review, {})
   iac_drift              = try(yamldecode(file("${local.org_config_dir}/iac-drift.yml")), { repos = {} })
+  runner_group_config    = try(yamldecode(file("${local.org_config_dir}/runner-groups.yml")), {})
+  self_hosted_runners    = try(local.runner_group_config.self_hosted_runners, false)
 
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection

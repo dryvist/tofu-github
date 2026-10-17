@@ -64,6 +64,11 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
+    condition     = !local.self_hosted_runners
+    error_message = "An org without runner-group data must not create the public workflow runner role."
+  }
+
+  assert {
     condition     = length(local.managed_repos) == 1 && local.managed_repos["sample"].description == "Mock repository metadata"
     error_message = "Repository metadata must be enumerated from GitHub when the org repo config is empty."
   }
