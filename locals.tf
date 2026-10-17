@@ -22,15 +22,21 @@ locals {
   docs_publisher = try(yamldecode(file("${local.org_config_dir}/docs-publisher.yml")), {})
 
   org_merge_gate_contexts = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts, {})
-  private_merge_gate_contexts = merge({}, [
-    for repo, cfg in var.private_repo_overrides : {
-      for key, gate in try(cfg.merge_gate, {}) : key => {
-        context = gate.context
-        repos   = [repo]
-      }
+  # One entry per (private repo, gate); concatenated into the org gate of the same key below.
+  private_merge_gate_entries = flatten([
+    for repo, cfg in var.private_repo_overrides : [
+      for key, gate in try(cfg.merge_gate, {}) : { key = key, context = gate.context, repo = repo }
+    ]
+  ])
+  merge_gate_contexts = {
+    for key in distinct(concat(keys(local.org_merge_gate_contexts), local.private_merge_gate_entries[*].key)) : key => {
+      context = try(local.org_merge_gate_contexts[key].context, [for e in local.private_merge_gate_entries : e.context if e.key == key][0])
+      repos = sort(distinct(concat(
+        try(local.org_merge_gate_contexts[key].repos, []),
+        [for e in local.private_merge_gate_entries : e.repo if e.key == key],
+      )))
     }
-  ]...)
-  merge_gate_contexts    = merge(local.org_merge_gate_contexts, local.private_merge_gate_contexts)
+  }
   copilot_review_targets = try(yamldecode(file("${local.org_config_dir}/copilot-review.yml")).copilot_review, {})
   iac_drift              = try(yamldecode(file("${local.org_config_dir}/iac-drift.yml")), { repos = {} })
   runner_group_config    = try(yamldecode(file("${local.org_config_dir}/runner-groups.yml")), {})

@@ -86,3 +86,43 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
     error_message = "Shared Actions defaults must allow all actions, require no pinning, and use read-only workflow tokens without approval rights."
   }
 }
+
+run "private_merge_gate_repos_share_one_gate" {
+  command = plan
+
+  variables {
+    github_owner                = "JacobPEvans"
+    github_token_permission_set = "JacobPEvans-full-automation"
+    automation_bypass_app_ids   = [1]
+    private_repo_overrides = {
+      example-a = {
+        description         = ""
+        topics              = []
+        visibility          = "private"
+        archived            = false
+        allow_update_branch = false
+        merge_gate          = { gate = { context = "gate / Merge Gate" } }
+      }
+      example-b = {
+        description         = ""
+        topics              = []
+        visibility          = "private"
+        archived            = false
+        allow_update_branch = false
+        merge_gate          = { gate = { context = "gate / Merge Gate" } }
+      }
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = jsonencode(local.merge_gate_contexts["gate"].repos) == jsonencode(["example-a", "example-b"]) && local.merge_gate_contexts["gate"].context == "gate / Merge Gate"
+    error_message = "Private repos on the same gate must all be listed in that gate's ruleset."
+  }
+}
