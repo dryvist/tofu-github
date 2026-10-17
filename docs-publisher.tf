@@ -27,7 +27,7 @@ resource "github_organization_ruleset" "docs_publisher" {
   }
 
   dynamic "bypass_actors" {
-    for_each = toset(concat(var.triage_merge_app_ids, local.release_app_ids))
+    for_each = toset(concat(try(local.automerge_config.triage_merge_app_ids, []), local.release_app_ids))
     content {
       actor_id    = bypass_actors.value
       actor_type  = "Integration"
