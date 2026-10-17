@@ -26,7 +26,10 @@ locals {
   # merged over it. Enumerated repos inherit their live description, topics
   # and visibility (so nothing is blanked) and derive git-flow from their
   # default branch (so no develop branch is cut on a trunk repo).
+  # The org defaults repo is always governed, so an org without one gets it created.
   managed_repos = merge({
+    ".github" = { visibility = "public", description = "Organization defaults", topics = [], gitflow = false }
+    }, {
     for name, repo in data.github_repository.enumerated : name => {
       visibility  = repo.visibility
       description = repo.description

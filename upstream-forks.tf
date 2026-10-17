@@ -18,7 +18,7 @@ resource "github_organization_custom_properties" "upstream_fork" {
 }
 
 resource "github_repository_custom_property" "upstream_fork" {
-  for_each = toset(local.upstream_fork_repos)
+  for_each = var.dryvist_org_extras ? toset(local.upstream_fork_repos) : toset([])
 
   repository     = each.value
   property_name  = github_organization_custom_properties.upstream_fork.property_name
@@ -35,12 +35,13 @@ removed {
 }
 
 import {
-  for_each = try(local.ruleset_imports.org_upstream_fork_protection, null) == null ? {} : { existing = local.ruleset_imports.org_upstream_fork_protection }
-  to       = restapi_object.org_upstream_fork_protection
+  for_each = !var.dryvist_org_extras || try(local.ruleset_imports.org_upstream_fork_protection, null) == null ? {} : { existing = local.ruleset_imports.org_upstream_fork_protection }
+  to       = restapi_object.org_upstream_fork_protection[0]
   id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
 }
 
 resource "restapi_object" "org_upstream_fork_protection" {
+  count        = var.dryvist_org_extras ? 1 : 0
   path         = "/orgs/${var.github_owner}/rulesets"
   id_attribute = "id"
   # Fields GitHub adds to a ruleset response; they never appear in the request body.
@@ -90,4 +91,9 @@ resource "restapi_object" "org_upstream_fork_protection" {
       },
     ]
   })
+}
+
+moved {
+  from = restapi_object.org_upstream_fork_protection
+  to   = restapi_object.org_upstream_fork_protection[0]
 }

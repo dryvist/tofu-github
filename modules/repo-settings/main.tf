@@ -28,6 +28,8 @@ resource "github_repository" "this" {
 
   visibility = var.visibility
   archived   = var.archived
+  # A created repo gets a default branch so PRs can target it.
+  auto_init = true
 
   has_issues      = true
   has_wiki        = false
