@@ -26,7 +26,7 @@ push_protection:
     - "*.p12"
     - "*.pfx"
 
-# Consumed by github_organization_ruleset.org_branch_protection — the
+# Consumed by restapi_object.org_branch_protection — the
 # non-bypassable quality gate on every repo's default branch.
 branch_protection:
   # Branch name pattern enforced on every PR. Defined here so the regex
@@ -45,9 +45,9 @@ branch_protection:
     - squash
     - rebase
 
-# Consumed by the git-flow pilot rulesets (org-gitflow-main / org-gitflow-develop
-# in rulesets-gitflow.tf) for repos opted in via `gitflow: true` in the
-# selected org's repos.yml.
+# Consumed by restapi_object.org_gitflow_main and
+# restapi_object.org_gitflow_develop in rulesets-gitflow.tf for repos opted in
+# via `gitflow: true` in the selected org's repos.yml.
 # These repos run the git-flow model: develop is the integration default branch
 # (feature PRs squash-merge in, back-merges land merge commits) and main is the
 # release branch (no direct pushes).
@@ -61,7 +61,7 @@ gitflow:
   develop_allowed_merge_methods:
     - squash
 
-# Consumed by github_organization_ruleset.org_upstream_fork_protection
+# Consumed by restapi_object.org_upstream_fork_protection
 # (upstream-forks.tf) for repos opted in via `upstream_fork: true` in
 # the selected org's repos.yml.
 upstream_fork:

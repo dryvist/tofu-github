@@ -25,3 +25,14 @@ provider "github" {
   owner = var.github_owner
   token = ephemeral.vault_generic_endpoint.github_token.write_data["token"]
 }
+
+provider "restapi" {
+  uri                  = "https://api.github.com"
+  write_returns_object = true
+
+  headers = {
+    Authorization          = "Bearer ${ephemeral.vault_generic_endpoint.github_token.write_data["token"]}"
+    Accept                 = "application/vnd.github+json"
+    "X-GitHub-Api-Version" = "2022-11-28"
+  }
+}

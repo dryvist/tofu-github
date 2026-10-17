@@ -2,3 +2,9 @@
 imports:
   org_branch_protection: "15555419"
   required_signatures: "17916554"
+  org_review_gate: "18542489"
+  org_gitflow_main: "18741232"
+  org_gitflow_develop: "18741234"
+  docs_publisher: "23046753"
+  org_automerge_manual: "24883233"
+  org_upstream_fork_protection: "24339984"

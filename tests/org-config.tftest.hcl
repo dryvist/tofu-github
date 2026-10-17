@@ -30,6 +30,8 @@ mock_provider "github" {
 
 mock_provider "vault" {}
 
+mock_provider "restapi" {}
+
 run "empty_non_dryvist_config_plans_from_live_repo_data" {
   command = plan
 
@@ -84,6 +86,23 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   assert {
     condition     = local.actions_defaults.enabled_repositories == "all" && local.actions_defaults.allowed_actions == "all" && !local.actions_defaults.sha_pinning_required && local.actions_defaults.default_workflow_permissions == "read" && !local.actions_defaults.can_approve_pull_request_reviews
     error_message = "Shared Actions defaults must allow all actions, require no pinning, and use read-only workflow tokens without approval rights."
+  }
+
+  assert {
+    condition = alltrue([
+      for ruleset in concat([
+        jsondecode(restapi_object.org_branch_protection.data),
+        jsondecode(restapi_object.org_review_gate.data),
+        jsondecode(restapi_object.org_gitflow_main.data),
+        jsondecode(restapi_object.org_gitflow_develop.data),
+        jsondecode(restapi_object.org_automerge_manual.data),
+        jsondecode(restapi_object.org_upstream_fork_protection.data),
+      ], [for docs in restapi_object.docs_publisher : jsondecode(docs.data)]) : length([for rule in ruleset.rules : rule if rule.type == "pull_request"]) == 1 &&
+      alltrue([
+        for rule in ruleset.rules : rule.type != "pull_request" || try(rule.parameters.require_extra_approval_for_unattributed_changes, null) == false
+      ])
+    ])
+    error_message = "Every REST-managed ruleset must set the extra approval parameter to false on its pull_request rule."
   }
 }
 

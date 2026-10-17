@@ -40,42 +40,67 @@ resource "github_organization_ruleset" "org_gitflow_base" {
 # org_gitflow_base (and the org-wide all-branch ruleset).
 # These repos are excluded from org_branch_protection
 # above, so this is their main-branch policy in full.
-resource "github_organization_ruleset" "org_gitflow_main" {
-  name        = "org-gitflow-main"
-  target      = "branch"
-  enforcement = var.org_gitflow_main_enforcement
+removed {
+  from = github_organization_ruleset.org_gitflow_main
 
-  conditions {
-    ref_name {
-      include = ["refs/heads/main"]
-      exclude = []
-    }
-    repository_property {
-      include = [{
-        name            = "gitflow"
-        property_values = ["true"]
-        source          = "custom"
-      }]
-    }
+  lifecycle {
+    destroy = false
   }
+}
 
-  rules {
-    commit_message_pattern {
-      name     = "conventional-commits-or-merge"
-      operator = "regex"
-      pattern  = local.gitflow_commit_message_pattern
-      negate   = false
-    }
+import {
+  for_each = try(local.ruleset_imports.org_gitflow_main, null) == null ? {} : { existing = local.ruleset_imports.org_gitflow_main }
+  to       = restapi_object.org_gitflow_main
+  id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
+}
 
-    pull_request {
-      required_approving_review_count   = 0
-      dismiss_stale_reviews_on_push     = false
-      require_code_owner_review         = false
-      require_last_push_approval        = false
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.gitflow_defaults.main_allowed_merge_methods
+resource "restapi_object" "org_gitflow_main" {
+  path         = "/orgs/${var.github_owner}/rulesets"
+  id_attribute = "id"
+  # Fields GitHub adds to a ruleset response; they never appear in the request body.
+  ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
+
+  data = jsonencode({
+    name        = "org-gitflow-main"
+    target      = "branch"
+    enforcement = var.org_gitflow_main_enforcement
+    conditions = {
+      ref_name = {
+        include = ["refs/heads/main"]
+        exclude = []
+      }
+      repository_property = {
+        include = [{
+          name            = "gitflow"
+          property_values = ["true"]
+          source          = "custom"
+        }]
+        exclude = []
+      }
     }
-  }
+    rules = [
+      {
+        type = "commit_message_pattern"
+        parameters = {
+          name     = "conventional-commits-or-merge"
+          operator = "regex"
+          pattern  = local.gitflow_commit_message_pattern
+          negate   = false
+        }
+      },
+      {
+        type = "pull_request"
+        parameters = merge(local.pull_request_rule_base, {
+          required_approving_review_count   = 0
+          dismiss_stale_reviews_on_push     = false
+          require_code_owner_review         = false
+          require_last_push_approval        = false
+          required_review_thread_resolution = true
+          allowed_merge_methods             = local.gitflow_defaults.main_allowed_merge_methods
+        })
+      },
+    ]
+  })
 }
 
 # Git-flow `develop` protection — the integration branch on opted-in repos.
@@ -85,40 +110,65 @@ resource "github_organization_ruleset" "org_gitflow_main" {
 # Conventional-Commits-or-merge message pattern, keeping subject quality without
 # rejecting "Merge branch ..." commits. Signatures come from the org-gitflow-base
 # ruleset.
-resource "github_organization_ruleset" "org_gitflow_develop" {
-  name        = "org-gitflow-develop"
-  target      = "branch"
-  enforcement = var.org_gitflow_develop_enforcement
+removed {
+  from = github_organization_ruleset.org_gitflow_develop
 
-  conditions {
-    ref_name {
-      include = ["refs/heads/develop"]
-      exclude = []
-    }
-    repository_property {
-      include = [{
-        name            = "gitflow"
-        property_values = ["true"]
-        source          = "custom"
-      }]
-    }
+  lifecycle {
+    destroy = false
   }
+}
 
-  rules {
-    commit_message_pattern {
-      name     = "conventional-commits-or-merge"
-      operator = "regex"
-      pattern  = local.gitflow_commit_message_pattern
-      negate   = false
-    }
+import {
+  for_each = try(local.ruleset_imports.org_gitflow_develop, null) == null ? {} : { existing = local.ruleset_imports.org_gitflow_develop }
+  to       = restapi_object.org_gitflow_develop
+  id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
+}
 
-    pull_request {
-      required_approving_review_count   = 0
-      dismiss_stale_reviews_on_push     = false
-      require_code_owner_review         = false
-      require_last_push_approval        = false
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.gitflow_defaults.develop_allowed_merge_methods
+resource "restapi_object" "org_gitflow_develop" {
+  path         = "/orgs/${var.github_owner}/rulesets"
+  id_attribute = "id"
+  # Fields GitHub adds to a ruleset response; they never appear in the request body.
+  ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
+
+  data = jsonencode({
+    name        = "org-gitflow-develop"
+    target      = "branch"
+    enforcement = var.org_gitflow_develop_enforcement
+    conditions = {
+      ref_name = {
+        include = ["refs/heads/develop"]
+        exclude = []
+      }
+      repository_property = {
+        include = [{
+          name            = "gitflow"
+          property_values = ["true"]
+          source          = "custom"
+        }]
+        exclude = []
+      }
     }
-  }
+    rules = [
+      {
+        type = "commit_message_pattern"
+        parameters = {
+          name     = "conventional-commits-or-merge"
+          operator = "regex"
+          pattern  = local.gitflow_commit_message_pattern
+          negate   = false
+        }
+      },
+      {
+        type = "pull_request"
+        parameters = merge(local.pull_request_rule_base, {
+          required_approving_review_count   = 0
+          dismiss_stale_reviews_on_push     = false
+          require_code_owner_review         = false
+          require_last_push_approval        = false
+          required_review_thread_resolution = true
+          allowed_merge_methods             = local.gitflow_defaults.develop_allowed_merge_methods
+        })
+      },
+    ]
+  })
 }

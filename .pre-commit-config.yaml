@@ -61,6 +61,13 @@ repos:
   # Local hooks using nix toolchain
   - repo: local
     hooks:
+      # The github provider cannot set require_extra_approval_for_unattributed_changes;
+      # pull_request rules live only in restapi_object rulesets.
+      - id: no-provider-pull-request-rule
+        name: no pull_request block in github provider rulesets
+        entry: '^\s*pull_request\s*\{'
+        language: pygrep
+        files: '\.tf$'
       - id: tofu-test
         name: tofu test (mock providers)
         entry: direnv exec . bash -c 'tofu init -backend=false -no-color && tofu test -no-color'
