@@ -242,17 +242,6 @@ variable "github_token_permission_set" {
   }
 }
 
-variable "config_org" {
-  description = "Org config directory under config/orgs/; empty uses files in config/; otherwise letters, digits, underscores, or hyphens."
-  type        = string
-  default     = ""
-
-  validation {
-    condition     = var.config_org == "" || can(regex("^[A-Za-z0-9_-]+$", var.config_org))
-    error_message = "config_org must be empty or contain only letters, numbers, underscores, and hyphens."
-  }
-}
-
 variable "private_repo_overrides" {
   description = "Workspace overrides keyed by repo name and shaped like repos.yml's repos map, keeping private repo names out of this public repo."
   type        = any
@@ -270,22 +259,6 @@ variable "org_automerge_manual_enforcement" {
     condition     = contains(["disabled", "evaluate", "active"], var.org_automerge_manual_enforcement)
     error_message = "org_automerge_manual_enforcement must be one of: disabled, evaluate, active."
   }
-}
-
-variable "agent_bypass_app_ids" {
-  description = <<-EOT
-    AI agent App IDs bypass manual-repo approval in addition to local.automerge_agent_app_ids; release uses GH_ACTION_RELEASE_PLEASE_APP_ID, while dependency-update apps use triage, not direct bypass.
-  EOT
-  type        = list(number)
-  default     = [2956476, 1236702, 4241562, 4952939, 1144995, 1210556, 5274352]
-}
-
-variable "triage_merge_app_ids" {
-  description = <<-EOT
-    Bot-merge App IDs for manual repos; local triage must label the PR low risk first. These apps bypass approval.
-  EOT
-  type        = list(number)
-  default     = [3923580]
 }
 
 # Hermes PR-review webhook sends pull_request events; created only when both

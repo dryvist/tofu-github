@@ -100,9 +100,9 @@ on every ref of every repo. Single source of truth: the workflow +
 `do_not_enforce_on_create` so brand-new repos don't fail before their
 default branch exists.
 
-The existing flat-config workspace (`config_org = ""`) adopts its live
-rulesets through these `import` blocks. Workspaces using per-org configuration
-skip them because those IDs belong to the existing organization:
+The existing org adopts its live rulesets through these `import` blocks. The
+IDs live in `config/orgs/<github_owner>/ruleset-imports.yml`; other orgs omit
+that optional file:
 
 - `org_branch_protection` ← the live ruleset originally named `main`
 - `markdown_lint` ← the live disabled required-workflow ruleset
@@ -128,21 +128,20 @@ release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
 main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
-config/           # shared policy defaults and the existing flat per-org config
-config/orgs/      # selected per-org config directories
+config/           # shared policy defaults and owner-scoped config
+config/orgs/      # selected by github_owner; files are optional
 ```
 
 CODEOWNERS is not committed or managed in this repo. A static
 `.github/CODEOWNERS` would bake a specific identity into the source tree.
 
-`config/` holds shared ruleset defaults and the existing flat per-org YAML
-files. Each workspace selects the organization with `github_owner`, the token
-permission set with `github_token_permission_set`, and the per-org files with
-`config_org`; defaults preserve the existing workspace. Set `config_org` to
-read per-org files from
-`config/orgs/<config_org>/`; an empty value keeps using the files directly in
-`config/`. `config/commit-message-pattern.txt` and
-`config/rulesets-defaults.yml` remain shared. The org's label set is read from
+`config/` holds shared ruleset defaults. Each workspace selects the organization
+with `github_owner` and the token permission set with
+`github_token_permission_set`; the owner also selects
+`config/orgs/<github_owner>/`. Missing per-org files mean defaults or no
+opt-in, and repository metadata comes from GitHub data sources.
+`config/commit-message-pattern.txt` and `config/rulesets-defaults.yml` remain
+shared. The org's label set is read from
 `.github/labels.yml` in that org's `.github` repository by `data.tf` and
 applied by `labels.tf`; label sets are not stored in `config/`. Canonical text
 the org doesn't author — MIT LICENSE body, CODE_OF_CONDUCT, etc. — is fetched

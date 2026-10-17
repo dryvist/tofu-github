@@ -4,13 +4,6 @@
 # they're tunable without editing Terraform code, and reviewable in a single
 # place.
 
-# Existing live rulesets adopted into state. These IDs are GitHub-assigned
-# identifiers, not policy settings; keeping them here avoids literals in HCL.
-imports:
-  org_branch_protection: "15555419"
-  markdown_lint: "17062292"
-  required_signatures: "17916554"
-
 # Consumed by github_organization_ruleset.org_push_protection. Native GitHub
 # push rules — enforced at the git layer without any workflow involvement.
 push_protection:
@@ -53,7 +46,8 @@ branch_protection:
     - rebase
 
 # Consumed by the git-flow pilot rulesets (org-gitflow-main / org-gitflow-develop
-# in rulesets.tf) for repos opted in via `gitflow: true` in config/repos.yml.
+# in rulesets-gitflow.tf) for repos opted in via `gitflow: true` in the
+# selected org's repos.yml.
 # These repos run the git-flow model: develop is the integration default branch
 # (feature PRs squash-merge in, direct pushes allowed, back-merges land merge
 # commits) and main is the release branch (no direct pushes). All merge methods
@@ -73,7 +67,7 @@ gitflow:
 
 # Consumed by github_organization_ruleset.org_upstream_fork_protection
 # (upstream-forks.tf) for repos opted in via `upstream_fork: true` in
-# config/repos.yml.
+# the selected org's repos.yml.
 upstream_fork:
   # Merge commits only: an upstream sync must keep upstream's commits as
   # ancestors, or the next sync re-applies them and conflicts. Squash or rebase

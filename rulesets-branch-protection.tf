@@ -14,7 +14,7 @@
 # into Terraform state so apply reconciles instead of creating a duplicate.
 # Only the existing flat-config workspace adopts this organization-specific ID.
 import {
-  for_each = var.config_org == "" ? { existing = local.ruleset_imports.org_branch_protection } : {}
+  for_each = try(local.ruleset_imports.org_branch_protection, null) == null ? {} : { existing = local.ruleset_imports.org_branch_protection }
   to       = github_organization_ruleset.org_branch_protection
   id       = each.value
 }
@@ -88,7 +88,7 @@ resource "github_organization_ruleset" "org_branch_protection" {
 # construction, so no sync could ever land.
 # Only the existing flat-config workspace adopts this organization-specific ID.
 import {
-  for_each = var.config_org == "" ? { existing = local.ruleset_imports.required_signatures } : {}
+  for_each = try(local.ruleset_imports.required_signatures, null) == null ? {} : { existing = local.ruleset_imports.required_signatures }
   to       = github_organization_ruleset.required_signatures
   id       = each.value
 }

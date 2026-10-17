@@ -7,7 +7,7 @@
 # to enforce.
 # Only the existing flat-config workspace adopts this organization-specific ID.
 import {
-  for_each = var.config_org == "" ? { existing = local.ruleset_imports.markdown_lint } : {}
+  for_each = try(local.ruleset_imports.markdown_lint, null) == null ? {} : { existing = local.ruleset_imports.markdown_lint }
   to       = github_organization_ruleset.markdown_lint
   id       = each.value
 }

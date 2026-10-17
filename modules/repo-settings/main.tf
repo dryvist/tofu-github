@@ -15,7 +15,7 @@ resource "github_repository" "this" {
   # checkov:skip=CKV_GIT_1: These repos are intentionally public. The org cost
   # policy (see AGENTS.md) depends on public visibility to keep secret scanning
   # free; forcing private would invert the design and incur GHAS charges. The
-  # visibility variable is validated and per-repo in config/repos.yml.
+  # visibility variable is validated and per-repo in the selected org config.
   # checkov:skip=CKV2_GIT_1: Branch protection is associated at the ORG level via
   # the github_organization_ruleset resources in ../../rulesets.tf (signed
   # commits, Conventional Commits on every repo's default

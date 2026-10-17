@@ -6,18 +6,17 @@
 - **No magic numbers in `.tf`. No specific identities in `.tf` either.**
   Numeric or string values land in `variables.tf` (with type + validation +
   description) or in shared `config/` files and the selected
-  `config/orgs/<config_org>/` files (parsed via `yamldecode(file(...))` into a
+  `config/orgs/<github_owner>/` files (parsed via `yamldecode(file(...))` into a
   local). For identifiers that GitHub already knows about — repo IDs and
   account IDs — use a `data` source in `data.tf` and reference the live value
   at apply time. The canonical example is `data.github_repository.dot_github`:
   it looks up the selected org's `.github` repo by name and exposes its
   numeric `repo_id` to org rulesets.
 - **Organization selection is workspace-scoped.** `var.github_owner` selects
-  the provider owner, and `var.github_token_permission_set` selects the
-  OpenBao token permission set. Their defaults preserve the existing
-  workspace. `var.config_org` selects `config/orgs/<config_org>/`; an empty
-  value uses the per-org files directly under `config/`. The ruleset defaults
-  and commit-message pattern remain shared.
+  both the provider owner and `config/orgs/<github_owner>/`; the
+  `github_token_permission_set` workspace input selects the OpenBao token
+  permission set. Missing files in the selected directory mean defaults or no
+  opt-in. The ruleset defaults and commit-message pattern remain shared.
 - **Keep org logins out of shared policy values.** Per-org config files may
   name repositories and their policy choices. Use `var.github_owner` or the
   provider-resolved `local.org` for organization logins wherever Terraform

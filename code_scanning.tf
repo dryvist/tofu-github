@@ -28,7 +28,7 @@
 # org configuration here by import once #3284 ships in a tagged release.
 #
 # CONSEQUENCE FOR NEW REPOS: a repo created by this config (`create: true` in
-# config/repos.yml), or made public after that bootstrap, lands WITHOUT code
+# selected per-org repos.yml), or made public after that bootstrap, lands WITHOUT code
 # scanning. repos.tf governs every unarchived org repo, so the public set is
 # larger than that original 31 (59 at the 2026-10-09 plan). Until the provider
 # ships, enabling it is a manual step — the same one-off the bootstrapped repos
@@ -52,7 +52,7 @@
 # belt — no private repo can land in the for_each.
 #
 # data "github_repositories" "public_for_codeql" {
-#   query = "org:dryvist archived:false fork:false visibility:public"
+#   query = "org:${var.github_owner} archived:false fork:false visibility:public"
 # }
 #
 # resource "github_repository_code_scanning_default_setup" "codeql" {
