@@ -19,6 +19,14 @@ resource "github_organization_ruleset" "org_merge_gate" {
   target      = "branch"
   enforcement = var.org_merge_gate_enforcement
 
+  lifecycle {
+    # Private repos reach the gate only through the private overrides; without them a plan would drop those repos.
+    precondition {
+      condition     = !local.merge_gate_requires_private_repos || length(local.private_merge_gate_entries) > 0
+      error_message = "This org's merge gates require private repo overrides, and none were supplied."
+    }
+  }
+
   conditions {
     ref_name {
       include = ["refs/heads/main", "refs/heads/develop"]
