@@ -1,4 +1,10 @@
 mock_provider "github" {
+  mock_resource "github_repository" {
+    defaults = {
+      repo_id = 1
+    }
+  }
+
   mock_data "github_repository" {
     defaults = {
       default_branch = "main"
@@ -379,6 +385,9 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_repository_custom_property.upstream_fork) == 0,
       length(restapi_object.org_upstream_fork_protection) == 0,
       length(github_actions_runner_group.homelab) == 0,
+      length(github_organization_ruleset.markdown_lint) == 0,
+      length(github_organization_ruleset.conventions) == 0,
+      length(github_organization_ruleset.ai_review) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
@@ -387,4 +396,41 @@ run "placeholder_org_disables_org_specific_extras" {
     condition     = length(module.repo_settings) == 2
     error_message = "Shared repository settings must remain enabled."
   }
+}
+
+run "required_workflow_rulesets_use_default_enforcement" {
+  command = plan
+
+  variables {
+    github_owner              = "example-org"
+    dryvist_org_extras        = true
+    automation_bypass_app_ids = [1]
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.markdown_lint) == 1 &&
+      github_organization_ruleset.markdown_lint[0].enforcement == "evaluate" &&
+      length(github_organization_ruleset.conventions) == 1 &&
+      github_organization_ruleset.conventions[0].enforcement == "evaluate" &&
+      length(github_organization_ruleset.ai_review) == 1 &&
+      github_organization_ruleset.ai_review[0].enforcement == "evaluate"
+    )
+    error_message = "Required-workflow rulesets must use their default enforcement and have one instance when enabled."
+  }
+
 }

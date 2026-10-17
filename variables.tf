@@ -1,4 +1,43 @@
 # Enforcement inputs accept disabled, evaluate, or active.
+variable "markdown_lint_enforcement" {
+  description = <<-EOT
+    Org markdown-lint enforcement. Evaluate reports in Insights without blocking; activate when the fleet is green.
+  EOT
+  type        = string
+  default     = "evaluate"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.markdown_lint_enforcement)
+    error_message = "markdown_lint_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
+variable "conventions_enforcement" {
+  description = <<-EOT
+    Org repo-conventions presence checks: LICENSE, AGENTS.md, Nix dev shell, release-please config. Evaluate reports without blocking; workflow defaults to WARN (exit 0). CONVENTIONS_STRICT repo variable opts repos into failure; activate when Insights shows the fleet is green.
+  EOT
+  type        = string
+  default     = "evaluate"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.conventions_enforcement)
+    error_message = "conventions_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
+variable "ai_review_enforcement" {
+  description = <<-EOT
+    Org-wide AI review injects .github/ai-review.yml into every repo's PRs and runs PR-Agent on the model router. Evaluate reports without gating; active waits through a router outage, then fails and blocks merges.
+  EOT
+  type        = string
+  default     = "evaluate"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.ai_review_enforcement)
+    error_message = "ai_review_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "docs_publisher_enforcement" {
   description = <<-EOT
     Documentation publisher requires its configured approval count; release and triage apps bypass PRs.
