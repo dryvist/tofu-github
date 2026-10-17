@@ -13,6 +13,7 @@ locals {
   ]
 
   rulesets_defaults = yamldecode(file("${path.module}/config/rulesets-defaults.yml"))
+  central           = yamldecode(file("${path.module}/config/central.yml"))
   ruleset_imports   = try(yamldecode(file("${local.org_config_dir}/ruleset-imports.yml")).imports, {})
   actions_defaults  = local.rulesets_defaults.actions
   repos_config      = try(yamldecode(file("${local.org_config_dir}/repos.yml")), {})

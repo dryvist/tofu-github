@@ -58,11 +58,11 @@ data "github_repository" "enumerated" {
   name     = each.value
 }
 
-# The canonical label set, read at plan time from the `.github` repo so this
+# The canonical label set, read at plan time from its central home so this
 # config carries no copy of it. labels.tf applies it to every
 # enumerated repo.
 data "github_repository_file" "labels" {
-  repository = data.github_repository.dot_github.name
-  branch     = data.github_repository.dot_github.default_branch
-  file       = ".github/labels.yml"
+  repository = local.central.labels.repository
+  branch     = local.central.labels.branch
+  file       = local.central.labels.file
 }
