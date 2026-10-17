@@ -13,10 +13,9 @@
   it looks up the selected org's `.github` repo by name and exposes its
   numeric `repo_id` to org rulesets.
 - **Organization selection is workspace-scoped.** `var.github_owner` selects
-  both the provider owner and `config/orgs/<github_owner>/`; the
-  `github_token_permission_set` workspace input selects the OpenBao token
-  permission set. Missing files in the selected directory mean defaults or no
-  opt-in. The ruleset defaults and commit-message pattern remain shared.
+  the provider owner and the optional `config/orgs/<github_owner>/` directory.
+  A missing directory or file means defaults or no opt-in. The ruleset
+  defaults and commit-message pattern remain shared.
 - **Keep org logins out of shared policy values.** Per-org config files may
   name repositories and their policy choices. Use `var.github_owner` or the
   provider-resolved `local.org` for organization logins wherever Terraform

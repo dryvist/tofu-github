@@ -192,17 +192,6 @@ variable "github_owner" {
   }
 }
 
-variable "github_token_permission_set" {
-  description = "OpenBao permission-set name for GitHub installation-token minting; one path component starting with a letter or digit, then letters, digits, underscores, or hyphens."
-  type        = string
-  default     = "dryvist-full-automation"
-
-  validation {
-    condition     = can(regex("^[A-Za-z0-9][A-Za-z0-9_-]*$", var.github_token_permission_set))
-    error_message = "github_token_permission_set must be a single path component containing letters, numbers, underscores, or hyphens."
-  }
-}
-
 variable "private_repo_overrides" {
   description = "Protected workspace map keyed by repo name with the same fields as per-org repo entries. Optional merge_gate maps are keyed by gate name and contain a context string; their repository list is derived from the outer key."
   type        = any

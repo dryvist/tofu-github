@@ -13,11 +13,11 @@ provider "vault" {
 # not a read.
 #
 # `write_fields` selects from the response, so only the token itself is
-# extracted. The permission set is installation-scoped on the OpenBao side, so
-# no installation_id is passed here.
+# extracted. OpenBao selects the installation by org name and applies the
+# installation's permissions, so no installation_id is passed here.
 ephemeral "vault_generic_endpoint" "github_token" {
-  path         = "github-admin/token/${var.github_token_permission_set}"
-  data_json    = jsonencode({})
+  path         = "github-admin/token"
+  data_json    = jsonencode({ org_name = var.github_owner })
   write_fields = ["token"]
 }
 
