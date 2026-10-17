@@ -117,6 +117,38 @@ resource "github_organization_ruleset" "required_signatures" {
   }
 }
 
+# Commit subjects on every non-default branch, so a bad subject is refused at
+# push rather than at merge. Merge messages pass (branch syncs, git-flow main);
+# default branches keep their own stricter rules above.
+resource "github_organization_ruleset" "commit_subject_branches" {
+  name        = "org-commit-subject-branches"
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["~ALL"]
+      exclude = ["~DEFAULT_BRANCH"]
+    }
+    repository_property {
+      exclude = [{
+        name            = github_organization_custom_properties.upstream_fork.property_name
+        property_values = ["true"]
+        source          = "custom"
+      }]
+    }
+  }
+
+  rules {
+    commit_message_pattern {
+      name     = "conventional-commits-or-merge"
+      operator = "regex"
+      pattern  = local.gitflow_commit_message_pattern
+      negate   = false
+    }
+  }
+}
+
 # Org-wide review gate — resolved review threads on PRs, no required approval.
 #
 # Separate ruleset (rather than rolled into org_branch_protection) so the

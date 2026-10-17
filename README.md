@@ -18,6 +18,7 @@ own configuration.
 | `github_organization_ruleset.org_push_protection` | [Push protection](#push-protection) | `rulesets-push-protection.tf` |
 | `github_organization_ruleset.org_branch_protection` | [Branch protection](#branch-protection) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) | `rulesets-branch-protection.tf` |
+| `github_organization_ruleset.commit_subject_branches` | [Branch commit subjects](#branch-commit-subjects) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
 | `github_organization_custom_properties.*` | Organization property schemas | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
@@ -55,6 +56,11 @@ bypass** — applies to everyone including org admins.
 
 Extends required signatures to every branch. Imported from the live
 org ruleset without narrowing its all-branch coverage.
+
+### Branch commit subjects
+
+Refuses a push to any non-default branch when a commit subject is not a
+Conventional Commit or a merge message. Upstream forks are excluded.
 
 ### Review gate
 
@@ -115,7 +121,7 @@ variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
-rulesets-branch-protection.tf   # org_branch_protection, required_signatures, org_review_gate + import blocks
+rulesets-branch-protection.tf   # org_branch_protection, required_signatures, commit_subject_branches, org_review_gate + import blocks
 rulesets-required-workflows.tf  # markdown_lint, conventions + import blocks
 rulesets-gitflow.tf             # org_gitflow_*
 release-freeze.tf               # org_release_freeze
