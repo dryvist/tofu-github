@@ -54,11 +54,9 @@ gitflow:
   main_allowed_merge_methods:
     - merge
 
-  # Integration branch merge methods, in the order the API returns them.
+  # Squash only into develop: one PR, one commit, subject is the PR title.
   develop_allowed_merge_methods:
-    - merge
     - squash
-    - rebase
 
 # Consumed by restapi_object.org_upstream_fork_protection
 # (upstream-forks.tf) for repos opted in via `upstream_fork: true` in
