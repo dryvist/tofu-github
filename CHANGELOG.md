@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.34.0](https://github.com/dryvist/tofu-github/compare/v1.33.0...v1.34.0) (2026-10-16)
+
+
+### Features
+
+* **rulesets:** require no approving review on any repo ([#321](https://github.com/dryvist/tofu-github/issues/321)) ([3fc7bc1](https://github.com/dryvist/tofu-github/commit/3fc7bc166ae3aff7f4a3dde43bb0b5e37469fae8))
+
 ## [1.33.0](https://github.com/dryvist/tofu-github/compare/v1.32.0...v1.33.0) (2026-10-14)
 
 
@@ -70,7 +77,6 @@ Releases are automated via release-please from Conventional Commits.
 ### Features
 
 * **automerge:** add the automerge repo property and the manual-merge ruleset ([#272](https://github.com/dryvist/tofu-github/issues/272)) ([1580304](https://github.com/dryvist/tofu-github/commit/15803046c7cb8dc3e0bbd1acad051dbd981783d7))
-* **repos:** rename docs-starlight to docs-private in place ([#265](https://github.com/dryvist/tofu-github/issues/265)) ([54d21b1](https://github.com/dryvist/tofu-github/commit/54d21b128fc4cc02f044d86fb8ee09425ed08229))
 * **rulesets:** require the Canary check on dryvist/.github ([#275](https://github.com/dryvist/tofu-github/issues/275)) ([d4bd0d8](https://github.com/dryvist/tofu-github/commit/d4bd0d8f7f8f2ffce491b8b2678b7c5c3a0fabd6))
 
 
@@ -359,7 +365,6 @@ Releases are automated via release-please from Conventional Commits.
 
 ### Features
 
-* **repos:** create ai-cli-permissions, enrol docs + docs-starlight, derive adopt-vs-create ([#80](https://github.com/dryvist/tofu-github/issues/80)) ([36177ac](https://github.com/dryvist/tofu-github/commit/36177ac78244ee5e787d9b21f1dd3465874c196a))
 
 ## [1.7.2](https://github.com/dryvist/tofu-github/compare/v1.7.1...v1.7.2) (2026-07-27)
 
@@ -461,7 +466,6 @@ Releases are automated via release-please from Conventional Commits.
 * default org-review-gate enforcement to disabled ([#26](https://github.com/dryvist/tofu-github/issues/26)) ([3c98912](https://github.com/dryvist/tofu-github/commit/3c98912a22355225a419bf652a4c479479653744))
 * **gitflow:** flip nix-home, nix-devenv, nix-claude-code, nix-pxe-bootstrap to git-flow ([#42](https://github.com/dryvist/tofu-github/issues/42)) ([e508c8d](https://github.com/dryvist/tofu-github/commit/e508c8d4377d250187470e3fa4fa0e5048e30d44))
 * **governance:** adopt live rulesets and repo rename ([#15](https://github.com/dryvist/tofu-github/issues/15)) ([527c409](https://github.com/dryvist/tofu-github/commit/527c4093a1a5fba9b84cd1fadef3aa359ccc768d))
-* **merge-gate:** require the Astro build on docs-starlight main ([#41](https://github.com/dryvist/tofu-github/issues/41)) ([211097e](https://github.com/dryvist/tofu-github/commit/211097e791b20a5857f98c95b5168049539c8a17))
 * migrate state backend to homelab Terrakube; retire AWS/terragrunt ([#23](https://github.com/dryvist/tofu-github/issues/23)) ([b5323be](https://github.com/dryvist/tofu-github/commit/b5323bed172cc570a5ebb8ef470f6ce0c6bea35c))
 * pilot git-flow enforcement for five repos ([#32](https://github.com/dryvist/tofu-github/issues/32)) ([04a17cd](https://github.com/dryvist/tofu-github/commit/04a17cd267fcd8cf1642ceddf98e50ed1eb23fbb))
 * pull Terrakube coords from OpenBao, retire per-repo sops ([#25](https://github.com/dryvist/tofu-github/issues/25)) ([99570dc](https://github.com/dryvist/tofu-github/commit/99570dcad0635e5480bafc69bd5e4805976d015e))

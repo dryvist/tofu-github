@@ -11,8 +11,8 @@
 
 locals {
   # Per-repo overrides, keyed by repo name: the committed file plus the
-  # private-repo overrides supplied by the workspace.
-  repos = merge(yamldecode(file("${path.module}/${local.org_config_dir}/repos.yml")).repos, var.private_repo_overrides)
+  # private-repo overrides read from OpenBao.
+  repos = merge(try(local.repos_config.repos, {}), local.private_repo_overrides)
 
   # Previous names of renamed repos (`renamed_from` in the selected per-org
   # repos.yml), kept out of the enumeration so the old live name never gets its
@@ -26,7 +26,10 @@ locals {
   # merged over it. Enumerated repos inherit their live description, topics
   # and visibility (so nothing is blanked) and derive git-flow from their
   # default branch (so no develop branch is cut on a trunk repo).
+  # The org defaults repo is always governed, so an org without one gets it created.
   managed_repos = merge({
+    ".github" = { visibility = "public", description = "Organization defaults", topics = [], gitflow = false }
+    }, {
     for name, repo in data.github_repository.enumerated : name => {
       visibility  = repo.visibility
       description = repo.description

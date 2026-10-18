@@ -18,7 +18,7 @@ resource "github_organization_custom_properties" "upstream_fork" {
 }
 
 resource "github_repository_custom_property" "upstream_fork" {
-  for_each = toset(local.upstream_fork_repos)
+  for_each = var.dryvist_org_extras ? toset(local.upstream_fork_repos) : toset([])
 
   repository     = each.value
   property_name  = github_organization_custom_properties.upstream_fork.property_name
@@ -26,43 +26,74 @@ resource "github_repository_custom_property" "upstream_fork" {
   property_value = ["true"]
 }
 
-resource "github_organization_ruleset" "org_upstream_fork_protection" {
-  name        = "org-upstream-fork-protection"
-  target      = "branch"
-  enforcement = var.org_upstream_fork_protection_enforcement
+removed {
+  from = github_organization_ruleset.org_upstream_fork_protection
 
-  conditions {
-    ref_name {
-      include = ["~DEFAULT_BRANCH"]
-      exclude = []
-    }
-    repository_property {
-      include = [{
-        name            = github_organization_custom_properties.upstream_fork.property_name
-        property_values = ["true"]
-        source          = "custom"
-      }]
-    }
+  lifecycle {
+    destroy = false
   }
+}
 
-  rules {
-    deletion         = true
-    non_fast_forward = true
+import {
+  for_each = !var.dryvist_org_extras || try(local.ruleset_imports.org_upstream_fork_protection, null) == null ? {} : { existing = local.ruleset_imports.org_upstream_fork_protection }
+  to       = restapi_object.org_upstream_fork_protection[0]
+  id       = "/orgs/${var.github_owner}/rulesets/${each.value}"
+}
 
-    branch_name_pattern {
-      operator = local.branch_protection_defaults.branch_name_operator
-      pattern  = local.branch_protection_defaults.branch_name_pattern
-      negate   = false
-      name     = ""
+resource "restapi_object" "org_upstream_fork_protection" {
+  count        = var.dryvist_org_extras ? 1 : 0
+  path         = "/orgs/${var.github_owner}/rulesets"
+  id_attribute = "id"
+  # Fields GitHub adds to a ruleset response; they never appear in the request body.
+  ignore_changes_to = ["_links", "created_at", "id", "node_id", "source", "source_type", "updated_at"]
+
+  data = jsonencode({
+    name          = "org-upstream-fork-protection"
+    target        = "branch"
+    enforcement   = var.org_upstream_fork_protection_enforcement
+    bypass_actors = []
+    conditions = {
+      ref_name = {
+        include = ["~DEFAULT_BRANCH"]
+        exclude = []
+      }
+      repository_property = {
+        include = [{
+          name            = github_organization_custom_properties.upstream_fork.property_name
+          property_values = ["true"]
+          source          = "custom"
+        }]
+        exclude = []
+      }
     }
+    rules = [
+      { type = "deletion" },
+      {
+        type = "pull_request"
+        parameters = merge(local.pull_request_rule_base, {
+          required_approving_review_count   = 0
+          dismiss_stale_reviews_on_push     = false
+          require_code_owner_review         = false
+          require_last_push_approval        = false
+          required_review_thread_resolution = true
+          allowed_merge_methods             = local.upstream_fork_defaults.allowed_merge_methods
+        })
+      },
+      { type = "non_fast_forward" },
+      {
+        type = "branch_name_pattern"
+        parameters = {
+          operator = local.branch_protection_defaults.branch_name_operator
+          pattern  = local.branch_protection_defaults.branch_name_pattern
+          negate   = false
+          name     = ""
+        }
+      },
+    ]
+  })
+}
 
-    pull_request {
-      required_approving_review_count   = 0
-      dismiss_stale_reviews_on_push     = false
-      require_code_owner_review         = false
-      require_last_push_approval        = false
-      required_review_thread_resolution = true
-      allowed_merge_methods             = local.upstream_fork_defaults.allowed_merge_methods
-    }
-  }
+moved {
+  from = restapi_object.org_upstream_fork_protection
+  to   = restapi_object.org_upstream_fork_protection[0]
 }

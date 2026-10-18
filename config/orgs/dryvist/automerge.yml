@@ -4,7 +4,15 @@
 #   prefixes: a repo whose name starts with one of these is manual.
 #   repos:    exact repo names that are manual.
 manual:
-  prefixes:
-    - ansible-
-  repos:
-    - nix-ai
+  prefixes: []
+  repos: []
+agent_bypass_app_ids:
+  - 2956476
+  - 1236702
+  - 4241562
+  - 4952939
+  - 1144995
+  - 1210556
+  - 5274352
+triage_merge_app_ids:
+  - 3923580

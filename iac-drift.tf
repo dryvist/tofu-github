@@ -12,7 +12,7 @@ locals {
 }
 
 resource "github_actions_variable" "iac_drift_enabled" {
-  for_each = local.iac_drift_repos
+  for_each = var.dryvist_org_extras ? local.iac_drift_repos : {}
 
   repository    = each.key
   variable_name = "IAC_DRIFT_ENABLED"

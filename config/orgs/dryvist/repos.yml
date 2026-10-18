@@ -277,13 +277,30 @@ repos:
     topics: []
     archived: true
 
+  # Archived: superseded by JacobPEvans/.github-ai.
+  ai-workflows:
+    visibility: public
+    description: "Reusable AI agent workflows that run 24/7 — issue triage, code cleanup, multi-repo orchestration. Import-ready for GitHub Copilot Agentic Workflows."
+    topics:
+      - agentic-workflows
+      - ai-agents
+      - ai-automation
+      - automation
+      - code-quality
+      - devops
+      - github-actions
+      - github-copilot
+      - issue-management
+      - workflow-automation
+    archived: true
+
   # This config, governing itself. Enrolled and opted into git-flow in one
   # step, which is safe here only because the pieces line up:
   #   - No `develop` branch exists yet, so gitflow.tf CREATES it from main and
   #     needs no one-shot import block (unlike llm-prompt-evals, which arrived
   #     already running git-flow out of band).
   #   - release-please keeps working across the default-branch flip: the
-  #     shared dryvist/.github/_release-please.yml this repo already calls
+  #     shared JacobPEvans/.github/_release-please.yml this repo already calls
   #     hardcodes `target-branch: main`, so the release PR keeps targeting main
   #     rather than following the default branch to develop.
   #   - Topics were empty on GitHub, so this sets them rather than blanking.
@@ -317,23 +334,6 @@ repos:
       - mintlify
       - nix
       - technical-writing
-
-  # The first PRIVATE entry in this inventory. Two consequences worth knowing
-  # before adding more:
-  #   - visibility: private makes modules/repo-settings SKIP the
-  #     security_and_analysis block entirely, so no paid GitHub Advanced
-  #     Security feature is ever enabled by an apply. Cost impact: $0.
-  #   - this file lives in a PUBLIC repo, so the name and description below
-  #     are public permanently. Description is reproduced verbatim from the
-  #     live repo so an apply shows no diff. Enrolled deliberately.
-  # Default branch is main; not git-flow. renamed_from: the repo's previous
-  # name, dropped from enumeration so the rename is one in-place update.
-  docs-private:
-    renamed_from: docs-starlight
-    visibility: private
-    allow_update_branch: true
-    description: "Private companion docs for the dryvist homelab. Built with Starlight (Astro), deployed to Cloudflare Pages, gated by Cloudflare Access on /d/*."
-    topics: []
 
   # Does not exist on GitHub yet, so this entry creates it. Deliberately NOT
   # git-flow: a policy dataset has no release train to stage, so a single

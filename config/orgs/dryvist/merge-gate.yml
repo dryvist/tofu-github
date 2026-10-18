@@ -6,38 +6,24 @@
 # caller shape:
 #
 #   gate:  `gate / Merge Gate` — the canonical thin caller (`jobs: gate:`
-#          calling dryvist/.github `_ci-gate.yml`). All new adopters land here.
+#          calling JacobPEvans/.github `_ci-gate.yml`). All new adopters land here.
 #   bare:  `Merge Gate` — the older inline ci-gate.yml pattern, where the
 #          alls-green summary job is a top-level job. These repos migrate to
 #          the thin caller over time; move each to `gate` when it does.
 #
 # A repo whose required check is NOT the org Merge Gate gets its own bucket:
 #
-#   astro-build: `Build & deploy` — docs-private's bespoke Astro build
-#                (ci.yml `build` job). It is a top-level job, so it reports a
-#                bare job-name context with no workflow prefix — same shape as
-#                `bare` above, NOT `CI / Build & deploy` (that prefix form only
-#                appears when a job CALLS a reusable workflow). Required so a
-#                red build can no longer auto-merge (incident: #130).
-#   canary:      `Canary` — dryvist/.github's caller-contract canary summary
-#                (canary.yml `canary-summary` job). It reports on every PR and
-#                passes with a notice on Markdown-only changes.
-#   flake-lock-fresh: `Flake Lock Fresh / Flake inputs at branch head` — repos
-#                without the org Merge Gate that call dryvist/.github
-#                `_flake-lock-fresh.yml` from a `fresh` job (workflow name
-#                `Flake Lock Fresh`), so the context carries that prefix.
-#
 # Adding a repo to a list REQUIRES its check context to be live on every PR
 # first — a required check that never reports blocks every PR in the repo.
-# Verify with a recent PR's check-run names before editing. Org rulesets apply
-# to dryvist private repos too — docs-private is the first private entry
-# (astro-build); the paid-feature gate is on secret scanning / push
-# protection, not on required-check rulesets. The rule targets main AND
+# Verify with a recent PR's check-run names before editing. The rule targets
+# main AND
 # develop: every git-flow repo's gate workflow triggers on `pull_request`
 # without a base filter, so the same context reports on develop PRs, and
 # develop already requires a PR (org-gitflow-develop), so nothing that reached
 # it by direct push is lost.
 merge_gate:
+  # Private repos join these gates from the private overrides; a plan without them fails.
+  requires_private_repos: true
   contexts:
     gate:
       context: "gate / Merge Gate"
@@ -53,25 +39,19 @@ merge_gate:
         - claude-code-best-practice
         - claude-code-plugins
         - claude-code-routines
-        - cribl-migration
         - docs
-        - docs-private
         - grafana-dashboards
         - homelab-contracts
         - iac-platform
-        - int_homelab
         - nix-ai-open-harness
         - nix-claude-code
         - nix-devenv
         - nix-hermes
-        - nix-mac-performance
         - nix-pi
         - nix-pxe-bootstrap
-        - nix-screenpipe
         - nixos-ai
         - python-template
         - raycast-smart-issue
-        - splunk-app-2-cribl-pack
         - tofu-aws-templates
         - tofu-splunk-aws
         - tofu-unifi
@@ -82,7 +62,6 @@ merge_gate:
         - ansible-proxmox
         - ansible-proxmox-ai
         - ansible-proxmox-apps
-        - ansible-servarr
         - ansible-splunk
         - mlx-benchmarks
         - nix-ai
@@ -91,19 +70,6 @@ merge_gate:
         - tofu-github
         - tofu-proxmox
         - tofu-runs-on
-    astro-build:
-      context: "Build & deploy"
-      repos:
-        - docs-private
-    canary:
-      context: "Canary"
-      repos:
-        - .github
-    flake-lock-fresh:
-      context: "Flake Lock Fresh / Flake inputs at branch head"
-      repos:
-        - iac-enforcer
-        - nix-darwin-host
     docs-secret-scan:
       context: "gitleaks (redacted)"
       repos:

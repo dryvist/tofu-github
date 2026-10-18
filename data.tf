@@ -1,21 +1,15 @@
-# Resolve the numeric repository ID of the org's `.github` repo at apply
-# time, so org rulesets that reference workflows living in it never carry
-# a literal ID. The provider's `owner` setting determines the org; this
-# data source just names the repo.
-data "github_repository" "dot_github" {
-  name = ".github"
-}
-
 # Every unarchived repo in the org, public and private, forks included,
 # resolved at plan time. The single org enumeration: repos.tf brings each one
 # under module.repo_settings and labels.tf applies the org label set to each.
-#
-# The org login is not written here: it is split back out of the `.github`
-# repo's full_name, which the provider's own `owner` setting determines. Same
-# reasoning as the data source above — reference the live value, never a
-# literal identity.
 data "github_repositories" "org" {
   query = "org:${local.org} fork:true archived:false"
+}
+
+# Private repo metadata is read only for orgs whose merge-gate config requires it.
+data "vault_kv_secret_v2" "private_repo_overrides" {
+  count = local.merge_gate_requires_private_repos ? 1 : 0
+  mount = "secret"
+  name  = "infrastructure/tofu-github/private-overrides"
 }
 
 # Read the release automation App ID from the org Actions variable so rulesets
@@ -58,11 +52,11 @@ data "github_repository" "enumerated" {
   name     = each.value
 }
 
-# The canonical label set, read at plan time from the `.github` repo so this
+# The canonical label set, read at plan time from its central home so this
 # config carries no copy of it. labels.tf applies it to every
 # enumerated repo.
 data "github_repository_file" "labels" {
-  repository = data.github_repository.dot_github.name
-  branch     = data.github_repository.dot_github.default_branch
-  file       = ".github/labels.yml"
+  repository = local.central.labels.repository
+  branch     = local.central.labels.branch
+  file       = local.central.labels.file
 }

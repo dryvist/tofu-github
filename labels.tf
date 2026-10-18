@@ -1,7 +1,7 @@
 # The org-wide label set, applied to every unarchived repo.
 #
-# The single definition is `.github/labels.yml` in the org's `.github` repo
-# (data.github_repository_file.labels). Repos are enumerated at plan time
+# The single definition is the central label file named in config/central.yml
+# (data.github_repository_file.labels), shared by every org. Repos are enumerated at plan time
 # (data.github_repositories.org), so no repo name is written here and a
 # new repo is covered on the next apply.
 #

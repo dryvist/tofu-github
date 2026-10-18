@@ -3,6 +3,7 @@
 # The shared status workflow posts `release-freeze`; evaluate mode reports the
 # requirement without blocking merges until every git-flow repo calls it.
 resource "github_organization_ruleset" "org_release_freeze" {
+  count       = var.dryvist_org_extras ? 1 : 0
   name        = "org-release-freeze"
   target      = "branch"
   enforcement = var.org_release_freeze_enforcement
@@ -31,4 +32,9 @@ resource "github_organization_ruleset" "org_release_freeze" {
       }
     }
   }
+}
+
+moved {
+  from = github_organization_ruleset.org_release_freeze
+  to   = github_organization_ruleset.org_release_freeze[0]
 }

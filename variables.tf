@@ -40,7 +40,7 @@ variable "ai_review_enforcement" {
 
 variable "docs_publisher_enforcement" {
   description = <<-EOT
-    Public-docs publisher requires the org provenance workflow and configured approval count; release and triage apps bypass PRs.
+    Documentation publisher requires its configured approval count; release and triage apps bypass PRs.
   EOT
   type        = string
   default     = "active"
@@ -118,7 +118,7 @@ variable "org_gitflow_main_enforcement" {
 
 variable "org_gitflow_develop_enforcement" {
   description = <<-EOT
-    Git-flow develop applies only to local.gitflow_repos: PRs (no direct pushes), squash/merge/rebase. Its only rule is the Conventional-Commits-or-merge message pattern, so main back-merges and conventional feature-squash subjects pass; signatures are enforced by org-gitflow-base and org-wide rulesets.
+    Git-flow develop applies only to local.gitflow_repos: PRs (no direct pushes), merge methods from config/rulesets-defaults.yml. Its only rule is the Conventional-Commits-or-merge message pattern, so main back-merges and conventional feature-squash subjects pass; signatures are enforced by org-gitflow-base and org-wide rulesets.
   EOT
   type        = string
   default     = "active"
@@ -231,32 +231,10 @@ variable "github_owner" {
   }
 }
 
-variable "github_token_permission_set" {
-  description = "OpenBao permission-set name for GitHub installation-token minting; one path component starting with a letter or digit, then letters, digits, underscores, or hyphens."
-  type        = string
-  default     = "dryvist-full-automation"
-
-  validation {
-    condition     = can(regex("^[A-Za-z0-9][A-Za-z0-9_-]*$", var.github_token_permission_set))
-    error_message = "github_token_permission_set must be a single path component containing letters, numbers, underscores, or hyphens."
-  }
-}
-
-variable "config_org" {
-  description = "Org config directory under config/orgs/; empty uses files in config/; otherwise letters, digits, underscores, or hyphens."
-  type        = string
-  default     = ""
-
-  validation {
-    condition     = var.config_org == "" || can(regex("^[A-Za-z0-9_-]+$", var.config_org))
-    error_message = "config_org must be empty or contain only letters, numbers, underscores, and hyphens."
-  }
-}
-
-variable "private_repo_overrides" {
-  description = "Workspace overrides keyed by repo name and shaped like repos.yml's repos map, keeping private repo names out of this public repo."
-  type        = any
-  default     = {}
+variable "dryvist_org_extras" {
+  description = "Enable organization-specific opt-in policies."
+  type        = bool
+  default     = true
 }
 
 variable "org_automerge_manual_enforcement" {
@@ -270,22 +248,6 @@ variable "org_automerge_manual_enforcement" {
     condition     = contains(["disabled", "evaluate", "active"], var.org_automerge_manual_enforcement)
     error_message = "org_automerge_manual_enforcement must be one of: disabled, evaluate, active."
   }
-}
-
-variable "agent_bypass_app_ids" {
-  description = <<-EOT
-    AI agent App IDs bypass manual-repo approval in addition to local.automerge_agent_app_ids; release uses GH_ACTION_RELEASE_PLEASE_APP_ID, while dependency-update apps use triage, not direct bypass.
-  EOT
-  type        = list(number)
-  default     = [2956476, 1236702, 4241562, 4952939, 1144995, 1210556, 5274352]
-}
-
-variable "triage_merge_app_ids" {
-  description = <<-EOT
-    Bot-merge App IDs for manual repos; local triage must label the PR low risk first. These apps bypass approval.
-  EOT
-  type        = list(number)
-  default     = [3923580]
 }
 
 # Hermes PR-review webhook sends pull_request events; created only when both

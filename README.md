@@ -6,37 +6,41 @@ state and per-org configuration.
 
 ## Why this exists
 
-Organization-level rulesets, required workflows, repository settings, and
-labels apply common policy across an organization's repositories. This root
-defines that policy once, and each workspace selects one organization and its
-own configuration.
+Organization-level rulesets, repository settings, and labels apply common
+policy across an organization's repositories. This root defines that policy
+once, and each workspace selects one organization and its own configuration.
 
 ## What it manages today
 
 | Resource | Effect | Source |
 | --- | --- | --- |
 | `github_organization_ruleset.org_push_protection` | [Push protection](#push-protection) | `rulesets-push-protection.tf` |
-| `github_organization_ruleset.org_branch_protection` | [Branch protection](#branch-protection) | `rulesets-branch-protection.tf` |
+| `restapi_object.org_branch_protection` | [Branch protection](#branch-protection) | `rulesets-branch-protection.tf` |
 | `github_organization_ruleset.required_signatures` | [Required signatures](#required-signatures) | `rulesets-branch-protection.tf` |
-| `github_organization_ruleset.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
-| `github_organization_ruleset.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
+| `github_organization_ruleset.commit_subject_branches` | [Branch commit subjects](#branch-commit-subjects) | `rulesets-branch-protection.tf` |
+| `restapi_object.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
+| `restapi_object.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
 | `github_organization_custom_properties.*` | Organization property schemas | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
 | `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
-| `github_organization_ruleset.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
+| `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
-| `github_organization_ruleset.markdown_lint` | [Markdown lint](#markdown-lint) | `rulesets-required-workflows.tf` |
-| `github_organization_ruleset.conventions` | Repo-conventions required workflow | `rulesets-required-workflows.tf` |
-| `github_organization_ruleset.ai_review` | AI-review required workflow | `rulesets-required-workflows.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
-| `github_organization_ruleset.org_gitflow_*` | Git-flow branch rulesets | `rulesets-gitflow.tf` |
-| `github_organization_ruleset.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
+| `github_organization_ruleset.org_gitflow_base` | Git-flow base branch ruleset | `rulesets-gitflow.tf` |
+| `restapi_object.org_gitflow_main` | Git-flow main branch ruleset | `rulesets-gitflow.tf` |
+| `restapi_object.org_gitflow_develop` | Git-flow develop branch ruleset | `rulesets-gitflow.tf` |
+| `restapi_object.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
 | `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
+| `github_actions_organization_permissions.org` | Allowed Actions and SHA policy | `actions.tf` |
+| `github_actions_organization_workflow_permissions.org` | Default `GITHUB_TOKEN` permissions | `actions.tf` |
 | `module.repo_settings` | Repository settings | `repos.tf`, `modules/repo-settings/main.tf` |
 | `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
-| `github_actions_runner_group.homelab` | Private-repository runner group | `runner-groups.tf` |
+| `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
+| `github_actions_runner_group.pr_agent` | PR-Agent workflow runner role | `runner-groups.tf` |
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
+
+Pull-request rulesets use the REST provider because the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
 
 ### Push protection
 
@@ -56,25 +60,39 @@ bypass** — applies to everyone including org admins.
 Extends required signatures to every branch. Imported from the live
 org ruleset without narrowing its all-branch coverage.
 
+### Branch commit subjects
+
+Refuses a push to any non-default branch when a commit subject is not a
+Conventional Commit or a merge message. Upstream forks are excluded.
+
 ### Review gate
 
-Review gate on every default branch: 1 approving review + CODEOWNER
-review on PRs. OrganizationAdmin and the release automation app bypass review
-in `pull_request` mode; other bots and contributors must obtain the review.
+Review gate on every default branch: resolved review threads on PRs, with no
+required approving or CODEOWNER review. Disabled by default.
+
+### Actions permissions
+
+All repositories and Actions are allowed. SHA pinning is not required so
+first-party references can use floating major-version tags. Workflow tokens
+default to read-only, and workflows cannot approve pull requests.
+
+### Runner groups
+
+The homelab runner role cannot use public repositories. The PR-Agent runner
+role allows public repositories and is limited to the shared PR-Agent workflow.
+It is created for every owner by default; an owner's `runner-groups.yml` can
+set `self_hosted_runners: false` to disable it.
 
 ### Manual-repo approval
 
-Requires one approving review on main and develop for repos with the
-`automerge: manual` property. OrganizationAdmin, configured agent apps, the
-release automation app from `GH_ACTION_RELEASE_PLEASE_APP_ID`, and configured
-triage apps bypass the review on pull requests. Required status checks still
-apply.
+Applies to repos with the `automerge: manual` property, and requires no
+approving review. Required status checks are the only merge gate.
 
 ### Documentation publisher
 
-Requires the org provenance workflow and the configured approval count for
-projected public documentation pull requests. The release automation and
-configured triage apps bypass review in `pull_request` mode.
+Requires the configured approval count for documentation pull requests. The
+release automation and configured triage apps bypass review in
+`pull_request` mode.
 
 ### Release freeze
 
@@ -90,62 +108,62 @@ can open and merge pull requests into `main` but cannot push or create
 any other branch. The list is a required workspace variable with no
 default.
 
-### Markdown lint
-
-Requires the markdownlint workflow in the org's `.github` repo to pass
-on every ref of every repo. Single source of truth: the workflow +
-`.markdownlint-cli2.yaml` both live in `.github`.
-`do_not_enforce_on_create` so brand-new repos don't fail before their
-default branch exists.
-
-The existing flat-config workspace (`config_org = ""`) adopts its live
-rulesets through these `import` blocks. Workspaces using per-org configuration
-skip them because those IDs belong to the existing organization:
+The existing org adopts its live rulesets through these `import` blocks. The
+IDs live in `config/orgs/<github_owner>/ruleset-imports.yml`; other orgs omit
+that optional file:
 
 - `org_branch_protection` ← the live ruleset originally named `main`
-- `markdown_lint` ← the live disabled required-workflow ruleset
+- `org_review_gate` ← the live org review gate
+- `org_gitflow_main` ← the live git-flow main ruleset
+- `org_gitflow_develop` ← the live git-flow develop ruleset
+- `org_automerge_manual` ← the live manual-repository ruleset
+- `docs_publisher` ← the live documentation-publisher ruleset
+- `org_upstream_fork_protection` ← the live upstream-fork ruleset
 - `required_signatures` ← the live all-branch signature ruleset
 
 Org Actions variables and secrets are configured in the secret manager and
 synced to GitHub; this root does not manage them (`ai-variables.tf`). CodeQL
-default setup is not an active Terraform resource here; see `code_scanning.tf`.
+default setup on the org's public repos is managed in `code_scanning.tf`.
 
 ## Layout
 
 ```text
 versions.tf       # tofu + provider pins, Terrakube cloud backend
-providers.tf      # github provider, token minted per run (ephemeral)
+providers.tf      # github + REST providers, token minted per run (ephemeral)
 variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
-rulesets-branch-protection.tf   # org_branch_protection, required_signatures, org_review_gate + import blocks
-rulesets-required-workflows.tf  # markdown_lint, conventions + import blocks
-rulesets-gitflow.tf             # org_gitflow_*
+rulesets-branch-protection.tf   # org_branch_protection, required_signatures, commit_subject_branches, org_review_gate + import blocks
+rulesets-gitflow.tf             # org_gitflow_base, org_gitflow_main, org_gitflow_develop
 release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
 main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
-config/           # shared policy defaults and the existing flat per-org config
-config/orgs/      # selected per-org config directories
+config/           # shared policy defaults and owner-scoped config
+config/orgs/      # selected by github_owner; files are optional
 ```
 
 CODEOWNERS is not committed or managed in this repo. A static
 `.github/CODEOWNERS` would bake a specific identity into the source tree.
 
-`config/` holds shared ruleset defaults and the existing flat per-org YAML
-files. Each workspace selects the organization with `github_owner`, the token
-permission set with `github_token_permission_set`, and the per-org files with
-`config_org`; defaults preserve the existing workspace. Set `config_org` to
-read per-org files from
-`config/orgs/<config_org>/`; an empty value keeps using the files directly in
-`config/`. `config/commit-message-pattern.txt` and
-`config/rulesets-defaults.yml` remain shared. The org's label set is read from
-`.github/labels.yml` in that org's `.github` repository by `data.tf` and
+`config/` holds shared ruleset defaults. Each workspace selects its organization
+through `github_owner`, which also selects `config/orgs/<github_owner>/` when
+present. A missing org directory or config file means defaults or no opt-in,
+and repository metadata comes from GitHub data sources.
+`config/commit-message-pattern.txt` and `config/rulesets-defaults.yml` remain
+shared. The label set is read from
+the central label file named in `config/central.yml` by `data.tf` and
 applied by `labels.tf`; label sets are not stored in `config/`. Canonical text
 the org doesn't author — MIT LICENSE body, CODE_OF_CONDUCT, etc. — is fetched
 at apply time from a trustworthy upstream via `data "http"`, not committed as
 a local template.
+
+`private_repo_overrides` is read from the protected OpenBao KV v2 document at
+`secret/infrastructure/tofu-github/private-overrides` for orgs whose merge-gate config
+requires private repos. Its optional `merge_gate` map carries required-check
+contexts for those repositories; the repo list is derived from each outer repo
+key.
 
 ## Installation
 
@@ -198,18 +216,8 @@ Validation only (no backend, no credentials):
 tofu init -backend=false && tofu validate
 ```
 
-**Rolling out a rule safely.** Org-wide enforcement can block merges everywhere
-at once. For `markdown_lint_enforcement` (legacy default `evaluate`), use the
-dry-run gate before enforcing:
-
-```bash
-tofu apply                                          # evaluate (legacy default)
-tofu apply -var markdown_lint_enforcement=active    # enforce
-```
-
-**New rulesets default to `active`.** The `evaluate` dry-run gate above is
-specific to `markdown_lint_enforcement`'s legacy default. Rulesets added going
-forward — push protection, branch protection, commit format, etc. — default
+**New rulesets default to `active`.** Rulesets added going forward — push
+protection, branch protection, commit format, etc. — default
 their `<name>_enforcement` variable to `"active"` and are applied enabled
 directly. The variable still exists so a misbehaving rule can be disabled with
 `-var <name>_enforcement=disabled` without a code change.

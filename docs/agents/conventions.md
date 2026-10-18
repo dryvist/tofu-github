@@ -6,18 +6,16 @@
 - **No magic numbers in `.tf`. No specific identities in `.tf` either.**
   Numeric or string values land in `variables.tf` (with type + validation +
   description) or in shared `config/` files and the selected
-  `config/orgs/<config_org>/` files (parsed via `yamldecode(file(...))` into a
+  `config/orgs/<github_owner>/` files (parsed via `yamldecode(file(...))` into a
   local). For identifiers that GitHub already knows about — repo IDs and
   account IDs — use a `data` source in `data.tf` and reference the live value
-  at apply time. The canonical example is `data.github_repository.dot_github`:
-  it looks up the selected org's `.github` repo by name and exposes its
-  numeric `repo_id` to org rulesets.
+  at apply time. The canonical example is
+  `data.github_actions_organization_variables.org`: it reads the release App
+  ID from the org instead of writing it down.
 - **Organization selection is workspace-scoped.** `var.github_owner` selects
-  the provider owner, and `var.github_token_permission_set` selects the
-  OpenBao token permission set. Their defaults preserve the existing
-  workspace. `var.config_org` selects `config/orgs/<config_org>/`; an empty
-  value uses the per-org files directly under `config/`. The ruleset defaults
-  and commit-message pattern remain shared.
+  the provider owner and the optional `config/orgs/<github_owner>/` directory.
+  A missing directory or file means defaults or no opt-in. The ruleset
+  defaults and commit-message pattern remain shared.
 - **Keep org logins out of shared policy values.** Per-org config files may
   name repositories and their policy choices. Use `var.github_owner` or the
   provider-resolved `local.org` for organization logins wherever Terraform
@@ -34,14 +32,12 @@
   Account identities that must materialize at apply time, such as CODEOWNERS
   entries, come from an operator-supplied Terraform variable, not a hardcoded
   value. The same root must work for each workspace-selected org.
-- **No local markdownlint config.** This repo *defines* the org-wide
-  markdownlint ruleset (`github_organization_ruleset.markdown_lint`), whose
-  single source of truth is the workflow + `.markdownlint-cli2.yaml` in the
-  org's `.github` repo. Adding a local `.markdownlint*` file here would create the
-  exact per-repo drift this repo exists to eliminate — never add one.
+- **No local markdownlint config.** Enterprise rulesets own required-workflow
+  policy. Keep markdownlint's workflow and `.markdownlint-cli2.yaml` in the
+  org's `.github` repo; never add a local `.markdownlint*` file here.
 - **`terraform_docs` is intentionally omitted** from `.pre-commit-config.yaml`:
   it injects HTML-anchored tables into the README that trip the org markdownlint
-  ruleset this repo itself defines (MD033).
+  ruleset (MD033).
 - Conventional commits: `type(scope): description`.
 - All commits must be GPG-signed (signing key varies per machine; see local
   `git config user.signingkey`).

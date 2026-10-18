@@ -1,18 +1,12 @@
 # Org-wide markdown linting, enforced as a Required Workflow.
 #
-# Adopts the existing disabled live ruleset so apply reconciles instead of
-# creating a duplicate. `do_not_enforce_on_create` keeps brand-new repos from
-# being blocked before their default branch exists. Enforcement defaults to
+# The moved block below keeps the adopted live ruleset at its indexed
+# address. `do_not_enforce_on_create` keeps brand-new repos from being
+# blocked before their default branch exists. Enforcement defaults to
 # the legacy `evaluate` posture; pass `-var markdown_lint_enforcement=active`
 # to enforce.
-# Only the existing flat-config workspace adopts this organization-specific ID.
-import {
-  for_each = var.config_org == "" ? { existing = local.ruleset_imports.markdown_lint } : {}
-  to       = github_organization_ruleset.markdown_lint
-  id       = each.value
-}
-
 resource "github_organization_ruleset" "markdown_lint" {
+  count       = var.dryvist_org_extras ? 1 : 0
   name        = "org-markdown-lint"
   target      = "branch"
   enforcement = var.markdown_lint_enforcement
@@ -33,7 +27,7 @@ resource "github_organization_ruleset" "markdown_lint" {
       do_not_enforce_on_create = true
 
       required_workflow {
-        repository_id = data.github_repository.dot_github.repo_id
+        repository_id = module.repo_settings[".github"].repo_id
         path          = ".github/workflows/markdownlint.yml"
         ref           = "refs/heads/main"
       }
@@ -44,6 +38,11 @@ resource "github_organization_ruleset" "markdown_lint" {
     actor_type  = "OrganizationAdmin"
     bypass_mode = "pull_request"
   }
+}
+
+moved {
+  from = github_organization_ruleset.markdown_lint
+  to   = github_organization_ruleset.markdown_lint[0]
 }
 
 # Org-wide repo-conventions presence check, enforced as a Required Workflow.
@@ -62,6 +61,7 @@ resource "github_organization_ruleset" "markdown_lint" {
 # their default branch exists. Enforce with:
 # `tofu apply -var conventions_enforcement=active`.
 resource "github_organization_ruleset" "conventions" {
+  count       = var.dryvist_org_extras ? 1 : 0
   name        = "org-conventions"
   target      = "branch"
   enforcement = var.conventions_enforcement
@@ -82,7 +82,7 @@ resource "github_organization_ruleset" "conventions" {
       do_not_enforce_on_create = true
 
       required_workflow {
-        repository_id = data.github_repository.dot_github.repo_id
+        repository_id = module.repo_settings[".github"].repo_id
         path          = ".github/workflows/conventions-check.yml"
         ref           = "refs/heads/main"
       }
@@ -93,6 +93,11 @@ resource "github_organization_ruleset" "conventions" {
     actor_type  = "OrganizationAdmin"
     bypass_mode = "pull_request"
   }
+}
+
+moved {
+  from = github_organization_ruleset.conventions
+  to   = github_organization_ruleset.conventions[0]
 }
 
 # Org-wide AI review, enforced as a Required Workflow.
@@ -110,6 +115,7 @@ resource "github_organization_ruleset" "conventions" {
 # required status check on its target refs, so `~ALL` here would reject every
 # push to an existing feature branch as "Required workflow not satisfied".
 resource "github_organization_ruleset" "ai_review" {
+  count       = var.dryvist_org_extras ? 1 : 0
   name        = "org-ai-review"
   target      = "branch"
   enforcement = var.ai_review_enforcement
@@ -130,7 +136,7 @@ resource "github_organization_ruleset" "ai_review" {
       do_not_enforce_on_create = true
 
       required_workflow {
-        repository_id = data.github_repository.dot_github.repo_id
+        repository_id = module.repo_settings[".github"].repo_id
         path          = ".github/workflows/ai-review.yml"
         ref           = "refs/heads/main"
       }
@@ -141,4 +147,9 @@ resource "github_organization_ruleset" "ai_review" {
     actor_type  = "OrganizationAdmin"
     bypass_mode = "pull_request"
   }
+}
+
+moved {
+  from = github_organization_ruleset.ai_review
+  to   = github_organization_ruleset.ai_review[0]
 }
