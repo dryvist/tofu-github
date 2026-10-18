@@ -35,12 +35,10 @@ branch_protection:
   # config/commit-message-pattern.txt (see locals.tf) so local commit-msg
   # hooks can read the same single copy.
 
-  # Merge methods allowed on PRs. All merge methods are enabled
-  # so contributors can choose the appropriate one for their change.
+  # Squash only: the merge button then offers one commit whose subject is the
+  # PR title, which the PR Title check already holds to the pattern above.
   allowed_merge_methods:
-    - merge
     - squash
-    - rebase
 
 # Consumed by restapi_object.org_gitflow_main and
 # restapi_object.org_gitflow_develop in rulesets-gitflow.tf for repos opted in
