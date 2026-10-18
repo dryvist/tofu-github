@@ -35,10 +35,12 @@ branch_protection:
   # config/commit-message-pattern.txt (see locals.tf) so local commit-msg
   # hooks can read the same single copy.
 
-  # Squash only: the merge button then offers one commit whose subject is the
-  # PR title, which the PR Title check already holds to the pattern above.
+  # Merge methods allowed on PRs. All merge methods are enabled
+  # so contributors can choose the appropriate one for their change.
   allowed_merge_methods:
+    - merge
     - squash
+    - rebase
 
 # Consumed by restapi_object.org_gitflow_main and
 # restapi_object.org_gitflow_develop in rulesets-gitflow.tf for repos opted in
@@ -52,11 +54,9 @@ gitflow:
   main_allowed_merge_methods:
     - merge
 
-  # Integration branch merge methods, in the order the API returns them.
+  # Squash only into develop: one PR, one commit, subject is the PR title.
   develop_allowed_merge_methods:
-    - merge
     - squash
-    - rebase
 
 # Consumed by restapi_object.org_upstream_fork_protection
 # (upstream-forks.tf) for repos opted in via `upstream_fork: true` in
