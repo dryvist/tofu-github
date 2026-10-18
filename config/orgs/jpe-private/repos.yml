@@ -1,5 +1,0 @@
-# Per-repo overrides for this org; schema in config/orgs/dryvist/repos.yml.
-repos:
-  .github:
-    visibility: private
-    description: "Organization agent rules"

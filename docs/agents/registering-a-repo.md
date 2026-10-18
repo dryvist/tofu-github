@@ -19,11 +19,6 @@ read from the protected OpenBao KV v2 document at
 Optional `merge_gate` entries there carry check contexts for the outer
 repository key.
 
-Set the workspace variable `private_repo_overrides_kv_name` to select a KV v2
-name under the `secret` mount for workspace-specific overrides. An empty value
-uses `infrastructure/tofu-github/private-overrides` when merge-gate config
-requires private repos.
-
 The full creation-to-registration path lives in the org `.github` repo's
 `AGENTS.md` under **New repo checklist** — that is the canonical standard and
 the file agents already read. It is enforced from two sides: a PR-time

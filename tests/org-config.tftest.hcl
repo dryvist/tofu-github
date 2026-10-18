@@ -418,31 +418,3 @@ run "required_workflow_rulesets_use_default_enforcement" {
   }
 
 }
-
-run "workspace_kv_path_loads_private_repos_without_merge_gate" {
-  command = plan
-
-  variables {
-    github_owner                   = "example-org"
-    dryvist_org_extras             = false
-    automation_bypass_app_ids      = [1]
-    private_repo_overrides_kv_name = "workspace/private-overrides"
-  }
-
-  override_data {
-    target = data.github_repositories.existing
-    values = {
-      names = []
-    }
-  }
-
-  assert {
-    condition = (
-      !local.merge_gate_requires_private_repos &&
-      data.vault_kv_secret_v2.private_repo_overrides[0].name == var.private_repo_overrides_kv_name &&
-      contains(keys(local.repos), "example-a") &&
-      contains(keys(module.repo_settings), "example-a")
-    )
-    error_message = "A workspace KV name must load private repo overrides without merge-gate config."
-  }
-}
