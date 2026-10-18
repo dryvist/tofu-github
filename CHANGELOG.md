@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.35.0](https://github.com/dryvist/tofu-github/compare/v1.34.0...v1.35.0) (2026-10-18)
+
+
+### Features
+
+* **config:** select organization data by GitHub owner ([#324](https://github.com/dryvist/tofu-github/issues/324)) ([2e72a1c](https://github.com/dryvist/tofu-github/commit/2e72a1cc3ea661919174eb079389833f5e24fb90))
+* **labels:** read the label set from the central home ([b2d3890](https://github.com/dryvist/tofu-github/commit/b2d3890e0c982d17a7939236858bdac6eaa54adf))
+* **labels:** read the shared label set by full repository name ([#328](https://github.com/dryvist/tofu-github/issues/328)) ([b2d3890](https://github.com/dryvist/tofu-github/commit/b2d3890e0c982d17a7939236858bdac6eaa54adf))
+* manage CodeQL default setup on public repositories ([#348](https://github.com/dryvist/tofu-github/issues/348)) ([0f9ea7f](https://github.com/dryvist/tofu-github/commit/0f9ea7f62eeeb3aeadfe6eaf61af3729b648c80f))
+* read private repo overrides from a workspace-named KV path ([#345](https://github.com/dryvist/tofu-github/issues/345)) ([0587a6e](https://github.com/dryvist/tofu-github/commit/0587a6e23ff2781016312cb5bc5e7e3cd9c67fc6))
+* read private repo overrides from OpenBao ([#341](https://github.com/dryvist/tofu-github/issues/341)) ([e1e1362](https://github.com/dryvist/tofu-github/commit/e1e136235b7ed1e745fb291f63ab7fbe83ae3295))
+* **repo-settings:** disable Dependabot security update pull requests ([#347](https://github.com/dryvist/tofu-github/issues/347)) ([a07276a](https://github.com/dryvist/tofu-github/commit/a07276a1d8a5c2bfe5a7d31abd5924d221067dbc))
+* **repos:** declare the jpe-private .github repository ([#344](https://github.com/dryvist/tofu-github/issues/344)) ([4c6490a](https://github.com/dryvist/tofu-github/commit/4c6490ab5c408f9118f03f0a4187c227e41b12a5))
+* **repos:** set ci_gate from the default branch's shared CI gate call ([#337](https://github.com/dryvist/tofu-github/issues/337)) ([3df88dd](https://github.com/dryvist/tofu-github/commit/3df88ddb5b2e20c2b973943d35e0791138097f75))
+* **rulesets:** check commit subjects on every non-default branch ([#323](https://github.com/dryvist/tofu-github/issues/323)) ([58b7fb7](https://github.com/dryvist/tofu-github/commit/58b7fb76432b51eb5277828064a725febb93a29a))
+* **rulesets:** manage pull request rulesets through the REST provider ([#329](https://github.com/dryvist/tofu-github/issues/329)) ([c44c4ca](https://github.com/dryvist/tofu-github/commit/c44c4caddab4ea3fafd471a749420561b62cd817))
+* **runner-groups:** declare the pr-agent group for every org by default ([#343](https://github.com/dryvist/tofu-github/issues/343)) ([e6e6db5](https://github.com/dryvist/tofu-github/commit/e6e6db5cb1a7d87d74d2f6620bee2a823e690c84))
+
+
+### Bug Fixes
+
+* **merge-gate:** fail the plan when required private overrides are missing ([#327](https://github.com/dryvist/tofu-github/issues/327)) ([b03f9f5](https://github.com/dryvist/tofu-github/commit/b03f9f5583ef2f0d79c2f2486abe622ea29d792b))
+* **repos:** match the shared CI gate by path on the gate job ([#338](https://github.com/dryvist/tofu-github/issues/338)) ([979e9c5](https://github.com/dryvist/tofu-github/commit/979e9c527c04c0e9adf09b32c1dacc1670ecf46c))
+* restore org required-workflow rulesets ([#340](https://github.com/dryvist/tofu-github/issues/340)) ([6366e6a](https://github.com/dryvist/tofu-github/commit/6366e6a6356193c8bdef373ddcd352f6307593c0))
+* **rulesets:** declare the live develop merge methods ([#332](https://github.com/dryvist/tofu-github/issues/332)) ([62e063e](https://github.com/dryvist/tofu-github/commit/62e063e43f9240d706b923eed3e286fd9b6863d9))
+* **rulesets:** match REST ruleset bodies to the server shape ([#331](https://github.com/dryvist/tofu-github/issues/331)) ([1756e46](https://github.com/dryvist/tofu-github/commit/1756e4646bf43d2c406f5ed68d8f5780ed146959))
+* **rulesets:** stop requiring review-thread resolution before merge ([#334](https://github.com/dryvist/tofu-github/issues/334)) ([06e0048](https://github.com/dryvist/tofu-github/commit/06e0048dce8d3dc47adbbd24c893d27d7742ff06))
+
 ## [1.34.0](https://github.com/dryvist/tofu-github/compare/v1.33.0...v1.34.0) (2026-10-16)
 
 
