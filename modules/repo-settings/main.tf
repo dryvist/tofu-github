@@ -118,12 +118,13 @@ moved {
   to   = github_repository_vulnerability_alerts.this[0]
 }
 
-# Dependabot automatic security update PRs. Also free on public and private,
-# and likewise unmanageable on archived repos (see above).
+# Dependabot automatic security update PRs are off: Renovate opens security
+# PRs from the alerts above on the org update schedule. Unmanageable on
+# archived repos (see above).
 resource "github_repository_dependabot_security_updates" "this" {
   count      = var.archived ? 0 : 1
   repository = github_repository.this.name
-  enabled    = true
+  enabled    = false
   depends_on = [github_repository_vulnerability_alerts.this]
 }
 
