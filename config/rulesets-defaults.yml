@@ -28,8 +28,8 @@ push_protection:
 branch_protection:
   # Branch name pattern enforced on every PR. Defined here so the regex
   # can change without editing rulesets.tf.
-  branch_name_operator: starts_with
-  branch_name_pattern: "(main|develop|feat|fix|hotfix|release|chore)"
+  branch_name_operator: regex
+  branch_name_pattern: "^(main|develop|feat|fix|hotfix|release|chore)"
 
   # The commit subject regex is not here: it lives alone in
   # config/commit-message-pattern.txt (see locals.tf) so local commit-msg
