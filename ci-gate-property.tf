@@ -1,8 +1,18 @@
 # Mark repositories whose default branch calls the shared CI merge gate.
-data "github_branch" "ci_gate" {
+data "github_repository_branches" "ci_gate" {
   for_each = {
     for name, repo in data.github_repository.enumerated : name => repo.default_branch
     if try(trimspace(repo.default_branch), "") != ""
+  }
+
+  repository = each.key
+}
+
+# An empty repo lists no branches; reading its default branch fails with 409.
+data "github_branch" "ci_gate" {
+  for_each = {
+    for name, listed in data.github_repository_branches.ci_gate : name => data.github_repository.enumerated[name].default_branch
+    if contains(listed.branches[*].name, data.github_repository.enumerated[name].default_branch)
   }
 
   repository = each.key

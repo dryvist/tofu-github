@@ -33,6 +33,12 @@ mock_provider "github" {
     }
   }
 
+  mock_data "github_repository_branches" {
+    defaults = {
+      branches = [{ name = "main", protected = false }]
+    }
+  }
+
   mock_data "github_branch" {
     defaults = {
       sha = "test-commit"
@@ -197,6 +203,47 @@ run "derives_ci_gate_property_from_default_branch_workflow_call" {
   assert {
     condition     = github_repository_custom_property.ci_gate["with-gate"].property_value == toset(["true"])
     error_message = "The shared gate caller must set ci_gate=true on its repo."
+  }
+}
+
+run "skips_ci_gate_branch_read_on_empty_repo" {
+  command = plan
+
+  variables {
+    github_owner              = "example-org"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = ["empty"]
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repository_branches.ci_gate
+    values = {
+      branches = []
+    }
+  }
+
+  assert {
+    condition     = length(data.github_branch.ci_gate) == 0
+    error_message = "An empty repo must not have its default branch read."
+  }
+
+  assert {
+    condition     = github_repository_custom_property.ci_gate["empty"].property_value == toset(["false"])
+    error_message = "An empty repo must get ci_gate=false."
   }
 }
 
