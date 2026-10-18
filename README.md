@@ -123,7 +123,7 @@ that optional file:
 
 Org Actions variables and secrets are configured in the secret manager and
 synced to GitHub; this root does not manage them (`ai-variables.tf`). CodeQL
-default setup is not an active Terraform resource here; see `code_scanning.tf`.
+default setup on the org's public repos is managed in `code_scanning.tf`.
 
 ## Layout
 
