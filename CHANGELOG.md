@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.35.1](https://github.com/dryvist/tofu-github/compare/v1.35.0...v1.35.1) (2026-10-18)
+
+
+### Bug Fixes
+
+* **ci-gate:** skip the branch read on empty repositories ([#353](https://github.com/dryvist/tofu-github/issues/353)) ([f4b39a0](https://github.com/dryvist/tofu-github/commit/f4b39a011b992cc736add4f9cec5dae42a1edaa8))
+* **rulesets:** match branch names with an anchored regex ([#354](https://github.com/dryvist/tofu-github/issues/354)) ([c337bea](https://github.com/dryvist/tofu-github/commit/c337beaef401633a696c0cf2ed260c45543c100d))
+
 ## [1.35.0](https://github.com/dryvist/tofu-github/compare/v1.34.0...v1.35.0) (2026-10-18)
 
 
