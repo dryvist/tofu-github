@@ -24,7 +24,7 @@ locals {
   # An org whose gates include private repos fails its plan when the private overrides are missing.
   merge_gate_requires_private_repos = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.requires_private_repos, false)
   # Repo metadata is not a credential; its names must be usable as managed-resource keys.
-  private_repo_overrides = local.merge_gate_requires_private_repos || var.private_repo_overrides_kv_name != "" ? try(
+  private_repo_overrides = local.merge_gate_requires_private_repos ? try(
     nonsensitive(jsondecode(data.vault_kv_secret_v2.private_repo_overrides[0].data_json).private_repo_overrides),
     {},
   ) : {}

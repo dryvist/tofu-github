@@ -220,12 +220,6 @@ variable "automation_bypass_app_ids" {
 }
 
 # Workspace selectors.
-variable "private_repo_overrides_kv_name" {
-  description = "KV v2 name under the `secret` mount holding this workspace's private repo overrides; empty keeps the merge-gate behaviour."
-  type        = string
-  default     = ""
-}
-
 variable "github_owner" {
   description = "GitHub org login to manage: 1-39 letters, digits, or hyphens."
   type        = string
