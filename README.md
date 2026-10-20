@@ -37,7 +37,6 @@ once, and each workspace selects one organization and its own configuration.
 | `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
 | `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
-| `github_actions_runner_group.pr_agent` | PR-Agent workflow runner role | `runner-groups.tf` |
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
 
 Pull-request rulesets use the REST provider because the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
@@ -79,9 +78,7 @@ default to read-only, and workflows cannot approve pull requests.
 ### Runner groups
 
 The homelab runner role cannot use public repositories. The PR-Agent runner
-role allows public repositories and is limited to the shared PR-Agent workflow.
-It is created for every owner by default; an owner's `runner-groups.yml` can
-set `self_hosted_runners: false` to disable it.
+group is enterprise-level and is not managed here.
 
 ### Manual-repo approval
 
