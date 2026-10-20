@@ -1,3 +1,0 @@
-self_hosted_runners: true
-selected_workflows:
-  - JacobPEvans/.github-ai/.github/workflows/pr-agent.yml@v1
