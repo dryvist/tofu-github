@@ -77,10 +77,3 @@ actions:
   sha_pinning_required: false
   default_workflow_permissions: read
   can_approve_pull_request_reviews: false
-
-# Consumed by github_actions_runner_group.pr_agent in runner-groups.tf.
-# Organizations can override these values in runner-groups.yml.
-runner_groups:
-  self_hosted_runners: true
-  selected_workflows:
-    - JacobPEvans/.github-ai/.github/workflows/pr-agent.yml@v1

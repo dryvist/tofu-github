@@ -13,13 +13,3 @@ moved {
   from = github_actions_runner_group.homelab
   to   = github_actions_runner_group.homelab[0]
 }
-
-resource "github_actions_runner_group" "pr_agent" {
-  count = local.self_hosted_runners ? 1 : 0
-
-  name                       = "pr-agent"
-  visibility                 = "all"
-  allows_public_repositories = true
-  restricted_to_workflows    = true
-  selected_workflows         = local.runner_group_selected_workflows
-}
