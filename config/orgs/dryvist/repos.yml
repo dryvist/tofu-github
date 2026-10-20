@@ -455,6 +455,15 @@ repos:
     description: "Splunk app providing the homelab's index and HEC input definitions"
     topics: []
 
+  # Does not exist on GitHub yet, so this entry creates it.
+  splunk-acs-config:
+    visibility: public
+    description: "Pull, document, compare and push Splunk Cloud ACS settings (indexes, HEC tokens, allowlists, roles) as JSON files"
+    topics:
+      - azure-pipelines
+      - splunk
+      - splunk-cloud
+
   mlx-benchmarks:
     visibility: public
     description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"
