@@ -3,14 +3,17 @@
 Every unarchived org repo is governed: `repos.tf` enumerates the org at plan
 time and brings each repo under `module.repo_settings` (merge methods,
 auto-merge, branch deletion, Dependabot, the public-only secret-scanning
-block). An unlisted repo inherits its live description, topics and visibility,
-and is git-flow when its default branch is `develop`. A new repo is adopted on
-the next apply.
+block). The public `.github` organization-defaults repo and private
+`.github-private` members-only profile repo are always managed, creating them
+if missing. An unlisted repo inherits its live description, topics and
+visibility, and is git-flow when its default branch is `develop`. A new repo
+is adopted on the next apply.
 
 `config/orgs/<github_owner>/repos.yml` holds per-repo overrides only. List a
 repo to override the enumerated values (an entry replaces them wholesale), to
-set `gitflow` or `upstream_fork`, to keep an archived repo managed, or to
-create a repo that does not exist yet. The file is optional when the org has no
+set `gitflow`, `family`, or `upstream_fork`, to keep an archived repo managed,
+or to create a repo that does not exist yet. `family` is optional and stays
+unset unless a value is supplied. The file is optional when the org has no
 overrides.
 
 Repository names and metadata that must stay outside this public source are
