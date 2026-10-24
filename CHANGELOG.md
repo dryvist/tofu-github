@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.39.0](https://github.com/dryvist/tofu-github/compare/v1.38.0...v1.39.0) (2026-10-24)
+
+
+### Features
+
+* **repos:** manage .github-private in every org and add a family property ([#371](https://github.com/dryvist/tofu-github/issues/371)) ([81a006a](https://github.com/dryvist/tofu-github/commit/81a006a1244afdc7ca6bb3302d8e6a73ea7da158))
+
+
+### Bug Fixes
+
+* **terrakube:** exclude nix result links from the config upload ([#373](https://github.com/dryvist/tofu-github/issues/373)) ([ecbc811](https://github.com/dryvist/tofu-github/commit/ecbc811565dd27bb0314d4d53711d0b721a43aa7))
+
 ## [1.38.0](https://github.com/dryvist/tofu-github/compare/v1.37.0...v1.38.0) (2026-10-24)
 
 
