@@ -454,4 +454,16 @@ run "required_workflow_rulesets_use_default_enforcement" {
     error_message = "Required-workflow rulesets must use their default enforcement and have one instance when enabled."
   }
 
+  assert {
+    condition = (
+      length(github_organization_ruleset.code_scanning) == 1 &&
+      github_organization_ruleset.code_scanning[0].enforcement == "active" &&
+      github_organization_ruleset.code_scanning[0].conditions[0].ref_name[0].include == ["~DEFAULT_BRANCH", "refs/heads/main"] &&
+      github_organization_ruleset.code_scanning[0].conditions[0].repository_name[0].include == sort(data.github_repositories.public_for_codeql.names) &&
+      one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).tool == "CodeQL" &&
+      one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).alerts_threshold == "errors" &&
+      one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).security_alerts_threshold == "high_or_higher"
+    )
+    error_message = "CodeQL merge protection must use the live default-setup repo set and the configured thresholds."
+  }
 }

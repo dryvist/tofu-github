@@ -168,6 +168,17 @@ variable "org_push_protection_enforcement" {
   }
 }
 
+variable "org_code_scanning_enforcement" {
+  description = "Require CodeQL default-setup results on public repositories' default branch and main before updates."
+  type        = string
+  default     = "active"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.org_code_scanning_enforcement)
+    error_message = "org_code_scanning_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_merge_gate_enforcement" {
   description = <<-EOT
     org-merge-gate-* required checks block merges to main; each selected repo needs a live gate context on main before activation or its PRs freeze.
