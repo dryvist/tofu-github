@@ -1,19 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>JacobPEvans/.github"],
-  "customManagers": [
-    {
-      "description": [
-        "Renovate-annotated version pins in this repo's workflow files. The org preset's custom managers cover .nix, Ansible role defaults, and biome.jsonc -- nothing scans .github/workflows for annotated tool pins, and the built-in github-actions manager only tracks `uses:`, not action inputs. Without this, `tflint_version:` in ci-gate.yml is invisible to Renovate and the pin rots silently. Only lines carrying an explicit `# renovate:` annotation are matched, so `uses:` lines are untouched."
-      ],
-      "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
-      ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}"
-    }
-  ],
   "packageRules": [
     {
       "description": [
