@@ -36,6 +36,9 @@
 #                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
 #                the set from this flag and, for unlisted repos, the live
 #                default branch.
+#   family:      Optional, defaults to unset. Set to one of the family values
+#                in family.tf to classify a repository; only configured values
+#                are written to the repository custom property.
 #   allow_update_branch: Optional, defaults to false. Shows the "Update branch"
 #                button on pull requests whose head is behind the base.
 #   upstream_fork: Optional, defaults to false. Set true on a fork that tracks a

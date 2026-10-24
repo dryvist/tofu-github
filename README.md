@@ -20,8 +20,8 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_ruleset.commit_subject_branches` | [Branch commit subjects](#branch-commit-subjects) | `rulesets-branch-protection.tf` |
 | `restapi_object.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
 | `restapi_object.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
-| `github_organization_custom_properties.*` | Organization property schemas | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
-| `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `docs-publisher.tf`, `gitflow.tf`, `upstream-forks.tf` |
+| `github_organization_custom_properties.*` | Organization property schemas | Each property's own file, e.g. `family.tf`, `gitflow.tf` |
+| `github_repository_custom_property.*` | Repository property values | `automerge.tf`, `ci-gate-property.tf`, `family.tf`, `gitflow.tf`, `upstream-forks.tf` |
 | `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
@@ -40,6 +40,11 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
 
 Pull-request rulesets use the REST provider because the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
+
+Repository settings cover every unarchived repo plus the always-managed public
+`.github` organization-defaults repo and private `.github-private` members-only
+profile repo. The optional `family` single-select property is unset unless a
+repo's selected `config/orgs/<github_owner>/repos.yml` entry supplies a value.
 
 ### Push protection
 
