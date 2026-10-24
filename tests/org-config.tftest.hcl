@@ -115,13 +115,32 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
-    condition     = length(local.managed_repos) == 2 && local.managed_repos[".github"].visibility == "public" && local.managed_repos["sample"].visibility == "public"
-    error_message = "Repository metadata must be enumerated from GitHub when the org repo config is empty."
+    condition = (
+      length(local.managed_repos) == 3 &&
+      local.managed_repos[".github"].visibility == "public" &&
+      local.managed_repos[".github-private"].visibility == "private" &&
+      local.managed_repos[".github-private"].description == "Members-only org profile and index" &&
+      !try(local.managed_repos[".github-private"].archived, false) &&
+      local.managed_repos["sample"].visibility == "public"
+    )
+    error_message = "Both org profile repos must always be managed alongside repos enumerated from GitHub."
   }
 
   assert {
-    condition     = length(module.repo_settings) == 2
-    error_message = "Every repository found in the org must receive the shared repository settings module."
+    condition     = length(module.repo_settings) == 3
+    error_message = "Every managed repository must receive the shared repository settings module."
+  }
+
+  assert {
+    condition = (
+      github_organization_custom_properties.family.required == false &&
+      github_organization_custom_properties.family.default_value == null &&
+      toset(github_organization_custom_properties.family.allowed_values) == toset(local.family_values) &&
+      length(github_repository_custom_property.family) == 0 &&
+      github_repository_custom_property.gitflow[".github-private"].property_value == toset(["false"]) &&
+      github_repository_custom_property.ci_gate[".github-private"].property_value == toset(["false"])
+    )
+    error_message = "Family must remain optional and unset until configured, while existing repo properties cover the private profile repo."
   }
 
   assert {
@@ -390,8 +409,13 @@ run "placeholder_org_disables_org_specific_extras" {
   }
 
   assert {
-    condition     = local.managed_repos[".github"].visibility == "public" && !contains(keys(local.adopted_repos), ".github")
-    error_message = "A missing defaults repository must be planned for creation as public."
+    condition = (
+      local.managed_repos[".github"].visibility == "public" &&
+      !contains(keys(local.adopted_repos), ".github") &&
+      local.managed_repos[".github-private"].visibility == "private" &&
+      !contains(keys(local.adopted_repos), ".github-private")
+    )
+    error_message = "Missing profile repositories must be planned for creation with their declared visibility."
   }
 
   assert {
@@ -414,7 +438,7 @@ run "placeholder_org_disables_org_specific_extras" {
   }
 
   assert {
-    condition     = length(module.repo_settings) == 2
+    condition     = length(module.repo_settings) == 3
     error_message = "Shared repository settings must remain enabled."
   }
 }
