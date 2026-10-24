@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.38.0](https://github.com/dryvist/tofu-github/compare/v1.37.0...v1.38.0) (2026-10-24)
+
+
+### Features
+
+* **org:** add the ai-untrusted-ok repository property ([#367](https://github.com/dryvist/tofu-github/issues/367)) ([735a2a5](https://github.com/dryvist/tofu-github/commit/735a2a5ae71a34dbacbdc9e36f1edbe430b7c87e))
+* **rulesets:** require CodeQL results on public repositories ([#368](https://github.com/dryvist/tofu-github/issues/368)) ([e651e77](https://github.com/dryvist/tofu-github/commit/e651e7739dedfb448d2d157a92d12fb5cd098b5d))
+
 ## [1.37.0](https://github.com/dryvist/tofu-github/compare/v1.36.0...v1.37.0) (2026-10-20)
 
 
