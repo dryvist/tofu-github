@@ -42,3 +42,37 @@ resource "restapi_object" "codeql" {
     runner_type = "standard"
   })
 }
+
+# Require CodeQL on merge targets only. Default setup scans the default branch
+# and protected branches, so these refs cover trunk and git-flow merge targets.
+# Reuse the live public-repository set above; private, archived, and forked repos
+# never receive a rule whose CodeQL analysis may not report.
+resource "github_organization_ruleset" "code_scanning" {
+  count = length(data.github_repositories.public_for_codeql.names) > 0 ? 1 : 0
+
+  name        = "org-code-scanning"
+  target      = "branch"
+  enforcement = var.org_code_scanning_enforcement
+
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH", "refs/heads/main"]
+      exclude = []
+    }
+
+    repository_name {
+      include = sort(data.github_repositories.public_for_codeql.names)
+      exclude = []
+    }
+  }
+
+  rules {
+    required_code_scanning {
+      required_code_scanning_tool {
+        alerts_threshold          = "errors"
+        security_alerts_threshold = "high_or_higher"
+        tool                      = "CodeQL"
+      }
+    }
+  }
+}
