@@ -11,7 +11,6 @@ locals {
     "mlx",
     "governance",
     "profile",
-    "visicore",
     "misc",
   ]
 
