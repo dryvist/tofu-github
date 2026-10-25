@@ -62,6 +62,7 @@ merge_gate:
         - ansible-proxmox
         - ansible-proxmox-ai
         - ansible-proxmox-apps
+        - ansible-secrets-management
         - ansible-splunk
         - mlx-benchmarks
         - nix-ai
