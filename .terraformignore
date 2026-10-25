@@ -12,3 +12,7 @@
 *.tfstate
 *.tfstate.backup
 crash.log
+# Nix build output links (`nix build`, `darwin-rebuild build`) point at whole
+# store closures; packaging one turns the upload into gigabytes.
+result
+result-*
