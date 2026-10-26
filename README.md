@@ -235,10 +235,9 @@ Validation only (no backend, no credentials):
 tofu init -backend=false && tofu validate
 ```
 
-**New rulesets default to `active`.** Rulesets added going forward — push
-protection, branch protection, commit format, etc. — default
-their `<name>_enforcement` variable to `"active"` and are applied enabled
-directly. The variable still exists so a misbehaving rule can be disabled with
+**Enforcement defaults vary by ruleset.** Most rulesets default to `active`;
+the exceptions are listed in [Applying](docs/agents/applying.md). Any
+`<name>_enforcement` variable can be set to `disabled` with
 `-var <name>_enforcement=disabled` without a code change.
 
 ---
