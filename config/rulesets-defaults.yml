@@ -46,8 +46,8 @@ branch_protection:
 # restapi_object.org_gitflow_develop in rulesets-gitflow.tf for repos opted in
 # via `gitflow: true` in the selected org's repos.yml.
 # These repos run the git-flow model: develop is the integration default branch
-# (feature PRs squash-merge in, back-merges land merge commits) and main is the
-# release branch (no direct pushes).
+# (feature PRs squash-merge in) and main is the release branch (no direct
+# pushes).
 gitflow:
   # Merge methods allowed on PRs into main. Git-flow strictly requires preserving
   # history on the release branch, so only merge commits are allowed.
