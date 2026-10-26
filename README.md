@@ -28,6 +28,7 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_ruleset.org_gitflow_base` | Git-flow base branch ruleset | `rulesets-gitflow.tf` |
 | `restapi_object.org_gitflow_main` | Git-flow main branch ruleset | `rulesets-gitflow.tf` |
 | `restapi_object.org_gitflow_develop` | Git-flow develop branch ruleset | `rulesets-gitflow.tf` |
+| Enterprise-level required workflow | [Git-flow main-source gate](#git-flow-main-source-gate) | Attached outside this root |
 | `restapi_object.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
 | `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
@@ -101,6 +102,22 @@ release automation and configured triage apps bypass review in
 Requires the `release-freeze` status on `develop` in repos with the
 `gitflow: true` property. The ruleset defaults to `evaluate` and can be set to
 `active` after the shared status workflow is called from every git-flow repo.
+
+### Git-flow main-source gate
+
+For repositories whose organization custom property `gitflow` is `true`, a
+pull request into `main` must come from the same repository's `develop`
+branch or from a `hotfix/<name>` branch. An enterprise-level required
+workflow runs `.github/workflows/main-source-gate.yml` and reports the
+`Main Source Gate` check. The ruleset that attaches it is managed outside this
+root. It runs in `evaluate` mode and moves to `active` after the evaluation
+results are clean.
+
+`main` accepts merge commits only, and `develop` accepts squash merges only.
+A `hotfix/<name>` branch starts from `main`: its pull request targets `main`,
+and a second pull request from that branch targets `develop`. Under
+[Branch-write restriction](#branch-write-restriction), only the apps listed in
+`automation_bypass_app_ids` can create or update a `hotfix/<name>` branch.
 
 ### Branch-write restriction
 
