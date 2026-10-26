@@ -27,7 +27,7 @@ push_protection:
 # non-bypassable quality gate on every repo's default branch.
 branch_protection:
   # Branch name pattern enforced on every PR. Defined here so the regex
-  # can change without editing rulesets.tf.
+  # can change without editing the rulesets that read it.
   branch_name_operator: regex
   branch_name_pattern: "^(main|develop|feat|fix|hotfix|release|chore)"
 

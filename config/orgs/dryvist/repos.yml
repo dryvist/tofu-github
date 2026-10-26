@@ -58,8 +58,8 @@
 # unrelated-histories collision with content pushed from a local clone.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
-# rulesets.tf already enforce signed commits and Conventional
-# Commits on every repo. This config manages only repository *settings*
+# rulesets-branch-protection.tf already enforce signed commits and
+# Conventional Commits on every repo. This config manages only repository *settings*
 # (merge methods, auto-merge, branch deletion, wiki, web-commit signoff,
 # Dependabot, and the public-only secret-scanning block).
 
