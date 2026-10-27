@@ -461,6 +461,12 @@ repos:
     topics: []
 
   # Does not exist on GitHub yet, so this entry creates it.
+  splunk-homelab-dashboards:
+    visibility: public
+    description: "Splunk app providing homelab dashboards for storage capacity, drive health, and node resources"
+    topics: []
+
+  # Does not exist on GitHub yet, so this entry creates it.
   splunk-acs-config:
     visibility: public
     description: "Pull, document, compare and push Splunk Cloud ACS settings (indexes, HEC tokens, allowlists, roles) as JSON files"
