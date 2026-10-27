@@ -16,7 +16,7 @@ data "github_repositories" "public_for_codeql" {
 }
 
 import {
-  for_each = toset(data.github_repositories.public_for_codeql.names)
+  for_each = var.codeql_import_enabled ? toset(data.github_repositories.public_for_codeql.names) : toset([])
   to       = restapi_object.codeql[each.value]
   id       = "/repos/${local.org}/${each.value}/code-scanning/default-setup"
 }
