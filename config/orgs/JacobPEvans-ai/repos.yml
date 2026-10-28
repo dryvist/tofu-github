@@ -1,13 +1,14 @@
 # Per-repo overrides for this organization. Schema: config/orgs/dryvist/repos.yml.
-ai-agents:
-  visibility: public
-  description: "Source-of-truth agent skills and instructions, generated for multiple AI coding agents"
-  topics:
-    - a2a
-    - agent-skills
-    - ai
-    - ai-agents
-    - claude-code
-    - codex
-    - hermes-agent
-    - mcp
+repos:
+  ai-agents:
+    visibility: public
+    description: "Source-of-truth agent skills and instructions, generated for multiple AI coding agents"
+    topics:
+      - a2a
+      - agent-skills
+      - ai
+      - ai-agents
+      - claude-code
+      - codex
+      - hermes-agent
+      - mcp
