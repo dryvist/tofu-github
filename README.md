@@ -236,10 +236,7 @@ Validation only (no backend, no credentials):
 tofu init -backend=false && tofu validate
 ```
 
-**Enforcement defaults vary by ruleset.** Most rulesets default to `active`;
-the exceptions are listed in [Applying](docs/agents/applying.md). Any
-`<name>_enforcement` variable can be set to `disabled` with
-`-var <name>_enforcement=disabled` without a code change.
+**Enforcement defaults vary by ruleset.** See [Applying](docs/agents/applying.md).
 
 ---
 
