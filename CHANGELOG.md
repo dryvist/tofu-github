@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.40.0](https://github.com/dryvist/tofu-github/compare/v1.39.1...v1.40.0) (2026-10-28)
+
+
+### Features
+
+* **repos:** declare splunk-homelab-dashboards as a public repository ([#380](https://github.com/dryvist/tofu-github/issues/380)) ([98351bf](https://github.com/dryvist/tofu-github/commit/98351bfa39f20e9e32d89499243fa3caac7025ea))
+* **rulesets:** require up-to-date branches on merge-gate refs ([#383](https://github.com/dryvist/tofu-github/issues/383)) ([3aa844f](https://github.com/dryvist/tofu-github/commit/3aa844f871c5d2d4cf809856278fa16d94d948a1))
+
+
+### Bug Fixes
+
+* **tests:** keep tofu test off the CodeQL import ([#381](https://github.com/dryvist/tofu-github/issues/381)) ([ac6aff9](https://github.com/dryvist/tofu-github/commit/ac6aff93ccd62ab8fe1b8e6c1f090fd43eac2215))
+
 ## [1.39.1](https://github.com/dryvist/tofu-github/compare/v1.39.0...v1.39.1) (2026-10-25)
 
 
