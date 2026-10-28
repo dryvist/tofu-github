@@ -85,12 +85,20 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   variables {
     github_owner              = "JacobPEvans"
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
     target = data.github_repositories.existing
     values = {
       names = []
+    }
+  }
+
+  override_resource {
+    target = github_organization_custom_properties.family
+    values = {
+      default_value = null
     }
   }
 
@@ -144,8 +152,8 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
-    condition     = local.gitflow_defaults.main_allowed_merge_methods == ["merge"] && local.gitflow_defaults.develop_allowed_merge_methods == ["merge", "squash", "rebase"]
-    error_message = "Git-flow main must remain merge-only and develop must allow merge, squash and rebase."
+    condition     = tolist(local.gitflow_defaults.main_allowed_merge_methods) == tolist(["merge"]) && tolist(local.gitflow_defaults.develop_allowed_merge_methods) == tolist(["squash"])
+    error_message = "Git-flow main must remain merge-only and develop must remain squash-only."
   }
 
   assert {
@@ -178,6 +186,7 @@ run "derives_ci_gate_property_from_default_branch_workflow_call" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -227,6 +236,7 @@ run "skips_ci_gate_branch_read_on_empty_repo" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -268,6 +278,7 @@ run "derives_ci_gate_from_sha_pinned_org_home_caller" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -317,6 +328,7 @@ run "ignores_ci_gate_caller_under_other_job_id" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -366,6 +378,7 @@ run "private_merge_gate_repos_share_one_gate" {
     github_owner              = "tofu-test-fixture"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -392,6 +405,7 @@ run "placeholder_org_disables_org_specific_extras" {
     github_owner              = "example-org"
     dryvist_org_extras        = false
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
     hermes_webhook_url        = "https://example.invalid/hook"
     hermes_webhook_secret     = "test-secret"
   }
@@ -450,6 +464,7 @@ run "required_workflow_rulesets_use_default_enforcement" {
     github_owner              = "example-org"
     dryvist_org_extras        = true
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -482,8 +497,8 @@ run "required_workflow_rulesets_use_default_enforcement" {
     condition = (
       length(github_organization_ruleset.code_scanning) == 1 &&
       github_organization_ruleset.code_scanning[0].enforcement == "active" &&
-      github_organization_ruleset.code_scanning[0].conditions[0].ref_name[0].include == ["~DEFAULT_BRANCH", "refs/heads/main"] &&
-      github_organization_ruleset.code_scanning[0].conditions[0].repository_name[0].include == sort(data.github_repositories.public_for_codeql.names) &&
+      tolist(github_organization_ruleset.code_scanning[0].conditions[0].ref_name[0].include) == tolist(["~DEFAULT_BRANCH", "refs/heads/main"]) &&
+      tolist(github_organization_ruleset.code_scanning[0].conditions[0].repository_name[0].include) == tolist(sort(data.github_repositories.public_for_codeql.names)) &&
       one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).tool == "CodeQL" &&
       one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).alerts_threshold == "errors" &&
       one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).security_alerts_threshold == "high_or_higher"

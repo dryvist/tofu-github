@@ -179,6 +179,14 @@ variable "org_code_scanning_enforcement" {
   }
 }
 
+variable "codeql_import_enabled" {
+  description = <<-EOT
+    Controls whether code_scanning.tf adopts existing CodeQL default-setup configuration through its import block.
+  EOT
+  type        = bool
+  default     = true
+}
+
 variable "org_merge_gate_enforcement" {
   description = <<-EOT
     org-merge-gate-* required checks block merges to main; each selected repo needs a live gate context on main before activation or its PRs freeze.

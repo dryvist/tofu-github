@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.39.1](https://github.com/dryvist/tofu-github/compare/v1.39.0...v1.39.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* **merge-gate:** require Merge Gate on ansible-secrets-management ([#376](https://github.com/dryvist/tofu-github/issues/376)) ([844be45](https://github.com/dryvist/tofu-github/commit/844be45796e1a5918af44eaa3d57409c7a02d48c))
+
 ## [1.39.0](https://github.com/dryvist/tofu-github/compare/v1.38.0...v1.39.0) (2026-10-24)
 
 

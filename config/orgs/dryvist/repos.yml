@@ -30,12 +30,14 @@
 #                unarchiving. See modules/repo-settings/variables.tf for the
 #                "most other settings become read-only" caveat.
 #   gitflow:     Optional, defaults to false on a listed repo. Set true to opt
-#                the repo into the git-flow model: gitflow.tf creates a
-#                `develop` branch and makes it the default, and rulesets.tf binds the git-flow main /
-#                develop rulesets to it while excluding it from the standard
-#                default-branch rulesets. local.gitflow_repos (gitflow.tf) derives
-#                the set from this flag and, for unlisted repos, the live
-#                default branch.
+#                the repo into the git-flow model. repos.tf sets it for an
+#                unlisted repo from the live default branch (true when that is
+#                `develop`). gitflow.tf writes the custom property and creates
+#                `develop` as the default branch. rulesets-gitflow.tf binds the
+#                git-flow main and develop rulesets to the property, and the
+#                standard default-branch rulesets exclude these repos. An
+#                enterprise-level required workflow applies the main-source
+#                rule to repos set to true.
 #   family:      Optional, defaults to unset. Set to one of the family values
 #                in family.tf to classify a repository; only configured values
 #                are written to the repository custom property.
@@ -56,8 +58,8 @@
 # unrelated-histories collision with content pushed from a local clone.
 #
 # Per-repo `all`/`main` rulesets are OUT OF SCOPE: the org-level rulesets in
-# rulesets.tf already enforce signed commits and Conventional
-# Commits on every repo. This config manages only repository *settings*
+# rulesets-branch-protection.tf already enforce signed commits and
+# Conventional Commits on every repo. This config manages only repository *settings*
 # (merge methods, auto-merge, branch deletion, wiki, web-commit signoff,
 # Dependabot, and the public-only secret-scanning block).
 
@@ -456,6 +458,12 @@ repos:
   splunk-homelab-indexes:
     visibility: public
     description: "Splunk app providing the homelab's index and HEC input definitions"
+    topics: []
+
+  # Does not exist on GitHub yet, so this entry creates it.
+  splunk-homelab-dashboards:
+    visibility: public
+    description: "Splunk app providing homelab dashboards for storage capacity, drive health, and node resources"
     topics: []
 
   # Does not exist on GitHub yet, so this entry creates it.
