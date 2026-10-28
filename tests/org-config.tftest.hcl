@@ -50,6 +50,12 @@ mock_provider "github" {
       entries = []
     }
   }
+
+  mock_data "github_app" {
+    defaults = {
+      id = "1"
+    }
+  }
 }
 
 mock_provider "vault" {
@@ -441,6 +447,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.org_copilot_review) == 0,
       length(github_organization_ruleset.org_release_freeze) == 0,
       length(github_organization_ruleset.org_merge_gate) == 0,
+      length(github_organization_ruleset.org_merge_gate_strict) == 0,
       length(github_repository_custom_property.upstream_fork) == 0,
       length(restapi_object.org_upstream_fork_protection) == 0,
       length(github_actions_runner_group.homelab) == 0,
@@ -504,5 +511,72 @@ run "required_workflow_rulesets_use_default_enforcement" {
       one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).security_alerts_threshold == "high_or_higher"
     )
     error_message = "CodeQL merge protection must use the live default-setup repo set and the configured thresholds."
+  }
+}
+
+run "merge_gate_strict_exempts_only_listed_apps" {
+  command = plan
+
+  variables {
+    github_owner              = "tofu-test-fixture"
+    dryvist_org_extras        = true
+    automation_bypass_app_ids = [1]
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.public_for_codeql
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.org_merge_gate_strict) == 1 &&
+      github_organization_ruleset.org_merge_gate_strict["gate"].enforcement == "evaluate" &&
+      github_organization_ruleset.org_merge_gate_strict["gate"].conditions[0].repository_name[0].include == local.merge_gate_contexts["gate"].repos &&
+      [for ref in github_organization_ruleset.org_merge_gate_strict["gate"].conditions[0].ref_name[0].include : ref] == ["refs/heads/main", "refs/heads/develop"]
+    )
+    error_message = "The strict ruleset must follow the merge gate contexts and refs, with evaluate as its default enforcement."
+  }
+
+  assert {
+    condition = (
+      github_organization_ruleset.org_merge_gate_strict["gate"].rules[0].required_status_checks[0].strict_required_status_checks_policy == true &&
+      [for check in github_organization_ruleset.org_merge_gate_strict["gate"].rules[0].required_status_checks[0].required_check : check.context] == ["gate / Merge Gate"] &&
+      [for check in github_organization_ruleset.org_merge_gate_strict["gate"].rules[0].required_status_checks[0].required_check : check.integration_id] == [for check in github_organization_ruleset.org_merge_gate["gate"].rules[0].required_status_checks[0].required_check : check.integration_id]
+    )
+    error_message = "The strict ruleset must require the same check context and integration as org_merge_gate, with strict policy on."
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.org_merge_gate_strict["gate"].bypass_actors) == 2 &&
+      length([for actor in github_organization_ruleset.org_merge_gate_strict["gate"].bypass_actors : actor if actor.actor_type == "OrganizationAdmin"]) == 1 &&
+      toset([for actor in github_organization_ruleset.org_merge_gate_strict["gate"].bypass_actors : actor.actor_id if actor.actor_type == "Integration"]) == toset([tonumber(data.github_app.renovate.id)])
+    )
+    error_message = "The strict ruleset must bypass only OrganizationAdmin and the Renovate app when the fixture has no automation app config."
+  }
+
+  assert {
+    condition = (
+      github_organization_ruleset.org_merge_gate["gate"].rules[0].required_status_checks[0].strict_required_status_checks_policy == false &&
+      [for actor in github_organization_ruleset.org_merge_gate["gate"].bypass_actors : actor.actor_type] == ["OrganizationAdmin"]
+    )
+    error_message = "The existing merge gate must keep strict off and bypass only OrganizationAdmin, so bot pull requests still face the gate check."
   }
 }

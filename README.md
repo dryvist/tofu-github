@@ -31,6 +31,7 @@ once, and each workspace selects one organization and its own configuration.
 | Enterprise-level required workflow | [Git-flow main-source gate](#git-flow-main-source-gate) | Attached outside this root |
 | `restapi_object.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
 | `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
+| `github_organization_ruleset.org_merge_gate_strict` | Up-to-date Merge Gate checks | `merge-gate-strict.tf` |
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
 | `github_actions_organization_permissions.org` | Allowed Actions and SHA policy | `actions.tf` |
 | `github_actions_organization_workflow_permissions.org` | Default `GITHUB_TOKEN` permissions | `actions.tf` |

@@ -200,6 +200,19 @@ variable "org_merge_gate_enforcement" {
   }
 }
 
+variable "merge_gate_strict_enforcement" {
+  description = <<-EOT
+    org-merge-gate-strict-* required checks require pull requests to be up to date with their base branch before merging, except for the automation apps in merge-gate-strict.tf. Evaluate reports in Insights without blocking.
+  EOT
+  type        = string
+  default     = "evaluate"
+
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.merge_gate_strict_enforcement)
+    error_message = "merge_gate_strict_enforcement must be one of: disabled, evaluate, active."
+  }
+}
+
 variable "org_upstream_fork_protection_enforcement" {
   description = <<-EOT
     For upstream_fork=true, default branch requires PRs and merge commits; deletion and force-push are forbidden.
