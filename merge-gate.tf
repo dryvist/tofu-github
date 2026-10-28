@@ -9,9 +9,9 @@
 # only thing a required check changes on develop is that a PR can no longer
 # merge while its gate is still queued or red.
 #
-# strict policy is off: requiring branches to be up to date with main would
-# serialize every merge behind a rebase, which the volume of Renovate PRs
-# makes impractical.
+# strict policy is off here. The sibling ruleset org_merge_gate_strict
+# (merge-gate-strict.tf) enforces it on the same refs, repos and contexts,
+# with the automation apps in its bypass list exempt.
 resource "github_organization_ruleset" "org_merge_gate" {
   for_each = var.dryvist_org_extras ? local.merge_gate_contexts : {}
 
