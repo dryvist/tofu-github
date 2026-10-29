@@ -13,6 +13,9 @@ A repo with `gitflow` set to `true`, whether derived from its default branch or
 listed in `repos.yml`, falls under the Git-flow main-source gate described in
 [the README](../../README.md#git-flow-main-source-gate).
 
+When registering a new git-flow repository whose default branch is `develop`,
+also add its name to the enterprise-level main-source gate repository list.
+
 `config/orgs/<github_owner>/repos.yml` holds per-repo overrides only. List a
 repo to override the enumerated values (an entry replaces them wholesale), to
 set `gitflow`, `family`, or `upstream_fork`, to keep an archived repo managed,
