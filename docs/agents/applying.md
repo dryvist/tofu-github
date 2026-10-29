@@ -33,8 +33,8 @@ iac-platform's `docs/runbook.md`.
 
 **Enforcement defaults.** Each ruleset's `<name>_enforcement` variable default
 is set in `variables.tf`. Most rulesets default to `active`.
-`markdown_lint_enforcement`, `conventions_enforcement`, `ai_review_enforcement`
-and `org_release_freeze_enforcement` default to `evaluate`, which reports
+`markdown_lint_enforcement`, `conventions_enforcement`, `ai_review_enforcement`,
+`org_release_freeze_enforcement`, and `merge_gate_strict_enforcement` default to `evaluate`, which reports
 results without blocking. `org_review_gate_enforcement` defaults to `disabled`.
 A workspace variable overrides a default. A misbehaving rule can be disabled
 with `-var <name>_enforcement=disabled` without a code change.
