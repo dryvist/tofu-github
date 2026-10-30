@@ -1,0 +1,21 @@
+# Per-repo overrides for jpe-nix repositories managed by tofu-github.
+repos:
+  .github:
+    visibility: public
+    gitflow: false
+    description: "Community defaults for composable Nix flakes."
+    topics: []
+
+  nix-herdr:
+    visibility: public
+    gitflow: false
+    description: "Declarative Nix packages and modules for the Herdr terminal workspace manager and its optional components."
+    topics:
+      - agent-integrations
+      - collie
+      - herdr
+      - home-manager
+      - nix
+      - nix-darwin
+      - nix-flakes
+      - nixos
