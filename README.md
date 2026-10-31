@@ -21,7 +21,7 @@ once, and each workspace selects one organization and its own configuration.
 | `restapi_object.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
 | `restapi_object.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
 | `github_organization_custom_properties.*` | Organization property schemas | Each property's own file, e.g. `family.tf`, `gitflow.tf` |
-| `github_repository_custom_property.*` | Repository property values | `ai-untrusted-property.tf`, `automerge.tf`, `ci-gate-property.tf`, `family.tf`, `gitflow.tf`, `upstream-forks.tf` |
+| `github_repository_custom_property.*` | Repository property values | Each property's own file, e.g. `ai-untrusted-property.tf`, `automerge.tf` |
 | `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
