@@ -1,0 +1,4 @@
+# Listed repositories are reachable by lower-trust AI sandbox agents.
+# They must be public and contain no secrets.
+repos:
+  - nix-agent-sandbox
