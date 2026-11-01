@@ -5,6 +5,12 @@ data "github_repositories" "org" {
   query = "org:${local.org} fork:true archived:false"
 }
 
+# Public unarchived repos, read only when ai-untrusted.yml opts every public repo in.
+data "github_repositories" "public" {
+  count = try(local.ai_untrusted_config.all_public, false) ? 1 : 0
+  query = "org:${local.org} is:public fork:true archived:false"
+}
+
 # Private repo metadata is read only for orgs whose merge-gate config requires it.
 data "vault_kv_secret_v2" "private_repo_overrides" {
   count = local.merge_gate_requires_private_repos ? 1 : 0
