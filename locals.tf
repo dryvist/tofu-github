@@ -18,6 +18,9 @@ locals {
   automerge_config = try(yamldecode(file("${local.org_config_dir}/automerge.yml")), {
     manual = { prefixes = [], repos = [] }
   })
+  ai_untrusted_config = try(yamldecode(file("${local.org_config_dir}/ai-untrusted.yml")), {
+    repos = []
+  })
   docs_publisher = try(yamldecode(file("${local.org_config_dir}/docs-publisher.yml")), {})
 
   org_merge_gate_contexts = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts, {})

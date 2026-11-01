@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.42.0](https://github.com/dryvist/tofu-github/compare/v1.41.0...v1.42.0) (2026-10-30)
+
+
+### Features
+
+* declare jpe-nix repository metadata ([#391](https://github.com/dryvist/tofu-github/issues/391)) ([0b59a9d](https://github.com/dryvist/tofu-github/commit/0b59a9d2a7dc5c67ab573e187a94472c87158eeb))
+
 ## [1.41.0](https://github.com/dryvist/tofu-github/compare/v1.40.0...v1.41.0) (2026-10-29)
 
 
