@@ -1,4 +1,7 @@
-# Listed repositories are reachable by lower-trust AI sandbox agents.
-# They must be public and contain no secrets.
+# Repositories reachable by lower-trust AI sandbox agents. all_public opts in
+# every public, unarchived repository; listed repositories are added to that
+# set. Private repositories never qualify. Opted-in repositories must contain
+# no secrets.
+all_public: true
 repos:
   - nix-agent-sandbox
