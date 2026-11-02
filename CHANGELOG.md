@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.43.0](https://github.com/dryvist/tofu-github/compare/v1.42.0...v1.43.0) (2026-11-02)
+
+
+### Features
+
+* **ai-untrusted:** opt every public repository into the AI sandbox ([#394](https://github.com/dryvist/tofu-github/issues/394)) ([5410af8](https://github.com/dryvist/tofu-github/commit/5410af824eabc9675f5ae98243fdedaea9fa0ea8))
+* **ai-untrusted:** opt nix-agent-sandbox into lower-trust AI agents ([#393](https://github.com/dryvist/tofu-github/issues/393)) ([e96f290](https://github.com/dryvist/tofu-github/commit/e96f290a0e3e9570edab870b69a35fea86fbbc80))
+
+
+### Bug Fixes
+
+* **merge-gate:** remove the retired Mac Edge pack repo from the gate list ([#396](https://github.com/dryvist/tofu-github/issues/396)) ([7672525](https://github.com/dryvist/tofu-github/commit/7672525b86844d408785b7a158a66a56b856ef1b))
+
 ## [1.42.0](https://github.com/dryvist/tofu-github/compare/v1.41.0...v1.42.0) (2026-10-30)
 
 
