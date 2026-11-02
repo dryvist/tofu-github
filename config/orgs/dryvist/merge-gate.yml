@@ -34,7 +34,6 @@ merge_gate:
         - cc-edge-claude-code-io
         - cc-edge-codex-io
         - cc-edge-pack-template
-        - cc-edge-the-mac-pack-io
         - cc-stream-openrouter-rest-io
         - claude-code-best-practice
         - claude-code-plugins
