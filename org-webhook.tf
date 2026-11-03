@@ -11,3 +11,17 @@ resource "github_organization_webhook" "hermes_pr_review" {
 
   active = true
 }
+
+resource "github_organization_webhook" "event_queue" {
+  count  = var.dryvist_org_extras && nonsensitive(trimspace(var.event_queue_webhook_url) != "" && trimspace(var.event_queue_webhook_secret) != "") ? 1 : 0
+  events = ["check_run", "pull_request"]
+
+  configuration {
+    url          = var.event_queue_webhook_url
+    content_type = "json"
+    insecure_ssl = false
+    secret       = var.event_queue_webhook_secret
+  }
+
+  active = true
+}

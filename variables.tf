@@ -297,3 +297,18 @@ variable "hermes_webhook_secret" {
   sensitive   = true
   default     = ""
 }
+
+# Event queue intake for check_run and pull_request events. Created only when both variables are set.
+variable "event_queue_webhook_url" {
+  description = "Event queue intake URL for check_run and pull_request; empty skips the webhook."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "event_queue_webhook_secret" {
+  description = "GitHub HMAC signing secret for the event queue intake; empty skips the webhook."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
