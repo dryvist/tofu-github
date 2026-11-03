@@ -40,6 +40,7 @@ once, and each workspace selects one organization and its own configuration.
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
 | `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
+| `github_organization_webhook.event_queue` | Optional check-run and pull-request webhook for the event queue, enabled when both queue variables are set | `org-webhook.tf` |
 
 Pull-request rulesets use the REST provider because the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
 

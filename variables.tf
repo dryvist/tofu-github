@@ -298,8 +298,7 @@ variable "hermes_webhook_secret" {
   default     = ""
 }
 
-# Event queue intake for check_run and pull_request events; the relay replays
-# them to Dify workflow routes. Created only when both variables are set.
+# Event queue intake for check_run and pull_request events. Created only when both variables are set.
 variable "event_queue_webhook_url" {
   description = "Event queue intake URL for check_run and pull_request; empty skips the webhook."
   type        = string
