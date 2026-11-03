@@ -443,6 +443,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(restapi_object.docs_publisher) == 0,
       length(github_organization_custom_properties.docs) == 0,
       length(github_organization_webhook.hermes_pr_review) == 0,
+      length(github_organization_webhook.event_queue) == 0,
       length(github_actions_variable.iac_drift_enabled) == 0,
       length(github_organization_ruleset.org_copilot_review) == 0,
       length(github_organization_ruleset.org_release_freeze) == 0,
@@ -578,5 +579,48 @@ run "merge_gate_strict_exempts_only_listed_apps" {
       [for actor in github_organization_ruleset.org_merge_gate["gate"].bypass_actors : actor.actor_type] == ["OrganizationAdmin"]
     )
     error_message = "The existing merge gate must keep strict off and bypass only OrganizationAdmin, so bot pull requests still face the gate check."
+  }
+}
+
+run "event_queue_webhook_created_when_url_and_secret_set" {
+  command = plan
+
+  variables {
+    github_owner               = "tofu-test-fixture"
+    dryvist_org_extras         = true
+    automation_bypass_app_ids  = [1]
+    event_queue_webhook_url    = "https://example.invalid/queue"
+    event_queue_webhook_secret = "test-secret"
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.public_for_codeql
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_webhook.event_queue) == 1 &&
+      toset(github_organization_webhook.event_queue[0].events) == toset(["check_run", "pull_request"]) &&
+      github_organization_webhook.event_queue[0].configuration[0].url == "https://example.invalid/queue" &&
+      github_organization_webhook.event_queue[0].active == true
+    )
+    error_message = "The event queue webhook must send check_run and pull_request events to the intake URL when both URL and secret are set."
   }
 }
