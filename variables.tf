@@ -169,9 +169,9 @@ variable "org_push_protection_enforcement" {
 }
 
 variable "org_code_scanning_enforcement" {
-  description = "Require CodeQL default-setup results on public repositories' default branch and main before updates."
+  description = "Require CodeQL default-setup results on public repositories' default branch and main before updates. Evaluate reports without blocking until every target repository has a configured CodeQL analysis."
   type        = string
-  default     = "active"
+  default     = "evaluate"
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_code_scanning_enforcement)
