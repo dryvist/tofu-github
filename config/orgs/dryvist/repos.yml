@@ -419,35 +419,9 @@ repos:
     description: "Shared content bundle (skills + SOUL persona) for the Hermes autonomous agent"
     topics: []
 
-  # Enrolled 2026-08-22. All four receive Renovate PRs but were unmanaged, so
-  # nothing held them to the module's repo-settings baseline and they had
-  # drifted away from it: raycast-smart-issue had merge commits disabled, and
-  # nix-openwhispr had both auto-merge and delete-branch-on-merge disabled.
-  # Descriptions, topics and visibility below mirror the live values, so
-  # enrolling changes settings and nothing else. cc-edge-pack-template had no
-  # description at all; the one below is drawn from its README.
-  cc-edge-pack-template:
-    visibility: public
-    description: "Template repo for dryvist Cribl packs - reusable test/release workflows and scaffolding"
-    topics: []
-
-  # Does not exist on GitHub yet, so this entry creates it. A Cribl Stream pack
-  # holding one pipeline that masks credential patterns out of events; it is
-  # attached as a destination post-processing pipeline rather than routed to.
-  # Deliberately NOT git-flow, matching the other pack repos: a pack has no
-  # release train to stage, so a single default branch is the honest model.
-  cc-stream-secret-redaction-io:
-    visibility: public
-    description: "Cribl Stream pack that masks credential patterns out of events, attached as a destination post-processing pipeline"
-    topics:
-      - cribl
-      - cribl-pack
-      - cribl-stream
-      - data-masking
-      - log-management
-      - observability
-      - redaction
-      - security
+  # Cribl pack repositories live in the jpe-cribl organization. An entry here
+  # for a name that no longer exists in dryvist is planned as a create, which
+  # would make a new empty repository under a transferred name.
 
   splunk-homelab-alerts:
     visibility: public
@@ -480,6 +454,12 @@ repos:
     description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"
     topics: []
 
+  # Enrolled 2026-08-22. These receive Renovate PRs but were unmanaged, so
+  # nothing held them to the module's repo-settings baseline and they had
+  # drifted away from it: raycast-smart-issue had merge commits disabled, and
+  # nix-openwhispr had both auto-merge and delete-branch-on-merge disabled.
+  # Descriptions, topics and visibility below mirror the live values, so
+  # enrolling changes settings and nothing else.
   nix-openwhispr:
     visibility: public
     description: "Reproducible Nix packaging and macOS lifecycle integration for OpenWhispr"
