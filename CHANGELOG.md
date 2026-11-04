@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.44.1](https://github.com/dryvist/tofu-github/compare/v1.44.0...v1.44.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* **rulesets:** set the org CodeQL ruleset default to evaluate ([#404](https://github.com/dryvist/tofu-github/issues/404)) ([c3243b6](https://github.com/dryvist/tofu-github/commit/c3243b632fb57be8a8d392768335f0094a420994))
+
 ## [1.44.0](https://github.com/dryvist/tofu-github/compare/v1.43.0...v1.44.0) (2026-11-04)
 
 
