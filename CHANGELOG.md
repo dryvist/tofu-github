@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.44.0](https://github.com/dryvist/tofu-github/compare/v1.43.0...v1.44.0) (2026-11-04)
+
+
+### Features
+
+* **github:** add an org webhook that feeds the event queue ([#399](https://github.com/dryvist/tofu-github/issues/399)) ([4da9ec5](https://github.com/dryvist/tofu-github/commit/4da9ec5cd6c20199dc6db834866f1c3559b15c69))
+
+
+### Bug Fixes
+
+* **config:** stop listing Cribl pack repos that moved to jpe-cribl ([#401](https://github.com/dryvist/tofu-github/issues/401)) ([24905ba](https://github.com/dryvist/tofu-github/commit/24905ba1e0efd3a14b0644afea78739b29b1504a))
+
 ## [1.43.0](https://github.com/dryvist/tofu-github/compare/v1.42.0...v1.43.0) (2026-11-02)
 
 
