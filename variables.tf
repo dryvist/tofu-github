@@ -298,17 +298,10 @@ variable "hermes_webhook_secret" {
   default     = ""
 }
 
-# Event queue intake for check_run and pull_request events. Created only when both variables are set.
-variable "event_queue_webhook_url" {
-  description = "Event queue intake URL for check_run and pull_request; empty skips the webhook."
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
-variable "event_queue_webhook_secret" {
-  description = "GitHub HMAC signing secret for the event queue intake; empty skips the webhook."
-  type        = string
-  sensitive   = true
-  default     = ""
+# Event queue intake for check_run and pull_request events. Off until the intake
+# records exist in Vault, so the plan never reads absent paths.
+variable "event_queue_webhook_enabled" {
+  description = "Create the event queue org webhook from the intake records in Vault."
+  type        = bool
+  default     = false
 }

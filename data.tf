@@ -18,6 +18,20 @@ data "vault_kv_secret_v2" "private_repo_overrides" {
   name  = "infrastructure/tofu-github/private-overrides"
 }
 
+# Event queue intake: the Function URL and HMAC secret that the webhook-intake
+# module publishes to Vault. Read only when the webhook is enabled.
+data "vault_kv_secret_v2" "event_queue_intake_config" {
+  count = var.dryvist_org_extras && var.event_queue_webhook_enabled ? 1 : 0
+  mount = "config"
+  name  = "apps/hermes-webhook"
+}
+
+data "vault_kv_secret_v2" "event_queue_intake_secret" {
+  count = var.dryvist_org_extras && var.event_queue_webhook_enabled ? 1 : 0
+  mount = "secrets-external"
+  name  = "apps/hermes-webhook"
+}
+
 # Read the release automation App ID from the org Actions variable so rulesets
 # can grant its pull-request review bypass without storing the ID in this repo.
 data "github_actions_organization_variables" "org" {}
