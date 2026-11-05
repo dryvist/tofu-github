@@ -13,14 +13,14 @@ resource "github_organization_webhook" "hermes_pr_review" {
 }
 
 resource "github_organization_webhook" "event_queue" {
-  count  = var.dryvist_org_extras && nonsensitive(trimspace(var.event_queue_webhook_url) != "" && trimspace(var.event_queue_webhook_secret) != "") ? 1 : 0
+  count  = var.dryvist_org_extras && var.event_queue_webhook_enabled ? 1 : 0
   events = ["check_run", "pull_request"]
 
   configuration {
-    url          = var.event_queue_webhook_url
+    url          = jsondecode(data.vault_kv_secret_v2.event_queue_intake_config[0].data_json).function_url
     content_type = "json"
     insecure_ssl = false
-    secret       = var.event_queue_webhook_secret
+    secret       = jsondecode(data.vault_kv_secret_v2.event_queue_intake_secret[0].data_json).hmac_secret
   }
 
   active = true
