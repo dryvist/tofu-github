@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.45.0](https://github.com/dryvist/tofu-github/compare/v1.44.1...v1.45.0) (2026-11-05)
+
+
+### Features
+
+* **github:** read the event queue webhook from Vault KV ([#408](https://github.com/dryvist/tofu-github/issues/408)) ([84a5d5b](https://github.com/dryvist/tofu-github/commit/84a5d5be02bf4605f5e0868edd7c52d4a37e2abb))
+
 ## [1.44.1](https://github.com/dryvist/tofu-github/compare/v1.44.0...v1.44.1) (2026-11-04)
 
 
