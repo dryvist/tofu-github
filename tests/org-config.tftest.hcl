@@ -582,15 +582,14 @@ run "merge_gate_strict_exempts_only_listed_apps" {
   }
 }
 
-run "event_queue_webhook_created_when_url_and_secret_set" {
+run "event_queue_webhook_created_when_enabled_with_intake_records" {
   command = plan
 
   variables {
-    github_owner               = "tofu-test-fixture"
-    dryvist_org_extras         = true
-    automation_bypass_app_ids  = [1]
-    event_queue_webhook_url    = "https://example.invalid/queue"
-    event_queue_webhook_secret = "test-secret"
+    github_owner                = "tofu-test-fixture"
+    dryvist_org_extras          = true
+    automation_bypass_app_ids   = [1]
+    event_queue_webhook_enabled = true
   }
 
   override_data {
@@ -614,13 +613,32 @@ run "event_queue_webhook_created_when_url_and_secret_set" {
     }
   }
 
+  override_data {
+    target = data.vault_kv_secret_v2.event_queue_intake_config
+    values = {
+      data_json = <<-JSON
+        {"function_url": "https://example.invalid/queue"}
+        JSON
+    }
+  }
+
+  override_data {
+    target = data.vault_kv_secret_v2.event_queue_intake_secret
+    values = {
+      data_json = <<-JSON
+        {"hmac_secret": "test-secret"}
+        JSON
+    }
+  }
+
   assert {
     condition = (
       length(github_organization_webhook.event_queue) == 1 &&
       toset(github_organization_webhook.event_queue[0].events) == toset(["check_run", "pull_request"]) &&
       github_organization_webhook.event_queue[0].configuration[0].url == "https://example.invalid/queue" &&
+      github_organization_webhook.event_queue[0].configuration[0].secret == "test-secret" &&
       github_organization_webhook.event_queue[0].active == true
     )
-    error_message = "The event queue webhook must send check_run and pull_request events to the intake URL when both URL and secret are set."
+    error_message = "The event queue webhook must send check_run and pull_request events to the intake URL, signed with the intake HMAC secret, when enabled."
   }
 }
