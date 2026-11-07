@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.46.0](https://github.com/dryvist/tofu-github/compare/v1.45.1...v1.46.0) (2026-11-07)
+
+
+### Features
+
+* **jpe-splunk:** register the Splunk app repositories ([#417](https://github.com/dryvist/tofu-github/issues/417)) ([48d6615](https://github.com/dryvist/tofu-github/commit/48d6615d0c70f0f400b0493a9343be3dff6dcab8))
+
 ## [1.45.1](https://github.com/dryvist/tofu-github/compare/v1.45.0...v1.45.1) (2026-11-07)
 
 
