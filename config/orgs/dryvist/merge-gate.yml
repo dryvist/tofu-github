@@ -37,6 +37,7 @@ merge_gate:
         - docs
         - grafana-dashboards
         - homelab-contracts
+        - homelab-wall
         - iac-platform
         - nix-ai-open-harness
         - nix-claude-code
