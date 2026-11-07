@@ -1,0 +1,63 @@
+# Per-repo overrides for jpe-splunk repositories managed by tofu-github.
+repos:
+  Jacobs_Alerts_for_Homelab:
+    visibility: public
+    gitflow: false
+    description: "Splunk app with cross-cutting alerts and KPIs for Jacob's homelab."
+    topics:
+      - splunk
+      - splunk-app
+
+  Jacobs_App_for_LiteLLM:
+    visibility: public
+    gitflow: false
+    description: "Splunk app for LiteLLM router searches and alerts."
+    topics:
+      - litellm
+      - splunk
+      - splunk-app
+
+  Jacobs_App_for_vLLM:
+    visibility: public
+    gitflow: false
+    description: "Splunk app for vLLM serving."
+    topics:
+      - splunk
+      - splunk-app
+      - vllm
+
+  Jacobs_Telemetry_Flow_App:
+    visibility: public
+    gitflow: false
+    description: "Splunk app for the Cribl telemetry flow."
+    topics:
+      - cribl
+      - splunk
+      - splunk-app
+
+  Jacobs_App_for_OpenBao:
+    visibility: public
+    gitflow: false
+    description: "Splunk app for OpenBao searches and alerts."
+    topics:
+      - openbao
+      - splunk
+      - splunk-app
+
+  Jacobs_App_for_Dify:
+    visibility: public
+    gitflow: false
+    description: "Splunk app for Dify."
+    topics:
+      - dify
+      - splunk
+      - splunk-app
+
+  Jacobs_App_for_Proxmox:
+    visibility: public
+    gitflow: false
+    description: "Splunk app for Proxmox searches and alerts."
+    topics:
+      - proxmox
+      - splunk
+      - splunk-app
