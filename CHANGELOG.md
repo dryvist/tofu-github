@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.45.1](https://github.com/dryvist/tofu-github/compare/v1.45.0...v1.45.1) (2026-11-07)
+
+
+### Bug Fixes
+
+* **tofu-github:** require homelab-wall merge gate ([#414](https://github.com/dryvist/tofu-github/issues/414)) ([85313a3](https://github.com/dryvist/tofu-github/commit/85313a333a9d57b86b382a9be37aa2f8d9ec643d))
+
 ## [1.45.0](https://github.com/dryvist/tofu-github/compare/v1.44.1...v1.45.0) (2026-11-05)
 
 
