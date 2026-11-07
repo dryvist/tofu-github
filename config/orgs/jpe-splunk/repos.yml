@@ -3,7 +3,7 @@ repos:
   Jacobs_Alerts_for_Homelab:
     visibility: public
     gitflow: false
-    description: "Splunk app with cross-cutting alerts and KPIs for Jacob's homelab."
+    description: "Splunk app with cross-cutting alerts and KPIs for one private homelab."
     topics:
       - splunk
       - splunk-app
