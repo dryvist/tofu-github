@@ -1,0 +1,7 @@
+# Test fixture for tests/org-config.tftest.hcl; not a managed organization.
+repos:
+  sample:
+    visibility: public
+    description: "Repository branch configuration test fixture"
+    topics: []
+    main_from_renovate_preset: true

@@ -7,6 +7,10 @@
 # git-flow rulesets. Never a second list to keep in sync.
 locals {
   gitflow_repos = [for name, cfg in local.managed_repos : name if try(cfg.gitflow, false)]
+  main_from_renovate_repos = [
+    for name, cfg in local.managed_repos : name
+    if try(cfg.main_from_renovate_preset, false) && try(cfg.visibility, "") == "public"
+  ]
 }
 
 # Define the custom property at the org level to tag git-flow enabled repositories
@@ -83,4 +87,22 @@ resource "github_branch_default" "develop" {
 
   repository = each.value
   branch     = github_branch.develop[each.key].branch
+}
+
+# Repositories selected in repos.yml get main from the existing Renovate branch.
+# github_branch only creates a ref; after creation, later commits on main are left alone.
+resource "github_branch" "main_from_renovate_preset" {
+  for_each = toset(local.main_from_renovate_repos)
+
+  repository    = each.value
+  branch        = "main"
+  source_branch = "chore/renovate-inherit-preset"
+}
+
+# Make the seeded main branch the default after it has been created.
+resource "github_branch_default" "main_from_renovate_preset" {
+  for_each = toset(local.main_from_renovate_repos)
+
+  repository = each.value
+  branch     = github_branch.main_from_renovate_preset[each.key].branch
 }

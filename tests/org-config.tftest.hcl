@@ -68,12 +68,14 @@ mock_provider "vault" {
               "description": "",
               "topics": [],
               "visibility": "private",
+              "main_from_renovate_preset": true,
               "merge_gate": { "gate": { "context": "gate / Merge Gate" } }
             },
             "example-b": {
               "description": "",
               "topics": [],
               "visibility": "private",
+              "main_from_renovate_preset": true,
               "merge_gate": { "gate": { "context": "gate / Merge Gate" } }
             }
           }
@@ -182,6 +184,60 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
       ])
     ])
     error_message = "Every REST-managed ruleset must set the extra approval parameter to false on its pull_request rule."
+  }
+}
+
+run "main_from_renovate_preset_is_configured_as_default" {
+  command = plan
+
+  variables {
+    github_owner              = "tofu-test-fixture"
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      contains(local.main_from_renovate_repos, "sample") &&
+      !contains(local.gitflow_repos, "sample") &&
+      !contains(local.main_from_renovate_repos, "example-a")
+    )
+    error_message = "The selected repo must be bootstrapped as trunk-based from its Renovate branch."
+  }
+
+  assert {
+    condition = (
+      github_branch.main_from_renovate_preset["sample"].branch == "main" &&
+      github_branch.main_from_renovate_preset["sample"].source_branch == "chore/renovate-inherit-preset"
+    )
+    error_message = "The selected repo's main branch must be created from the Renovate branch."
+  }
+
+  assert {
+    condition = (
+      github_branch_default.main_from_renovate_preset["sample"].repository == "sample" &&
+      github_branch_default.main_from_renovate_preset["sample"].branch == "main"
+    )
+    error_message = "The created main branch must become the selected repo's default branch."
+  }
+
+  assert {
+    condition     = yamldecode(file("${path.module}/config/orgs/dryvist/repos.yml")).repos["ai-cli-permissions"].main_from_renovate_preset
+    error_message = "The first repo must select the shared main-branch bootstrap through its org config."
   }
 }
 
