@@ -83,7 +83,7 @@ module "repo_settings" {
 }
 
 moved {
-  from = module.repo_settings["docs-starlight"]
+  from = module.repo_settings["docs-previous"]
   to   = module.repo_settings["docs-private"]
 }
 
