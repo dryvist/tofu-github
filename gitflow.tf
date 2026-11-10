@@ -39,7 +39,7 @@ resource "github_repository_custom_property" "gitflow" {
 }
 
 moved {
-  from = github_repository_custom_property.gitflow["docs-starlight"]
+  from = github_repository_custom_property.gitflow["docs-previous"]
   to   = github_repository_custom_property.gitflow["docs-private"]
 }
 
