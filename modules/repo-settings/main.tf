@@ -12,6 +12,10 @@
 # The owner is supplied by the calling module's provider (a single
 # org-scoped provider at the root); this module never names it.
 
+locals {
+  fork_source = var.fork_of == null ? [] : split("/", var.fork_of)
+}
+
 resource "github_repository" "this" {
   # checkov:skip=CKV_GIT_1: These repos are intentionally public. The org cost
   # policy (see AGENTS.md) depends on public visibility to keep secret scanning
@@ -25,6 +29,12 @@ resource "github_repository" "this" {
   name        = var.name
   description = var.description
   topics      = var.topics
+
+  # The provider types fork as a string. Only set the native fork arguments when the selected org config names an
+  # upstream. Null keeps the pre-existing resource arguments unchanged.
+  fork         = var.fork_of == null ? null : "true"
+  source_owner = try(local.fork_source[0], null)
+  source_repo  = try(local.fork_source[1], null)
 
   visibility = var.visibility
   archived   = var.archived

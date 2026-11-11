@@ -17,3 +17,8 @@ repos:
     description: "Test fixture for pull request automation"
     topics: []
     allow_update_branch: true
+  tau2-bench:
+    visibility: public
+    fork_of: sierra-research/tau2-bench
+    description: "Fork of tau2-bench with CLI flags to pin every model role"
+    topics: [benchmark, llm-evaluation]
