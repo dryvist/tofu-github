@@ -1,0 +1,6 @@
+# Repositories whose default branch requires the PR Reconcile `merge-hold`
+# status. `evaluate` reports without blocking; switch to `active` once the
+# controller's sweep covers every listed repository.
+enforcement: evaluate
+repos:
+  - pr-automation-fixture

@@ -116,6 +116,21 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
+    condition     = length(github_organization_ruleset.merge_hold) == 0
+    error_message = "An owner without merge-hold.yml must not get the merge-hold ruleset."
+  }
+
+  assert {
+    condition = (
+      length(github_actions_variable.pr_reconcile_owners) == 1 &&
+      github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
+      github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
+      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans-ai"
+    )
+    error_message = "The PR Reconcile owners variable must come from the owner's pr-reconcile.yml."
+  }
+
+  assert {
     condition     = length(local.repos) == 0 && length(local.ruleset_imports) == 0
     error_message = "An owner with no YAML overrides must use empty repo data and skip org-specific imports."
   }
@@ -511,6 +526,8 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.markdown_lint) == 0,
       length(github_organization_ruleset.conventions) == 0,
       length(github_organization_ruleset.ai_review) == 0,
+      length(github_organization_ruleset.merge_hold) == 0,
+      length(github_actions_variable.pr_reconcile_owners) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
@@ -696,5 +713,45 @@ run "event_queue_webhook_created_when_enabled_with_intake_records" {
       github_organization_webhook.event_queue[0].active == true
     )
     error_message = "The event queue webhook must send check_run and pull_request events to the intake URL, signed with the intake HMAC secret, when enabled."
+  }
+}
+
+run "merge_hold_ruleset_follows_the_owner_config" {
+  command = plan
+
+  variables {
+    github_owner              = "JacobPEvans-ai"
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_resource {
+    target = github_organization_custom_properties.family
+    values = {
+      default_value = null
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.merge_hold) == 1 &&
+      github_organization_ruleset.merge_hold[0].name == "org-merge-hold" &&
+      github_organization_ruleset.merge_hold[0].target == "branch" &&
+      github_organization_ruleset.merge_hold[0].enforcement == "evaluate" &&
+      tolist(github_organization_ruleset.merge_hold[0].conditions[0].ref_name[0].include) == tolist(["~DEFAULT_BRANCH"]) &&
+      tolist(github_organization_ruleset.merge_hold[0].conditions[0].repository_name[0].include) == tolist(["pr-automation-fixture"]) &&
+      github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].strict_required_status_checks_policy == false &&
+      github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].do_not_enforce_on_create == true &&
+      [for check in github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].required_check : check.context] == ["merge-hold"] &&
+      [for actor in github_organization_ruleset.merge_hold[0].bypass_actors : "${actor.actor_type}/${actor.bypass_mode}"] == ["OrganizationAdmin/pull_request"]
+    )
+    error_message = "merge-hold.yml must set the ruleset's enforcement, repositories, the merge-hold context and the admin bypass."
   }
 }

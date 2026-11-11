@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.48.0](https://github.com/dryvist/tofu-github/compare/v1.47.0...v1.48.0) (2026-11-10)
+
+
+### Features
+
+* **agent:** zcode run j-5621b7d6de1ea599 ([dc2a4b6](https://github.com/dryvist/tofu-github/commit/dc2a4b6f98fd5c7a34de95e18b779959f5d7e0b2))
+
+
+### Bug Fixes
+
+* replace private names with role words ([#423](https://github.com/dryvist/tofu-github/issues/423)) ([dc2a4b6](https://github.com/dryvist/tofu-github/commit/dc2a4b6f98fd5c7a34de95e18b779959f5d7e0b2))
+
 ## [1.47.0](https://github.com/dryvist/tofu-github/compare/v1.46.0...v1.47.0) (2026-11-08)
 
 
@@ -388,7 +400,7 @@ Releases are automated via release-please from Conventional Commits.
 
 ### Features
 
-* **rulesets:** require Flake Lock Fresh on nix-darwin-host and iac-enforcer ([#173](https://github.com/dryvist/tofu-github/issues/173)) ([9c31005](https://github.com/dryvist/tofu-github/commit/9c3100510a6c7b189296904e71aa465375748efa))
+* **rulesets:** require Flake Lock Fresh on the managed flake repos ([#173](https://github.com/dryvist/tofu-github/issues/173)) ([9c31005](https://github.com/dryvist/tofu-github/commit/9c3100510a6c7b189296904e71aa465375748efa))
 
 ## [1.18.0](https://github.com/dryvist/tofu-github/compare/v1.17.0...v1.18.0) (2026-09-28)
 
