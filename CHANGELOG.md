@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.49.0](https://github.com/dryvist/tofu-github/compare/v1.48.0...v1.49.0) (2026-11-11)
+
+
+### Features
+
+* **actions:** set PR_RECONCILE_OWNERS from the owner's pr-reconcile.yml ([#429](https://github.com/dryvist/tofu-github/issues/429)) ([a7af626](https://github.com/dryvist/tofu-github/commit/a7af626ca7d6f4028c20cfee48e8ac0b158a2602))
+* **ai-untrusted:** opt public repositories of JacobPEvans, JacobPEvans-ai and jpe-cribl into the AI sandbox ([#425](https://github.com/dryvist/tofu-github/issues/425)) ([562b3e8](https://github.com/dryvist/tofu-github/commit/562b3e856679244d28b912f3d098e649db76e0cf))
+* **repos:** add the pr-automation-fixture repository to JacobPEvans-ai ([#426](https://github.com/dryvist/tofu-github/issues/426)) ([e406f53](https://github.com/dryvist/tofu-github/commit/e406f5389bb2f7cbeece750c6a2015d2aa5c6f16))
+* **repos:** declare a repository as a fork with fork_of ([#431](https://github.com/dryvist/tofu-github/issues/431)) ([38d3054](https://github.com/dryvist/tofu-github/commit/38d30547eb71a1cd1998d2876f50802e7bc2bad8))
+* **rulesets:** require the merge-hold status where merge-hold.yml lists repositories ([#428](https://github.com/dryvist/tofu-github/issues/428)) ([d68aaaf](https://github.com/dryvist/tofu-github/commit/d68aaaf7d75af7f387f064c7c86460ec1ef52113))
+
 ## [1.48.0](https://github.com/dryvist/tofu-github/compare/v1.47.0...v1.48.0) (2026-11-10)
 
 
