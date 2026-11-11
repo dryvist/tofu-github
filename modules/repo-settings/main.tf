@@ -28,6 +28,8 @@ resource "github_repository" "this" {
 
   visibility = var.visibility
   archived   = var.archived
+  # A destroy archives the repository on GitHub instead of deleting it.
+  archive_on_destroy = true
   # A created repo gets a default branch so PRs can target it.
   auto_init = true
 
