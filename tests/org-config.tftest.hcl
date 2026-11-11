@@ -516,6 +516,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.markdown_lint) == 0,
       length(github_organization_ruleset.conventions) == 0,
       length(github_organization_ruleset.ai_review) == 0,
+      length(github_organization_ruleset.merge_hold) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
@@ -731,9 +732,13 @@ run "merge_hold_ruleset_follows_the_owner_config" {
     condition = (
       length(github_organization_ruleset.merge_hold) == 1 &&
       github_organization_ruleset.merge_hold[0].name == "org-merge-hold" &&
+      github_organization_ruleset.merge_hold[0].target == "branch" &&
       github_organization_ruleset.merge_hold[0].enforcement == "evaluate" &&
-      local.merge_hold_config.repos == ["pr-automation-fixture"] &&
-      anytrue([for check in github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].required_check : check.context == "merge-hold"])
+      tolist(github_organization_ruleset.merge_hold[0].conditions[0].ref_name[0].include) == tolist(["~DEFAULT_BRANCH"]) &&
+      tolist(github_organization_ruleset.merge_hold[0].conditions[0].repository_name[0].include) == tolist(["pr-automation-fixture"]) &&
+      github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].strict_required_status_checks_policy == false &&
+      github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].do_not_enforce_on_create == true &&
+      [for check in github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].required_check : check.context] == ["merge-hold"]
     )
     error_message = "merge-hold.yml must set the ruleset's enforcement, repositories and the merge-hold context."
   }
