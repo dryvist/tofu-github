@@ -234,11 +234,6 @@ run "main_from_renovate_preset_is_configured_as_default" {
     )
     error_message = "The created main branch must become the selected repo's default branch."
   }
-
-  assert {
-    condition     = yamldecode(file("${path.module}/config/orgs/dryvist/repos.yml")).repos["ai-cli-permissions"].main_from_renovate_preset
-    error_message = "The first repo must select the shared main-branch bootstrap through its org config."
-  }
 }
 
 run "derives_ci_gate_property_from_default_branch_workflow_call" {

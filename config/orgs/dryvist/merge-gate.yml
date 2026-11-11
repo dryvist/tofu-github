@@ -29,7 +29,6 @@ merge_gate:
       context: "gate / Merge Gate"
       repos:
         - .github
-        - ai-llm-prompts
         - ai-workflows
         - claude-code-best-practice
         - claude-code-plugins
@@ -60,7 +59,6 @@ merge_gate:
         - ansible-proxmox-apps
         - ansible-secrets-management
         - ansible-splunk
-        - mlx-benchmarks
         - nix-ai
         - nix-darwin
         - nix-home
