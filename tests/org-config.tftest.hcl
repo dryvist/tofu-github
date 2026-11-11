@@ -738,8 +738,9 @@ run "merge_hold_ruleset_follows_the_owner_config" {
       tolist(github_organization_ruleset.merge_hold[0].conditions[0].repository_name[0].include) == tolist(["pr-automation-fixture"]) &&
       github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].strict_required_status_checks_policy == false &&
       github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].do_not_enforce_on_create == true &&
-      [for check in github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].required_check : check.context] == ["merge-hold"]
+      [for check in github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].required_check : check.context] == ["merge-hold"] &&
+      [for actor in github_organization_ruleset.merge_hold[0].bypass_actors : "${actor.actor_type}/${actor.bypass_mode}"] == ["OrganizationAdmin/pull_request"]
     )
-    error_message = "merge-hold.yml must set the ruleset's enforcement, repositories and the merge-hold context."
+    error_message = "merge-hold.yml must set the ruleset's enforcement, repositories, the merge-hold context and the admin bypass."
   }
 }

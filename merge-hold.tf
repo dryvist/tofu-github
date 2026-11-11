@@ -5,7 +5,7 @@
 # Enforce only after the controller's sweep covers every listed repository, or
 # their pull requests wait for a status that never comes.
 resource "github_organization_ruleset" "merge_hold" {
-  count       = local.merge_hold_config == null ? 0 : 1
+  count       = var.dryvist_org_extras && local.merge_hold_config != null ? 1 : 0
   name        = "org-merge-hold"
   target      = "branch"
   enforcement = local.merge_hold_enforcement
@@ -37,5 +37,10 @@ resource "github_organization_ruleset" "merge_hold" {
         context = "merge-hold"
       }
     }
+  }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
   }
 }
