@@ -46,6 +46,10 @@
 #                are written to the repository custom property.
 #   allow_update_branch: Optional, defaults to false. Shows the "Update branch"
 #                button on pull requests whose head is behind the base.
+#   fork_of:     Optional, defaults to unset. Set to `<owner>/<repo>` to create
+#                this repository as a fork of that public upstream. The owner
+#                and repository name are passed separately to the GitHub
+#                provider's native fork arguments.
 #   upstream_fork: Optional, defaults to false. Set true on a fork that tracks a
 #                third-party upstream default branch. Upstream history is
 #                authored outside the org and cannot carry the org's commit

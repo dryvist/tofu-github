@@ -80,6 +80,9 @@ module "repo_settings" {
   archived = try(each.value.archived, false)
   # Optional, like archived.
   allow_update_branch = try(each.value.allow_update_branch, false)
+  # Optional — absent fork_of passes null so existing repos retain today's
+  # github_repository arguments.
+  fork_of = try(each.value.fork_of, null)
 }
 
 moved {
