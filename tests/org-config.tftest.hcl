@@ -116,6 +116,11 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
+    condition     = length(github_organization_ruleset.merge_hold) == 0
+    error_message = "An owner without merge-hold.yml must not get the merge-hold ruleset."
+  }
+
+  assert {
     condition     = length(local.repos) == 0 && length(local.ruleset_imports) == 0
     error_message = "An owner with no YAML overrides must use empty repo data and skip org-specific imports."
   }
@@ -696,5 +701,40 @@ run "event_queue_webhook_created_when_enabled_with_intake_records" {
       github_organization_webhook.event_queue[0].active == true
     )
     error_message = "The event queue webhook must send check_run and pull_request events to the intake URL, signed with the intake HMAC secret, when enabled."
+  }
+}
+
+run "merge_hold_ruleset_follows_the_owner_config" {
+  command = plan
+
+  variables {
+    github_owner              = "JacobPEvans-ai"
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  override_resource {
+    target = github_organization_custom_properties.family
+    values = {
+      default_value = null
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.merge_hold) == 1 &&
+      github_organization_ruleset.merge_hold[0].name == "org-merge-hold" &&
+      github_organization_ruleset.merge_hold[0].enforcement == "evaluate" &&
+      local.merge_hold_config.repos == ["pr-automation-fixture"] &&
+      anytrue([for check in github_organization_ruleset.merge_hold[0].rules[0].required_status_checks[0].required_check : check.context == "merge-hold"])
+    )
+    error_message = "merge-hold.yml must set the ruleset's enforcement, repositories and the merge-hold context."
   }
 }
