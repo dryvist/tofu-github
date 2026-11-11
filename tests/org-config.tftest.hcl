@@ -122,6 +122,7 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
 
   assert {
     condition = (
+      length(github_actions_variable.pr_reconcile_owners) == 1 &&
       github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
       github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
       github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans-ai"
@@ -526,6 +527,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.conventions) == 0,
       length(github_organization_ruleset.ai_review) == 0,
       length(github_organization_ruleset.merge_hold) == 0,
+      length(github_actions_variable.pr_reconcile_owners) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
