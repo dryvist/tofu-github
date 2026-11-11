@@ -25,6 +25,7 @@ locals {
   merge_hold_config      = try(yamldecode(file("${local.org_config_dir}/merge-hold.yml")), null)
   merge_hold_enforcement = local.merge_hold_config == null ? null : local.merge_hold_config.enforcement
   merge_hold_repos       = local.merge_hold_config == null ? [] : local.merge_hold_config.repos
+  pr_reconcile_config    = try(yamldecode(file("${local.org_config_dir}/pr-reconcile.yml")), null)
 
   org_merge_gate_contexts = try(yamldecode(file("${local.org_config_dir}/merge-gate.yml")).merge_gate.contexts, {})
   # An org whose gates include private repos fails its plan when the private overrides are missing.

@@ -1,0 +1,6 @@
+# The PR Reconcile sweep runs in sweep_repository and reconciles every open
+# pull request of each listed owner. Both keys are required. Owners are added
+# one at a time, after the previous owner's sweep is proven.
+sweep_repository: .github-ai
+owners:
+  - JacobPEvans-ai
