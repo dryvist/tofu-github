@@ -51,3 +51,19 @@ variable "allow_update_branch" {
   type        = bool
   default     = false
 }
+
+variable "fork_of" {
+  description = "Optional upstream repository in <owner>/<repo> form; unset leaves this repository's fork arguments unset."
+  type        = string
+  default     = null
+
+  validation {
+    condition = var.fork_of == null ? true : (
+      length(split("/", var.fork_of)) == 2 &&
+      alltrue([
+        for part in split("/", var.fork_of) : part != "" && part == trimspace(part)
+      ])
+    )
+    error_message = "fork_of must be in the form <owner>/<repo> with non-empty owner and repo."
+  }
+}
