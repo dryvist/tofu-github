@@ -78,17 +78,6 @@ repos:
       - code-review
       - pr-agent
 
-  ai-llm-prompts:
-    visibility: public
-    description: "Version-controlled catalog of Dryvist LLM prompts"
-    topics:
-      - ai
-      - llm
-      - nix
-      - open-knowledge-format
-      - prompt-engineering
-      - prompts
-
   nix-ai:
     visibility: public
     gitflow: true
@@ -251,12 +240,6 @@ repos:
       - syslog
       - virtualization
 
-  llm-prompt-evals:
-    visibility: public
-    gitflow: true
-    description: "promptfoo evaluation harness for the dryvist LLM prompt catalog (ai-llm-prompts)"
-    topics: []
-
   ai-assistant-instructions:
     visibility: public
     gitflow: true
@@ -362,24 +345,6 @@ repos:
       - nix
       - technical-writing
 
-  # Create main from the existing Renovate branch and keep the repo trunk-based.
-  ai-cli-permissions:
-    visibility: public
-    main_from_renovate_preset: true
-    description: "Tool-agnostic command permission policy for AI coding CLIs — one dataset, JSON Schema validated, rendered per tool"
-    topics:
-      - ai
-      - ai-agents
-      - ai-tools
-      - claude-code
-      - cli
-      - gemini-cli
-      - json-schema
-      - llm
-      - permissions
-      - policy-as-code
-      - security
-
   # Git-flow repos that were running the model out of band — `develop` was
   # already their live default branch, set by hand, with nothing in this config
   # describing it. That meant they took none of the shared git-flow wiring:
@@ -468,11 +433,6 @@ repos:
       - azure-pipelines
       - splunk
       - splunk-cloud
-
-  mlx-benchmarks:
-    visibility: public
-    description: "Benchmark harness for MLX and local LLMs on Apple Silicon (results: hf.co/datasets/JacobPEvans/mlx-benchmarks)"
-    topics: []
 
   # Enrolled 2026-08-22. These receive Renovate PRs but were unmanaged, so
   # nothing held them to the module's repo-settings baseline and they had
