@@ -285,6 +285,25 @@ repos:
     topics: []
     archived: true
 
+  # Archived Cribl Edge packs: kept managed so archiving does not drop them from state.
+  cc-edge-macos-diagnostic-reports-io:
+    visibility: public
+    description: "Cribl Edge pack: macOS crash, hang and diagnostic reports"
+    topics: [cribl, cribl-edge, cribl-pack, macos]
+    archived: true
+
+  cc-edge-macos-unified-logs-io:
+    visibility: public
+    description: "Cribl Edge pack: macOS unified log processing"
+    topics: [cribl, cribl-edge, cribl-pack, macos]
+    archived: true
+
+  cc-edge-mlx-serving-io:
+    visibility: public
+    description: "Cribl Edge pack: local MLX model serving logs and metrics"
+    topics: [cribl, cribl-edge, cribl-pack, mlx]
+    archived: true
+
   # Archived: superseded by JacobPEvans/.github-ai.
   ai-workflows:
     visibility: public
