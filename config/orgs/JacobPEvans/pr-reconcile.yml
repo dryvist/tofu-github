@@ -1,0 +1,5 @@
+# The PR Reconcile sweep runs in sweep_repository and reconciles every open
+# pull request of each listed owner.
+sweep_repository: .github-ai
+owners:
+  - JacobPEvans-ai

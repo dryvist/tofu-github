@@ -121,6 +121,15 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
+    condition = (
+      github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
+      github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
+      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans-ai"
+    )
+    error_message = "The PR Reconcile owners variable must come from the owner's pr-reconcile.yml."
+  }
+
+  assert {
     condition     = length(local.repos) == 0 && length(local.ruleset_imports) == 0
     error_message = "An owner with no YAML overrides must use empty repo data and skip org-specific imports."
   }
