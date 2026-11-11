@@ -12,3 +12,8 @@ repos:
       - codex
       - hermes-agent
       - mcp
+  pr-automation-fixture:
+    visibility: public
+    description: "Test fixture for pull request automation"
+    topics: []
+    allow_update_branch: true
