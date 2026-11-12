@@ -23,6 +23,7 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_custom_properties.*` | Organization property schemas | Each property's own file, e.g. `family.tf`, `gitflow.tf` |
 | `github_repository_custom_property.*` | Repository property values | Each property's own file, e.g. `ai-untrusted-property.tf`, `automerge.tf` |
 | `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
+| `github_organization_ruleset.event_forwarder` | [Event forwarder](#event-forwarder) | `rulesets-required-workflows.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
 | `github_organization_ruleset.org_gitflow_base` | Git-flow base branch ruleset | `rulesets-gitflow.tf` |
@@ -98,6 +99,13 @@ approving review. Required status checks are the only merge gate.
 Requires the configured approval count for documentation pull requests. The
 release automation and configured triage apps bypass review in
 `pull_request` mode.
+
+### Event forwarder
+
+When `event_forwarder_enabled` is `true`, the organization ruleset requires
+`.github/workflows/github-event-forwarder.yml` from the selected owner's
+`.github` repository on every repository and branch. The rule is disabled by
+default, and `event_forwarder_enforcement` defaults to `evaluate`.
 
 ### Release freeze
 

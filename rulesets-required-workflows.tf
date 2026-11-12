@@ -153,3 +153,43 @@ moved {
   from = github_organization_ruleset.ai_review
   to   = github_organization_ruleset.ai_review[0]
 }
+
+# Org-wide event forwarder, enforced as a Required Workflow.
+#
+# Attaches the selected owner's .github repo caller to every repository and
+# branch. This rule is independently opt-in so existing workspace behavior is
+# unchanged until event_forwarder_enabled is set.
+resource "github_organization_ruleset" "event_forwarder" {
+  count       = var.event_forwarder_enabled ? 1 : 0
+  name        = "org-event-forwarder"
+  target      = "branch"
+  enforcement = var.event_forwarder_enforcement
+
+  conditions {
+    ref_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+    repository_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = module.repo_settings[".github"].repo_id
+        path          = ".github/workflows/github-event-forwarder.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
+}
