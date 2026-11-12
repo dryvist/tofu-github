@@ -526,6 +526,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.markdown_lint) == 0,
       length(github_organization_ruleset.conventions) == 0,
       length(github_organization_ruleset.ai_review) == 0,
+      length(github_organization_ruleset.event_forwarder) == 0,
       length(github_organization_ruleset.merge_hold) == 0,
       length(github_actions_variable.pr_reconcile_owners) == 0,
     ])
@@ -569,9 +570,10 @@ run "required_workflow_rulesets_use_default_enforcement" {
       length(github_organization_ruleset.conventions) == 1 &&
       github_organization_ruleset.conventions[0].enforcement == "evaluate" &&
       length(github_organization_ruleset.ai_review) == 1 &&
-      github_organization_ruleset.ai_review[0].enforcement == "evaluate"
+      github_organization_ruleset.ai_review[0].enforcement == "evaluate" &&
+      length(github_organization_ruleset.event_forwarder) == 0
     )
-    error_message = "Required-workflow rulesets must use their default enforcement and have one instance when enabled."
+    error_message = "Legacy required-workflow rulesets must retain their defaults while the separately gated event forwarder remains disabled."
   }
 
   assert {
@@ -585,6 +587,47 @@ run "required_workflow_rulesets_use_default_enforcement" {
       one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).security_alerts_threshold == "high_or_higher"
     )
     error_message = "CodeQL merge protection must use the live default-setup repo set and the configured thresholds."
+  }
+}
+
+run "event_forwarder_is_independently_opted_in" {
+  command = plan
+
+  variables {
+    github_owner              = "example-org"
+    dryvist_org_extras        = false
+    event_forwarder_enabled   = true
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.event_forwarder) == 1 &&
+      github_organization_ruleset.event_forwarder[0].enforcement == "evaluate" &&
+      tolist(github_organization_ruleset.event_forwarder[0].conditions[0].ref_name[0].include) == tolist(["~ALL"]) &&
+      tolist(github_organization_ruleset.event_forwarder[0].conditions[0].repository_name[0].include) == tolist(["~ALL"]) &&
+      one(github_organization_ruleset.event_forwarder[0].rules[0].required_workflows[0].required_workflow).repository_id == 1 &&
+      one(github_organization_ruleset.event_forwarder[0].rules[0].required_workflows[0].required_workflow).path == ".github/workflows/github-event-forwarder.yml" &&
+      one(github_organization_ruleset.event_forwarder[0].rules[0].required_workflows[0].required_workflow).ref == "refs/heads/main" &&
+      one(github_organization_ruleset.event_forwarder[0].bypass_actors).actor_type == "OrganizationAdmin" &&
+      one(github_organization_ruleset.event_forwarder[0].bypass_actors).bypass_mode == "pull_request"
+    )
+    error_message = "The event-forwarder rule must independently target every repository and branch, require the selected owner's caller at main, default to evaluate, and retain the org-admin bypass."
   }
 }
 

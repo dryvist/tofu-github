@@ -23,6 +23,7 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_custom_properties.*` | Organization property schemas | Each property's own file, e.g. `family.tf`, `gitflow.tf` |
 | `github_repository_custom_property.*` | Repository property values | Each property's own file, e.g. `ai-untrusted-property.tf`, `automerge.tf` |
 | `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
+| `github_organization_ruleset.event_forwarder` | [Event forwarder](#event-forwarder) | `rulesets-required-workflows.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
 | `github_organization_ruleset.org_branch_write_restriction` | [Branch-write restriction](#branch-write-restriction) | `rulesets-branch-write-restriction.tf` |
 | `github_organization_ruleset.org_gitflow_base` | Git-flow base branch ruleset | `rulesets-gitflow.tf` |
@@ -99,6 +100,13 @@ Requires the configured approval count for documentation pull requests. The
 release automation and configured triage apps bypass review in
 `pull_request` mode.
 
+### Event forwarder
+
+When `event_forwarder_enabled` is `true`, the organization ruleset requires
+`.github/workflows/github-event-forwarder.yml` from the selected owner's
+`.github` repository on every repository and branch. The rule is disabled by
+default, and `event_forwarder_enforcement` defaults to `evaluate`.
+
 ### Release freeze
 
 Requires the `release-freeze` status on `develop` in repos with the
@@ -107,19 +115,8 @@ Requires the `release-freeze` status on `develop` in repos with the
 
 ### Git-flow main-source gate
 
-For repositories whose organization custom property `gitflow` is `true`, a
-pull request into `main` must come from the same repository's `develop`
-branch or from a `hotfix/<name>` branch. An enterprise-level required
-workflow runs `.github/workflows/main-source-gate.yml` and reports the
-`Main Source Gate` check. The ruleset that attaches it is managed outside this
-root. It runs in `evaluate` mode and moves to `active` after the evaluation
-results are clean.
-
-`main` accepts merge commits only, and `develop` accepts squash merges only.
-A `hotfix/<name>` branch starts from `main`: its pull request targets `main`,
-and a second pull request from that branch targets `develop`. Under
-[Branch-write restriction](#branch-write-restriction), only the apps listed in
-`automation_bypass_app_ids` can create or update a `hotfix/<name>` branch.
+See [Git-flow main-source gate](docs/agents/git-flow-main-source-gate.md) for
+allowed source branches, enforcement, and the hotfix flow.
 
 ### Branch-write restriction
 
