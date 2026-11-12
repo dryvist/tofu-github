@@ -125,7 +125,7 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
       length(github_actions_variable.pr_reconcile_owners) == 1 &&
       github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
       github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
-      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans-ai"
+      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans,JacobPEvans-ai,jpe-nix,jpe-private,jpe-ansible,jpe-cribl,jpe-splunk,jpe-openbao-plugin-secrets"
     )
     error_message = "The PR Reconcile owners variable must come from the owner's pr-reconcile.yml."
   }
