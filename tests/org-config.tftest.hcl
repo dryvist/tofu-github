@@ -125,9 +125,19 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
       length(github_actions_variable.pr_reconcile_owners) == 1 &&
       github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
       github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
-      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans-ai"
+      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans,JacobPEvans-ai,jpe-nix,jpe-private,jpe-ansible,jpe-cribl,jpe-splunk,jpe-openbao-plugin-secrets"
     )
     error_message = "The PR Reconcile owners variable must come from the owner's pr-reconcile.yml."
+  }
+
+  assert {
+    condition = (
+      length(github_actions_variable.pr_reconcile_claude_bot_id) == 1 &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].repository == ".github-ai" &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].variable_name == "GH_APP_CLAUDE_BOT_ID" &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].value == "2956476"
+    )
+    error_message = "The Claude bot app ID variable must come from the owner's pr-reconcile.yml."
   }
 
   assert {
@@ -529,6 +539,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.event_forwarder) == 0,
       length(github_organization_ruleset.merge_hold) == 0,
       length(github_actions_variable.pr_reconcile_owners) == 0,
+      length(github_actions_variable.pr_reconcile_claude_bot_id) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
