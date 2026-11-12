@@ -1,8 +1,10 @@
 # The PR Reconcile sweep runs in sweep_repository and reconciles every open
-# pull request of each listed owner. All keys are required. dryvist joins once
-# the sweep honours a repository exclusion list.
+# pull request of each listed owner. sweep_repository, claude_bot_app_id, and
+# owners are required; runner_group optionally selects a restricted self-hosted
+# runner group. dryvist joins once the sweep honours a repository exclusion list.
 sweep_repository: .github-ai
 claude_bot_app_id: "2956476"
+runner_group: pr-reconcile
 owners:
   - JacobPEvans
   - JacobPEvans-ai

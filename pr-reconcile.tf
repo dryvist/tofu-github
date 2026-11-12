@@ -31,3 +31,32 @@ resource "github_actions_variable" "pr_reconcile_claude_bot_id" {
     }
   }
 }
+
+data "github_repository" "pr_reconcile" {
+  count = try(local.pr_reconcile_config.runner_group, null) == null ? 0 : 1
+
+  name = try(local.pr_reconcile_config.sweep_repository, "")
+}
+
+resource "github_actions_runner_group" "pr_reconcile" {
+  count = try(local.pr_reconcile_config.runner_group, null) == null ? 0 : 1
+
+  name                    = try(local.pr_reconcile_config.runner_group, "")
+  visibility              = "selected"
+  selected_repository_ids = [data.github_repository.pr_reconcile[0].repo_id]
+  restricted_to_workflows = true
+  selected_workflows = [
+    "${local.org}/${try(local.pr_reconcile_config.sweep_repository, "")}/.github/workflows/pr-reconcile-sweep.yml@refs/heads/main",
+    "${local.org}/${try(local.pr_reconcile_config.sweep_repository, "")}/.github/workflows/pr-reconcile.yml@refs/heads/main",
+  ]
+  # The public sweep repository needs public-repository access. Selection of
+  # that repository and these workflow refs limits which jobs can use the group.
+  allows_public_repositories = true
+
+  lifecycle {
+    precondition {
+      condition     = try(local.pr_reconcile_config.runner_group, "") != "" && try(local.pr_reconcile_config.sweep_repository, "") != ""
+      error_message = "config/orgs/<owner>/pr-reconcile.yml runner_group requires a non-empty runner_group and sweep_repository."
+    }
+  }
+}
