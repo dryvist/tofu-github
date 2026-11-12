@@ -38,23 +38,6 @@ variable "ai_review_enforcement" {
   }
 }
 
-variable "event_forwarder_enabled" {
-  description = "Enable the org-wide event-forwarder required workflow."
-  type        = bool
-  default     = false
-}
-
-variable "event_forwarder_enforcement" {
-  description = "Event-forwarder required-workflow enforcement mode."
-  type        = string
-  default     = "evaluate"
-
-  validation {
-    condition     = contains(["disabled", "evaluate", "active"], var.event_forwarder_enforcement)
-    error_message = "event_forwarder_enforcement must be one of: disabled, evaluate, active."
-  }
-}
-
 variable "docs_publisher_enforcement" {
   description = <<-EOT
     Documentation publisher requires its configured approval count; release and triage apps bypass PRs.
@@ -321,4 +304,20 @@ variable "event_queue_webhook_enabled" {
   description = "Create the event queue org webhook from the intake records in Vault."
   type        = bool
   default     = false
+}
+
+variable "event_forwarder_enabled" {
+  description = "Enable the org-wide event-forwarder required workflow."
+  type        = bool
+  default     = false
+}
+
+variable "event_forwarder_enforcement" {
+  description = "Event-forwarder required-workflow enforcement mode."
+  type        = string
+  default     = "evaluate"
+  validation {
+    condition     = contains(["disabled", "evaluate", "active"], var.event_forwarder_enforcement)
+    error_message = "Use disabled, evaluate or active."
+  }
 }
