@@ -148,8 +148,7 @@ default setup on the org's public repos is managed in `code_scanning.tf`.
 ```text
 versions.tf       # tofu + provider pins, Terrakube cloud backend
 providers.tf      # github + REST providers, token minted per run (ephemeral)
-variables.tf      # shared input variables (no magic numbers in .tf below)
-event-forwarder-variables.tf   # event-forwarder inputs
+variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
