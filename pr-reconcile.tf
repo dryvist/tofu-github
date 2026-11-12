@@ -16,3 +16,18 @@ resource "github_actions_variable" "pr_reconcile_owners" {
     }
   }
 }
+
+resource "github_actions_variable" "pr_reconcile_claude_bot_id" {
+  count = local.pr_reconcile_config == null ? 0 : 1
+
+  repository    = try(local.pr_reconcile_config.sweep_repository, "")
+  variable_name = "GH_APP_CLAUDE_BOT_ID"
+  value         = try(local.pr_reconcile_config.claude_bot_app_id, "")
+
+  lifecycle {
+    precondition {
+      condition     = try(local.pr_reconcile_config.sweep_repository, "") != "" && try(local.pr_reconcile_config.claude_bot_app_id, "") != ""
+      error_message = "config/orgs/<owner>/pr-reconcile.yml needs sweep_repository and claude_bot_app_id."
+    }
+  }
+}

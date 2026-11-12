@@ -131,6 +131,16 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
+    condition = (
+      length(github_actions_variable.pr_reconcile_claude_bot_id) == 1 &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].repository == ".github-ai" &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].variable_name == "GH_APP_CLAUDE_BOT_ID" &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].value == "2956476"
+    )
+    error_message = "The Claude bot app ID variable must come from the owner's pr-reconcile.yml."
+  }
+
+  assert {
     condition     = length(local.repos) == 0 && length(local.ruleset_imports) == 0
     error_message = "An owner with no YAML overrides must use empty repo data and skip org-specific imports."
   }
@@ -529,6 +539,7 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_organization_ruleset.event_forwarder) == 0,
       length(github_organization_ruleset.merge_hold) == 0,
       length(github_actions_variable.pr_reconcile_owners) == 0,
+      length(github_actions_variable.pr_reconcile_claude_bot_id) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
