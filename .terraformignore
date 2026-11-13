@@ -7,6 +7,9 @@
 #   such file or directory
 # .git/ and .terraform/ are excluded by tofu's defaults; .direnv/ is not.
 .direnv/
+# Agent skill links point into the Nix store and worktrees are separate checkouts.
+.agents/
+.worktrees/
 .terraform/
 **/.terraform/
 *.tfstate
