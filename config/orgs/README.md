@@ -7,3 +7,5 @@ organization's live GitHub data.
 
 Shared policy values stay in `config/commit-message-pattern.txt` and
 `config/rulesets-defaults.yml`.
+
+Required workflow gates are enabled by `config/orgs/<github_owner>/required-workflows.yml`.

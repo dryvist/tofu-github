@@ -1,0 +1,3 @@
+# Organization rulesets that require a workflow from this organization's .github repository.
+disclosure_gate: true
+main_source_gate: true

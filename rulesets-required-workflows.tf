@@ -193,3 +193,73 @@ resource "github_organization_ruleset" "event_forwarder" {
     bypass_mode = "pull_request"
   }
 }
+
+# Requires the disclosure workflow on public repository PRs targeting the
+# default, main, and develop branches. `config/orgs/<owner>/required-workflows.yml` opts in each org.
+resource "github_organization_ruleset" "disclosure_gate" {
+  count       = try(local.required_workflows_config.disclosure_gate, false) ? 1 : 0
+  name        = "org-disclosure-gate"
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH", "refs/heads/main", "refs/heads/develop"]
+      exclude = []
+    }
+    repository_property {
+      include = [{
+        name            = "visibility"
+        property_values = ["public"]
+        source          = "system"
+      }]
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = module.repo_settings[".github"].repo_id
+        path          = ".github/workflows/disclosure-gate.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+}
+
+# Requires the main-source workflow on gitflow repositories' main PRs.
+# `config/orgs/<owner>/required-workflows.yml` opts in each org.
+resource "github_organization_ruleset" "main_source_gate" {
+  count       = try(local.required_workflows_config.main_source_gate, false) ? 1 : 0
+  name        = "org-main-source-gate"
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/main"]
+      exclude = []
+    }
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = module.repo_settings[".github"].repo_id
+        path          = ".github/workflows/main-source-gate.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+}
