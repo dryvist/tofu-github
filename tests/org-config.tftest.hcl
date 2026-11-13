@@ -122,12 +122,48 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
 
   assert {
     condition = (
+      length(github_organization_ruleset.disclosure_gate) == 0 &&
+      length(github_organization_ruleset.main_source_gate) == 0
+    )
+    error_message = "An owner without required-workflows.yml must not get either required-workflow gate."
+  }
+
+  assert {
+    condition = (
       length(github_actions_variable.pr_reconcile_owners) == 1 &&
       github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
       github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
-      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans-ai"
+      github_actions_variable.pr_reconcile_owners[0].value == "JacobPEvans,JacobPEvans-ai,jpe-nix,jpe-private,jpe-ansible,jpe-cribl,jpe-splunk,jpe-openbao-plugin-secrets"
     )
     error_message = "The PR Reconcile owners variable must come from the owner's pr-reconcile.yml."
+  }
+
+  assert {
+    condition = (
+      length(github_actions_variable.pr_reconcile_claude_bot_id) == 1 &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].repository == ".github-ai" &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].variable_name == "GH_APP_CLAUDE_BOT_ID" &&
+      github_actions_variable.pr_reconcile_claude_bot_id[0].value == "2956476"
+    )
+    error_message = "The Claude bot app ID variable must come from the owner's pr-reconcile.yml."
+  }
+
+  assert {
+    condition = (
+      length(github_actions_runner_group.pr_reconcile) == 1 &&
+      github_actions_runner_group.pr_reconcile[0].name == "pr-reconcile" &&
+      github_actions_runner_group.pr_reconcile[0].visibility == "selected" &&
+      length(github_actions_runner_group.pr_reconcile[0].selected_repository_ids) == 1 &&
+      toset(github_actions_runner_group.pr_reconcile[0].selected_repository_ids) == toset([data.github_repository.pr_reconcile[0].repo_id]) &&
+      github_actions_runner_group.pr_reconcile[0].restricted_to_workflows &&
+      length(github_actions_runner_group.pr_reconcile[0].selected_workflows) == 2 &&
+      toset(github_actions_runner_group.pr_reconcile[0].selected_workflows) == toset([
+        "${local.org}/${local.pr_reconcile_config.sweep_repository}/.github/workflows/pr-reconcile-sweep.yml@refs/heads/main",
+        "${local.org}/${local.pr_reconcile_config.sweep_repository}/.github/workflows/pr-reconcile.yml@refs/heads/main",
+      ]) &&
+      github_actions_runner_group.pr_reconcile[0].allows_public_repositories
+    )
+    error_message = "The PR Reconcile runner group must be limited to the sweep repository and its two main-branch workflows."
   }
 
   assert {
@@ -253,6 +289,69 @@ run "main_from_renovate_preset_is_configured_as_default" {
   assert {
     condition     = yamldecode(file("${path.module}/config/orgs/dryvist/repos.yml")).repos["ai-cli-permissions"].main_from_renovate_preset
     error_message = "The first repo must select the shared main-branch bootstrap through its org config."
+  }
+}
+
+run "required_workflow_gates_follow_the_owner_config" {
+  command = plan
+
+  variables {
+    github_owner              = "tofu-test-fixture"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.disclosure_gate) == 1 &&
+      github_organization_ruleset.disclosure_gate[0].name == "org-disclosure-gate" &&
+      github_organization_ruleset.disclosure_gate[0].target == "branch" &&
+      github_organization_ruleset.disclosure_gate[0].enforcement == "active" &&
+      tolist(github_organization_ruleset.disclosure_gate[0].conditions[0].ref_name[0].include) == tolist(["~DEFAULT_BRANCH", "refs/heads/main", "refs/heads/develop"]) &&
+      one(github_organization_ruleset.disclosure_gate[0].conditions[0].repository_property[0].include).name == "visibility" &&
+      tolist(one(github_organization_ruleset.disclosure_gate[0].conditions[0].repository_property[0].include).property_values) == tolist(["public"]) &&
+      one(github_organization_ruleset.disclosure_gate[0].conditions[0].repository_property[0].include).source == "system" &&
+      github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].do_not_enforce_on_create == true &&
+      one(github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].required_workflow).repository_id == 1 &&
+      one(github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].required_workflow).path == ".github/workflows/disclosure-gate.yml" &&
+      one(github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].required_workflow).ref == "refs/heads/main" &&
+      length(github_organization_ruleset.disclosure_gate[0].bypass_actors) == 0
+    )
+    error_message = "disclosure_gate must require the org workflow on public default, main, and develop PRs without a bypass."
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.main_source_gate) == 1 &&
+      github_organization_ruleset.main_source_gate[0].name == "org-main-source-gate" &&
+      github_organization_ruleset.main_source_gate[0].target == "branch" &&
+      github_organization_ruleset.main_source_gate[0].enforcement == "active" &&
+      tolist(github_organization_ruleset.main_source_gate[0].conditions[0].ref_name[0].include) == tolist(["refs/heads/main"]) &&
+      one(github_organization_ruleset.main_source_gate[0].conditions[0].repository_property[0].include).name == "gitflow" &&
+      tolist(one(github_organization_ruleset.main_source_gate[0].conditions[0].repository_property[0].include).property_values) == tolist(["true"]) &&
+      one(github_organization_ruleset.main_source_gate[0].conditions[0].repository_property[0].include).source == "custom" &&
+      github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].do_not_enforce_on_create == true &&
+      one(github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].required_workflow).repository_id == 1 &&
+      one(github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].required_workflow).path == ".github/workflows/main-source-gate.yml" &&
+      one(github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].required_workflow).ref == "refs/heads/main" &&
+      length(github_organization_ruleset.main_source_gate[0].bypass_actors) == 0
+    )
+    error_message = "main_source_gate must require the org workflow on gitflow main PRs without a bypass."
   }
 }
 
@@ -523,11 +622,15 @@ run "placeholder_org_disables_org_specific_extras" {
       length(github_repository_custom_property.upstream_fork) == 0,
       length(restapi_object.org_upstream_fork_protection) == 0,
       length(github_actions_runner_group.homelab) == 0,
+      length(data.github_repository.pr_reconcile) == 0,
+      length(github_actions_runner_group.pr_reconcile) == 0,
       length(github_organization_ruleset.markdown_lint) == 0,
       length(github_organization_ruleset.conventions) == 0,
       length(github_organization_ruleset.ai_review) == 0,
+      length(github_organization_ruleset.event_forwarder) == 0,
       length(github_organization_ruleset.merge_hold) == 0,
       length(github_actions_variable.pr_reconcile_owners) == 0,
+      length(github_actions_variable.pr_reconcile_claude_bot_id) == 0,
     ])
     error_message = "Organization-specific resources must have no instances when the opt-in is false."
   }
@@ -569,9 +672,10 @@ run "required_workflow_rulesets_use_default_enforcement" {
       length(github_organization_ruleset.conventions) == 1 &&
       github_organization_ruleset.conventions[0].enforcement == "evaluate" &&
       length(github_organization_ruleset.ai_review) == 1 &&
-      github_organization_ruleset.ai_review[0].enforcement == "evaluate"
+      github_organization_ruleset.ai_review[0].enforcement == "evaluate" &&
+      length(github_organization_ruleset.event_forwarder) == 0
     )
-    error_message = "Required-workflow rulesets must use their default enforcement and have one instance when enabled."
+    error_message = "Legacy required-workflow rulesets must retain their defaults while the separately gated event forwarder remains disabled."
   }
 
   assert {
@@ -585,6 +689,47 @@ run "required_workflow_rulesets_use_default_enforcement" {
       one(github_organization_ruleset.code_scanning[0].rules[0].required_code_scanning[0].required_code_scanning_tool).security_alerts_threshold == "high_or_higher"
     )
     error_message = "CodeQL merge protection must use the live default-setup repo set and the configured thresholds."
+  }
+}
+
+run "event_forwarder_is_independently_opted_in" {
+  command = plan
+
+  variables {
+    github_owner              = "example-org"
+    dryvist_org_extras        = false
+    event_forwarder_enabled   = true
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.event_forwarder) == 1 &&
+      github_organization_ruleset.event_forwarder[0].enforcement == "evaluate" &&
+      tolist(github_organization_ruleset.event_forwarder[0].conditions[0].ref_name[0].include) == tolist(["~ALL"]) &&
+      tolist(github_organization_ruleset.event_forwarder[0].conditions[0].repository_name[0].include) == tolist(["~ALL"]) &&
+      one(github_organization_ruleset.event_forwarder[0].rules[0].required_workflows[0].required_workflow).repository_id == 1 &&
+      one(github_organization_ruleset.event_forwarder[0].rules[0].required_workflows[0].required_workflow).path == ".github/workflows/github-event-forwarder.yml" &&
+      one(github_organization_ruleset.event_forwarder[0].rules[0].required_workflows[0].required_workflow).ref == "refs/heads/main" &&
+      one(github_organization_ruleset.event_forwarder[0].bypass_actors).actor_type == "OrganizationAdmin" &&
+      one(github_organization_ruleset.event_forwarder[0].bypass_actors).bypass_mode == "pull_request"
+    )
+    error_message = "The event-forwarder rule must independently target every repository and branch, require the selected owner's caller at main, default to evaluate, and retain the org-admin bypass."
   }
 }
 

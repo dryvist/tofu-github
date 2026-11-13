@@ -153,3 +153,113 @@ moved {
   from = github_organization_ruleset.ai_review
   to   = github_organization_ruleset.ai_review[0]
 }
+
+# Org-wide event forwarder, enforced as a Required Workflow.
+#
+# Attaches the selected owner's .github repo caller to every repository and
+# branch. This rule is independently opt-in so existing workspace behavior is
+# unchanged until event_forwarder_enabled is set.
+resource "github_organization_ruleset" "event_forwarder" {
+  count       = var.event_forwarder_enabled ? 1 : 0
+  name        = "org-event-forwarder"
+  target      = "branch"
+  enforcement = var.event_forwarder_enforcement
+
+  conditions {
+    ref_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+    repository_name {
+      include = ["~ALL"]
+      exclude = []
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = module.repo_settings[".github"].repo_id
+        path          = ".github/workflows/github-event-forwarder.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+
+  bypass_actors {
+    actor_type  = "OrganizationAdmin"
+    bypass_mode = "pull_request"
+  }
+}
+
+# Requires the disclosure workflow on public repository PRs targeting the
+# default, main, and develop branches. `config/orgs/<owner>/required-workflows.yml` opts in each org.
+resource "github_organization_ruleset" "disclosure_gate" {
+  count       = try(local.required_workflows_config.disclosure_gate, false) ? 1 : 0
+  name        = "org-disclosure-gate"
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH", "refs/heads/main", "refs/heads/develop"]
+      exclude = []
+    }
+    repository_property {
+      include = [{
+        name            = "visibility"
+        property_values = ["public"]
+        source          = "system"
+      }]
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = module.repo_settings[".github"].repo_id
+        path          = ".github/workflows/disclosure-gate.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+}
+
+# Requires the main-source workflow on gitflow repositories' main PRs.
+# `config/orgs/<owner>/required-workflows.yml` opts in each org.
+resource "github_organization_ruleset" "main_source_gate" {
+  count       = try(local.required_workflows_config.main_source_gate, false) ? 1 : 0
+  name        = "org-main-source-gate"
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/main"]
+      exclude = []
+    }
+    repository_property {
+      include = [{
+        name            = "gitflow"
+        property_values = ["true"]
+        source          = "custom"
+      }]
+    }
+  }
+
+  rules {
+    required_workflows {
+      do_not_enforce_on_create = true
+
+      required_workflow {
+        repository_id = module.repo_settings[".github"].repo_id
+        path          = ".github/workflows/main-source-gate.yml"
+        ref           = "refs/heads/main"
+      }
+    }
+  }
+}
