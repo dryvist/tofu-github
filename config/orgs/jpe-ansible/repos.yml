@@ -1,0 +1,10 @@
+# Per-repo overrides for jpe-ansible repositories managed by tofu-github.
+repos:
+  ansible-youtrack:
+    visibility: public
+    gitflow: true
+    description: "Ansible collection for YouTrack configuration"
+    topics:
+      - ansible
+      - ansible-collection
+      - youtrack

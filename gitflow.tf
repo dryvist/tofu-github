@@ -75,6 +75,19 @@ import {
   id = "${each.key}:develop"
 }
 
+# One-shot import: ansible-youtrack's develop branch already exists while its
+# default branch is still main, so the derived import above does not cover it —
+# that set selects only repos whose default branch is already develop, and
+# github_branch would otherwise try to create the existing ref. Scoped to the
+# jpe-ansible workspace so no other workspace's plan carries it. The plan must
+# show an import for this branch and no create or destroy, and the block is
+# removed after the jpe-ansible workspace applies.
+import {
+  for_each = var.github_owner == "jpe-ansible" ? toset(["ansible-youtrack"]) : toset([])
+  to       = github_branch.develop[each.key]
+  id       = "${each.key}:develop"
+}
+
 # Make develop the default branch on git-flow repos: new clones and new PRs
 # target the integration branch, while main is reserved for releases. The
 # reference to github_branch.develop makes this depend on the branch existing
