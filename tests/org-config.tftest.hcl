@@ -122,6 +122,14 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
 
   assert {
     condition = (
+      length(github_organization_ruleset.disclosure_gate) == 0 &&
+      length(github_organization_ruleset.main_source_gate) == 0
+    )
+    error_message = "An owner without required-workflows.yml must not get either required-workflow gate."
+  }
+
+  assert {
+    condition = (
       length(github_actions_variable.pr_reconcile_owners) == 1 &&
       github_actions_variable.pr_reconcile_owners[0].repository == ".github-ai" &&
       github_actions_variable.pr_reconcile_owners[0].variable_name == "PR_RECONCILE_OWNERS" &&
@@ -281,6 +289,69 @@ run "main_from_renovate_preset_is_configured_as_default" {
   assert {
     condition     = yamldecode(file("${path.module}/config/orgs/dryvist/repos.yml")).repos["ai-cli-permissions"].main_from_renovate_preset
     error_message = "The first repo must select the shared main-branch bootstrap through its org config."
+  }
+}
+
+run "required_workflow_gates_follow_the_owner_config" {
+  command = plan
+
+  variables {
+    github_owner              = "tofu-test-fixture"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.disclosure_gate) == 1 &&
+      github_organization_ruleset.disclosure_gate[0].name == "org-disclosure-gate" &&
+      github_organization_ruleset.disclosure_gate[0].target == "branch" &&
+      github_organization_ruleset.disclosure_gate[0].enforcement == "active" &&
+      tolist(github_organization_ruleset.disclosure_gate[0].conditions[0].ref_name[0].include) == tolist(["~DEFAULT_BRANCH", "refs/heads/main", "refs/heads/develop"]) &&
+      one(github_organization_ruleset.disclosure_gate[0].conditions[0].repository_property[0].include).name == "visibility" &&
+      tolist(one(github_organization_ruleset.disclosure_gate[0].conditions[0].repository_property[0].include).property_values) == tolist(["public"]) &&
+      one(github_organization_ruleset.disclosure_gate[0].conditions[0].repository_property[0].include).source == "system" &&
+      github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].do_not_enforce_on_create == true &&
+      one(github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].required_workflow).repository_id == 1 &&
+      one(github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].required_workflow).path == ".github/workflows/disclosure-gate.yml" &&
+      one(github_organization_ruleset.disclosure_gate[0].rules[0].required_workflows[0].required_workflow).ref == "refs/heads/main" &&
+      length(github_organization_ruleset.disclosure_gate[0].bypass_actors) == 0
+    )
+    error_message = "disclosure_gate must require the org workflow on public default, main, and develop PRs without a bypass."
+  }
+
+  assert {
+    condition = (
+      length(github_organization_ruleset.main_source_gate) == 1 &&
+      github_organization_ruleset.main_source_gate[0].name == "org-main-source-gate" &&
+      github_organization_ruleset.main_source_gate[0].target == "branch" &&
+      github_organization_ruleset.main_source_gate[0].enforcement == "active" &&
+      tolist(github_organization_ruleset.main_source_gate[0].conditions[0].ref_name[0].include) == tolist(["refs/heads/main"]) &&
+      one(github_organization_ruleset.main_source_gate[0].conditions[0].repository_property[0].include).name == "gitflow" &&
+      tolist(one(github_organization_ruleset.main_source_gate[0].conditions[0].repository_property[0].include).property_values) == tolist(["true"]) &&
+      one(github_organization_ruleset.main_source_gate[0].conditions[0].repository_property[0].include).source == "custom" &&
+      github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].do_not_enforce_on_create == true &&
+      one(github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].required_workflow).repository_id == 1 &&
+      one(github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].required_workflow).path == ".github/workflows/main-source-gate.yml" &&
+      one(github_organization_ruleset.main_source_gate[0].rules[0].required_workflows[0].required_workflow).ref == "refs/heads/main" &&
+      length(github_organization_ruleset.main_source_gate[0].bypass_actors) == 0
+    )
+    error_message = "main_source_gate must require the org workflow on gitflow main PRs without a bypass."
   }
 }
 
