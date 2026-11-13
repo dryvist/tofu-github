@@ -1,5 +1,8 @@
 # Per-repo overrides for jpe-ansible repositories managed by tofu-github.
 repos:
+  ansible-productivity-apps:
+    visibility: public
+    description: "Ansible project for productivity apps"
   ansible-youtrack:
     visibility: public
     gitflow: true
