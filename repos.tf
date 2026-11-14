@@ -71,10 +71,11 @@ module "repo_settings" {
   source   = "./modules/repo-settings"
   for_each = local.managed_repos
 
-  name        = each.key
-  description = each.value.description
-  topics      = each.value.topics
-  visibility  = each.value.visibility
+  name            = each.key
+  description     = each.value.description
+  topics          = each.value.topics
+  visibility      = each.value.visibility
+  live_visibility = try(data.github_repository.enumerated[each.key].visibility, null)
   # Optional — most repos.yml entries omit this, which yamldecode simply drops
   # from the map, so try() falls back to the module default (`false`).
   archived = try(each.value.archived, false)
