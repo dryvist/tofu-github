@@ -3,6 +3,8 @@ repos:
   ansible-productivity-apps:
     visibility: public
     description: "Ansible project for productivity apps"
+    topics:
+      - ansible
   ansible-youtrack:
     visibility: public
     gitflow: true
