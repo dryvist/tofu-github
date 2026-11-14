@@ -1,13 +1,14 @@
 # tofu-github
 
 OpenTofu-managed GitHub **organization governance** for the organization
-selected by each workspace: one root, its own state and per-org configuration.
+selected by each workspace. Each organization uses the same root with its own
+state and per-org configuration.
 
 ## Why this exists
 
 Organization-level rulesets, repository settings, and labels apply common
-policy across an organization's repositories; this root defines that policy
-once, and each workspace selects one organization and its configuration.
+policy across an organization's repositories. This root defines that policy
+once, and each workspace selects one organization and its own configuration.
 
 ## What it manages today
 
@@ -20,7 +21,7 @@ once, and each workspace selects one organization and its configuration.
 | `restapi_object.org_review_gate` | [Review gate](#review-gate) | `rulesets-branch-protection.tf` |
 | `restapi_object.org_automerge_manual` | [Manual-repo approval](#manual-repo-approval) | `automerge.tf` |
 | `github_organization_custom_properties.*` | Organization property schemas | Each property's own file, e.g. `family.tf`, `gitflow.tf` |
-| `github_repository_custom_property.*` | Repository property values | Each property's file, e.g. `ai-untrusted-property.tf`, `automerge.tf` |
+| `github_repository_custom_property.*` | Repository property values | Each property's own file, e.g. `ai-untrusted-property.tf`, `automerge.tf` |
 | `restapi_object.docs_publisher` | [Documentation publisher](#documentation-publisher) | `docs-publisher.tf` |
 | `github_organization_ruleset.event_forwarder` | [Event forwarder](#event-forwarder) | `rulesets-required-workflows.tf` |
 | `github_organization_ruleset.org_release_freeze` | [Release freeze](#release-freeze) | `release-freeze.tf` |
@@ -28,29 +29,29 @@ once, and each workspace selects one organization and its configuration.
 | `github_organization_ruleset.org_gitflow_base` | Git-flow base branch ruleset | `rulesets-gitflow.tf` |
 | `restapi_object.org_gitflow_main` | Git-flow main branch ruleset | `rulesets-gitflow.tf` |
 | `restapi_object.org_gitflow_develop` | Git-flow develop branch ruleset | `rulesets-gitflow.tf` |
-| Enterprise required workflow | [Git-flow main-source gate](#git-flow-main-source-gate) | Attached outside this root |
+| Enterprise-level required workflow | [Git-flow main-source gate](#git-flow-main-source-gate) | Attached outside this root |
 | `restapi_object.org_upstream_fork_protection` | Upstream-fork branch ruleset | `upstream-forks.tf` |
 | `github_organization_ruleset.org_merge_gate` | Required Merge Gate checks | `merge-gate.tf` |
 | `github_organization_ruleset.org_merge_gate_strict` | Up-to-date Merge Gate checks | `merge-gate-strict.tf` |
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
-| `github_actions_organization_permissions.org` | Allowed Actions, SHA policy | `actions.tf` |
-| `github_actions_organization_workflow_permissions.org` | Default token permissions | `actions.tf` |
+| `github_actions_organization_permissions.org` | Allowed Actions and SHA policy | `actions.tf` |
+| `github_actions_organization_workflow_permissions.org` | Default `GITHUB_TOKEN` permissions | `actions.tf` |
 | `restapi_object.fork_pr_contributor_approval` | Fork pull-request contributor approval policy | `actions-policy.tf` |
-| `github_actions_runner_group.default` | Default runner group's repository reach | `actions-policy.tf` |
+| `github_actions_runner_group.default` | Default self-hosted runner group's repository reach | `actions-policy.tf` |
 | `module.repo_settings` | Repository settings | `repos.tf`, `modules/repo-settings/main.tf` |
 | `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
 | `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
 | `github_actions_runner_group.pr_reconcile` | PR Reconcile sweep runner role | `pr-reconcile.tf` |
-| `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, on when both webhook variables are set | `org-webhook.tf` |
+| `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
 
-Pull-request rulesets use the REST provider: the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
+Pull-request rulesets use the REST provider because the GitHub provider cannot set `require_extra_approval_for_unattributed_changes`.
 
-Repository settings cover every unarchived repo plus the always-managed
-`.github` and `.github-private` profile repos. The optional `family` single-select property is unset unless a
-repo's `config/orgs/<github_owner>/repos.yml` entry supplies a value; the
-selected `config/orgs/<github_owner>/ai-untrusted.yml` lists
-lower-trust AI sandbox repositories.
+Repository settings cover every unarchived repo plus the always-managed public
+`.github` organization-defaults repo and private `.github-private` members-only
+profile repo. The optional `family` single-select property is unset unless a
+repo's selected `config/orgs/<github_owner>/repos.yml` entry supplies a value.
+The selected `config/orgs/<github_owner>/ai-untrusted.yml` lists repositories opted into lower-trust AI sandbox access.
 
 ### Push protection
 
@@ -72,53 +73,53 @@ org ruleset without narrowing its all-branch coverage.
 
 ### Branch commit subjects
 
-Refuses a push to any non-default branch when a commit subject is neither a
-Conventional Commit nor a merge message. Upstream forks are excluded.
+Refuses a push to any non-default branch when a commit subject is not a
+Conventional Commit or a merge message. Upstream forks are excluded.
 
 ### Review gate
 
-Review gate on every default branch: resolved review threads on PRs, with
-no required approving or CODEOWNER review. Disabled by default.
+Review gate on every default branch: resolved review threads on PRs, with no
+required approving or CODEOWNER review. Disabled by default.
 
 ### Actions permissions
 
-All repositories and Actions are allowed; SHA pinning is not required, so
+All repositories and Actions are allowed. SHA pinning is not required so
 first-party references can use floating major-version tags. Workflow tokens
-default to read-only and cannot approve pull requests; fork pull-request
-workflows from contributors always require approval to run.
+default to read-only, and workflows cannot approve pull requests. Fork
+pull-request workflows from contributors always require approval before they
+can run.
 
 ### Runner groups
 
 The homelab runner role cannot use public repositories. The built-in `Default`
-runner group serves every repository, public ones included; the variable
-`default_runner_group_allows_public_repositories` refuses `true` unless fork
-workflows always face contributor approval. The PR-Agent runner group is
-enterprise-level and is not managed here.
+runner group serves every repository, public ones included, and the
+`default_runner_group_allows_public_repositories` variable refuses `true`
+unless fork workflows always face contributor approval. The PR-Agent runner
+group is enterprise-level and is not managed here.
 
 ### Manual-repo approval
 
-Applies to repos with the `automerge: manual` property and requires no
-approving review; required status checks are the only merge gate.
+Applies to repos with the `automerge: manual` property, and requires no
+approving review. Required status checks are the only merge gate.
 
 ### Documentation publisher
 
-Requires the configured approval count for documentation pull requests;
-the release automation and configured triage apps bypass review in
+Requires the configured approval count for documentation pull requests. The
+release automation and configured triage apps bypass review in
 `pull_request` mode.
 
 ### Event forwarder
 
 When `event_forwarder_enabled` is `true`, the organization ruleset requires
 `.github/workflows/github-event-forwarder.yml` from the selected owner's
-`.github` repository on every repository and branch. The rule is disabled
-by default; `event_forwarder_enforcement` defaults to `evaluate`.
+`.github` repository on every repository and branch. The rule is disabled by
+default, and `event_forwarder_enforcement` defaults to `evaluate`.
 
 ### Release freeze
 
 Requires the `release-freeze` status on `develop` in repos with the
-`gitflow: true` property. The ruleset defaults to `evaluate` and can be
-set to `active` once the shared status workflow is called from every
-git-flow repo.
+`gitflow: true` property. The ruleset defaults to `evaluate` and can be set to
+`active` after the shared status workflow is called from every git-flow repo.
 
 ### Git-flow main-source gate
 
@@ -127,11 +128,11 @@ allowed source branches, enforcement, and the hotfix flow.
 
 ### Branch-write restriction
 
-Only the GitHub Apps listed in `automation_bypass_app_ids` can create
-or update a branch other than `main`. Everyone else, org admins
-included, can open and merge pull requests into `main` but cannot push
-or create any other branch. The list is a required workspace variable
-with no default.
+Only the GitHub Apps listed in `automation_bypass_app_ids` can create or
+update a branch other than `main`. Everyone else, org admins included,
+can open and merge pull requests into `main` but cannot push or create
+any other branch. The list is a required workspace variable with no
+default.
 
 The existing org adopts its live rulesets through these `import` blocks. The
 IDs live in `config/orgs/<github_owner>/ruleset-imports.yml`; other orgs omit
@@ -148,7 +149,7 @@ that optional file:
 
 Org Actions variables and secrets are configured in the secret manager and
 synced to GitHub; this root does not manage them (`ai-variables.tf`). CodeQL
-default setup on the org's public repos lives in `code_scanning.tf`.
+default setup on the org's public repos is managed in `code_scanning.tf`.
 
 ## Layout
 
@@ -159,35 +160,36 @@ variables.tf      # all input variables (no magic numbers in .tf below)
 data.tf           # live lookups: repo IDs, org metadata — never literals
 locals.tf         # shared and selected per-org config decoded into named locals
 rulesets-push-protection.tf     # org_push_protection
-rulesets-branch-protection.tf   # branch_protection, required_signatures, commit_subject_branches, review_gate
+rulesets-branch-protection.tf   # org_branch_protection, required_signatures, commit_subject_branches, org_review_gate + import blocks
 rulesets-gitflow.tf             # org_gitflow_base, org_gitflow_main, org_gitflow_develop
 release-freeze.tf               # org_release_freeze
 rulesets-branch-write-restriction.tf  # org_branch_write_restriction
-main.tf           # entrypoint stub (resources organized by topic)
+main.tf           # multi-file entrypoint stub (resources organized by topic)
 outputs.tf       # intentionally empty — see file header
 config/           # shared policy defaults and owner-scoped config
 config/orgs/      # selected by github_owner; files are optional
 ```
 
-CODEOWNERS is not committed or managed here. A static `.github/CODEOWNERS`
-would bake a specific identity into the source tree.
+CODEOWNERS is not committed or managed in this repo. A static
+`.github/CODEOWNERS` would bake a specific identity into the source tree.
 
 `config/` holds shared ruleset defaults. Each workspace selects its organization
 through `github_owner`, which also selects `config/orgs/<github_owner>/` when
-present; a missing org directory or config file means defaults or no opt-in,
+present. A missing org directory or config file means defaults or no opt-in,
 and repository metadata comes from GitHub data sources.
 `config/commit-message-pattern.txt` and `config/rulesets-defaults.yml` remain
-shared. The label set is read from the central file named in
-`config/central.yml` by `data.tf` and applied by `labels.tf`; label sets are
-not stored in `config/`. Canonical text the org doesn't author — MIT LICENSE
-body, CODE_OF_CONDUCT, etc. — is fetched at apply time from a trustworthy
-upstream via `data "http"`, not committed as a local template.
+shared. The label set is read from
+the central label file named in `config/central.yml` by `data.tf` and
+applied by `labels.tf`; label sets are not stored in `config/`. Canonical text
+the org doesn't author — MIT LICENSE body, CODE_OF_CONDUCT, etc. — is fetched
+at apply time from a trustworthy upstream via `data "http"`, not committed as
+a local template.
 
-`private_repo_overrides` is read from the protected OpenBao KV v2 document
-at `secret/infrastructure/tofu-github/private-overrides` for orgs whose
-merge-gate config requires private repos. Its optional `merge_gate` map
-carries required-check contexts for those repositories; the repo list is
-derived from each outer repo key.
+`private_repo_overrides` is read from the protected OpenBao KV v2 document at
+`secret/infrastructure/tofu-github/private-overrides` for orgs whose merge-gate config
+requires private repos. Its optional `merge_gate` map carries required-check
+contexts for those repositories; the repo list is derived from each outer repo
+key.
 
 ## Installation
 
@@ -200,16 +202,19 @@ derived from each outer repo key.
   cd tofu-github && direnv allow   # provides tofu, sops, linters
   ```
 
-- **A reachable Terrakube workspace.** State, locking, and remote execution
-  come from the homelab Terrakube instance; the `tofu-github` workspace is
-  defined as code in the platform repo. The platform is deliberately not-24/7
-  — power its node on for off-hours work.
+- **A reachable Terrakube workspace.** State, locking, and remote
+  execution come from the homelab Terrakube instance; the `tofu-github`
+  workspace is
+  defined as code in the platform repo. The platform is deliberately
+  not-24/7 — power its node on for off-hours work.
 
 - **One-time login per machine** (no keychain, no stored passwords). The
-  `TF_CLOUD_*` coordinates are a fleet-wide fact owned by the platform, stored once in
+  `TF_CLOUD_*` coordinates (`TF_CLOUD_HOSTNAME`, `TF_CLOUD_ORGANIZATION`,
+  `TF_WORKSPACE`) are a fleet-wide fact owned by the platform, stored once in
   OpenBao (`secret/platform/terrakube/main`). `.envrc` pulls them at
-  `direnv allow` via the platform AppRole (role/secret ID from the
-  operator's environment), so nothing sensitive is committed here:
+  `direnv allow` via the platform AppRole (`BAO_ADDR` + role/secret ID from the
+  operator's environment) — so nothing sensitive, not even the internal
+  endpoint, is committed in this repo:
 
   ```bash
   tofu login "$TF_CLOUD_HOSTNAME"
@@ -218,8 +223,8 @@ derived from each outer repo key.
   Requires membership in the org's `terrakube-admins` team.
 
 No AWS account, no aws-vault, no local `GITHUB_TOKEN`: `providers.tf`
-mints a short-lived GitHub App token from OpenBao on every run through an
-`ephemeral` resource, so it is never stored in state.
+mints a short-lived GitHub App installation token from OpenBao on every
+run, through an `ephemeral` resource, so it is never stored or written to state.
 
 ## Usage
 
@@ -227,7 +232,7 @@ Daily flow:
 
 ```bash
 tofu init     # one-time per worktree
-tofu plan     # executes remotely
+tofu plan     # executes remotely; output streams back
 tofu apply    # remote apply, gated on plan confirmation
 ```
 
@@ -237,8 +242,8 @@ Validation only (no backend, no credentials):
 tofu init -backend=false && tofu validate
 ```
 
-**Enforcement defaults vary by ruleset** — see [Applying](docs/agents/applying.md)
+**Enforcement defaults vary by ruleset.** See [Applying](docs/agents/applying.md).
 
 ---
 
-> Part of a [larger ecosystem of ~40 repos](https://docs.jacobpevans.com) — see how it fits together.
+> Part of a [larger ecosystem of ~40 repos](https://docs.jacobpevans.com) — see how it all fits together.
