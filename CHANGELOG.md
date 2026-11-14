@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.51.0](https://github.com/dryvist/tofu-github/compare/v1.50.0...v1.51.0) (2026-11-13)
+
+
+### Features
+
+* **agent:** zcode run j-5d8e171e32560d92 ([6803a59](https://github.com/dryvist/tofu-github/commit/6803a598d44b0d5855c36257adf5ae3ed5f6b948))
+* **gitflow:** enroll ansible-youtrack in the jpe-ansible workspace ([#438](https://github.com/dryvist/tofu-github/issues/438)) ([6803a59](https://github.com/dryvist/tofu-github/commit/6803a598d44b0d5855c36257adf5ae3ed5f6b948))
+* **pr-reconcile:** add a runner group only the sweep workflows can use ([6679571](https://github.com/dryvist/tofu-github/commit/6679571a55e4919ba5bd22f810e0e6cb10470050))
+* **pr-reconcile:** add an optional runner group ([#437](https://github.com/dryvist/tofu-github/issues/437)) ([6679571](https://github.com/dryvist/tofu-github/commit/6679571a55e4919ba5bd22f810e0e6cb10470050))
+* **pr-reconcile:** set the sweep App id and add seven owners ([#436](https://github.com/dryvist/tofu-github/issues/436)) ([96687a2](https://github.com/dryvist/tofu-github/commit/96687a285e4dc7b8b34a4eb5a07ec1b32a1c1d41))
+* **repos:** make ansible-productivity-apps public ([#442](https://github.com/dryvist/tofu-github/issues/442)) ([37c4f5e](https://github.com/dryvist/tofu-github/commit/37c4f5e0a96797954fdee2d9d2c573268768629e))
+* **rulesets:** add per-organization disclosure and main source gates ([#440](https://github.com/dryvist/tofu-github/issues/440)) ([01bdaac](https://github.com/dryvist/tofu-github/commit/01bdaac5b845eeb5196eff8eee95c5384586d945))
+
 ## [1.50.0](https://github.com/dryvist/tofu-github/compare/v1.49.0...v1.50.0) (2026-11-12)
 
 
