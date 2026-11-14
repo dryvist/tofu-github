@@ -18,12 +18,12 @@ resource "restapi_object" "fork_pr_contributor_approval" {
   destroy_method = "PUT"
 
   data = jsonencode({
-    approval_policy = var.fork_pr_contributor_approval
+    approval_policy = "all_external_contributors"
   })
 
   # Destroying the resource PUTs the strict policy back instead of a DELETE.
   destroy_data = jsonencode({
-    approval_policy = var.fork_pr_contributor_approval
+    approval_policy = "all_external_contributors"
   })
 }
 
@@ -32,7 +32,7 @@ resource "restapi_object" "fork_pr_contributor_approval" {
 resource "github_actions_runner_group" "default" {
   name                       = "Default"
   visibility                 = "all"
-  allows_public_repositories = var.default_runner_group_allows_public_repositories
+  allows_public_repositories = true
 
   depends_on = [restapi_object.fork_pr_contributor_approval]
 
@@ -41,7 +41,9 @@ resource "github_actions_runner_group" "default" {
   }
 }
 
+# The group exists in every organisation with id 1; tests switch the adoption off.
 import {
-  to = github_actions_runner_group.default
-  id = "1"
+  for_each = var.codeql_import_enabled ? toset(["1"]) : toset([])
+  to       = github_actions_runner_group.default
+  id       = each.value
 }

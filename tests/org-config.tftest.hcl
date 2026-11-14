@@ -87,6 +87,10 @@ mock_provider "vault" {
 
 mock_provider "restapi" {}
 
+mock_provider "restapi" {
+  alias = "no_body"
+}
+
 run "empty_non_dryvist_config_plans_from_live_repo_data" {
   command = plan
 
@@ -740,6 +744,7 @@ run "merge_gate_strict_exempts_only_listed_apps" {
     github_owner              = "tofu-test-fixture"
     dryvist_org_extras        = true
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -808,6 +813,7 @@ run "event_queue_webhook_created_when_enabled_with_intake_records" {
     dryvist_org_extras          = true
     automation_bypass_app_ids   = [1]
     event_queue_webhook_enabled = true
+    codeql_import_enabled       = false
   }
 
   override_data {
@@ -937,31 +943,4 @@ run "fork_approval_defaults_to_all_external_contributors" {
     )
     error_message = "The built-in Default runner group must stay visible to all repositories and serve public ones."
   }
-}
-
-run "invalid_fork_approval_policy_is_rejected" {
-  command = plan
-
-  variables {
-    github_owner                 = "tofu-test-fixture"
-    automation_bypass_app_ids    = [1]
-    codeql_import_enabled        = false
-    fork_pr_contributor_approval = "no_approval_required"
-  }
-
-  expect_failures = [var.fork_pr_contributor_approval]
-}
-
-run "public_default_runner_group_with_weaker_policy_is_rejected" {
-  command = plan
-
-  variables {
-    github_owner                                    = "tofu-test-fixture"
-    automation_bypass_app_ids                       = [1]
-    codeql_import_enabled                           = false
-    fork_pr_contributor_approval                    = "first_time_contributors"
-    default_runner_group_allows_public_repositories = true
-  }
-
-  expect_failures = [var.default_runner_group_allows_public_repositories]
 }
