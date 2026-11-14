@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases are automated via release-please from Conventional Commits.
 
+## [1.52.0](https://github.com/dryvist/tofu-github/compare/v1.51.2...v1.52.0) (2026-11-14)
+
+
+### Features
+
+* **actions:** declare the fork approval policy and the Default runner group reach ([#456](https://github.com/dryvist/tofu-github/issues/456)) ([415e6fd](https://github.com/dryvist/tofu-github/commit/415e6fd41ea4b50c6a3dcb9ce79aed92de3c3d66))
+
 ## [1.51.2](https://github.com/dryvist/tofu-github/compare/v1.51.1...v1.51.2) (2026-11-14)
 
 
