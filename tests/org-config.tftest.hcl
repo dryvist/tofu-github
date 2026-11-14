@@ -87,6 +87,10 @@ mock_provider "vault" {
 
 mock_provider "restapi" {}
 
+mock_provider "restapi" {
+  alias = "no_body"
+}
+
 run "empty_non_dryvist_config_plans_from_live_repo_data" {
   command = plan
 
@@ -740,6 +744,7 @@ run "merge_gate_strict_exempts_only_listed_apps" {
     github_owner              = "tofu-test-fixture"
     dryvist_org_extras        = true
     automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
   }
 
   override_data {
@@ -808,6 +813,7 @@ run "event_queue_webhook_created_when_enabled_with_intake_records" {
     dryvist_org_extras          = true
     automation_bypass_app_ids   = [1]
     event_queue_webhook_enabled = true
+    codeql_import_enabled       = false
   }
 
   override_data {
@@ -898,5 +904,43 @@ run "merge_hold_ruleset_follows_the_owner_config" {
       [for actor in github_organization_ruleset.merge_hold[0].bypass_actors : "${actor.actor_type}/${actor.bypass_mode}"] == ["OrganizationAdmin/pull_request"]
     )
     error_message = "merge-hold.yml must set the ruleset's enforcement, repositories, the merge-hold context and the admin bypass."
+  }
+}
+
+run "fork_approval_defaults_to_all_external_contributors" {
+  command = plan
+
+  variables {
+    github_owner              = "tofu-test-fixture"
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = jsondecode(restapi_object.fork_pr_contributor_approval.data).approval_policy == "all_external_contributors"
+    error_message = "Fork pull-request workflows must require approval from all external contributors by default."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.default.name == "Default" &&
+      github_actions_runner_group.default.visibility == "all" &&
+      github_actions_runner_group.default.allows_public_repositories
+    )
+    error_message = "The built-in Default runner group must stay visible to all repositories and serve public ones."
   }
 }
