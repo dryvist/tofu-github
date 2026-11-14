@@ -1,26 +1,23 @@
+# Inputs for actions-policy.tf, which declares the fork approval policy and
+# the Default runner group's reach.
+
 # The fork approval policy gates the Default runner group's public reach.
 variable "fork_pr_contributor_approval" {
-  description = <<-EOT
-    Approval required before fork pull-request workflows from contributors run: all_external_contributors is the strictest value; the two first_time_* values only gate contributors new to GitHub.
-  EOT
+  description = "Approval before fork PR workflows run; first_time_* gate only contributors new to GitHub."
   type        = string
   default     = "all_external_contributors"
-
   validation {
     condition     = contains(["first_time_contributors_new_to_github", "first_time_contributors", "all_external_contributors"], var.fork_pr_contributor_approval)
-    error_message = "fork_pr_contributor_approval must be one of: first_time_contributors_new_to_github, first_time_contributors, all_external_contributors."
+    error_message = "Use first_time_contributors_new_to_github, first_time_contributors or all_external_contributors."
   }
 }
 
 variable "default_runner_group_allows_public_repositories" {
-  description = <<-EOT
-    Whether the built-in Default runner group may serve public repositories; keep true only with the strictest fork approval policy.
-  EOT
+  description = "Default runner group serves public repos; requires the all_external_contributors fork approval policy."
   type        = bool
   default     = true
-
   validation {
     condition     = !var.default_runner_group_allows_public_repositories || var.fork_pr_contributor_approval == "all_external_contributors"
-    error_message = "default_runner_group_allows_public_repositories requires fork_pr_contributor_approval to be all_external_contributors."
+    error_message = "Requires all_external_contributors fork approval."
   }
 }

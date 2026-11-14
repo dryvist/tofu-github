@@ -40,7 +40,6 @@ once, and each workspace selects one organization and its own configuration.
 | `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
 | `github_actions_runner_group.homelab` | Homelab runner role | `runner-groups.tf` |
-| `restapi_object.fork_pr_contributor_approval`, `github_actions_runner_group.default` | Fork approval policy, Default runner group | `actions-policy.tf` |
 | `github_actions_runner_group.pr_reconcile` | PR Reconcile sweep runner role | `pr-reconcile.tf` |
 | `github_organization_webhook.hermes_pr_review` | Optional pull-request webhook, enabled when both webhook variables are set | `org-webhook.tf` |
 
