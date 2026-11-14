@@ -30,6 +30,18 @@ variable "visibility" {
   }
 }
 
+variable "live_visibility" {
+  description = <<-EOT
+    The repo's current visibility on GitHub, or null for a repo that does not
+    exist yet. GitHub evaluates secret scanning against the visibility a repo
+    has before the request, so a repo still private on GitHub gets no
+    security_and_analysis block in the apply that makes it public; the next
+    apply adds it.
+  EOT
+  type        = string
+  default     = null
+}
+
 variable "archived" {
   description = <<-EOT
     Archive the repository. Defaults to false. The GitHub API does not

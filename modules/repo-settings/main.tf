@@ -80,7 +80,7 @@ resource "github_repository" "this" {
   # protection disabled), so managing the block would make every plan error with
   # "repository is archived, please remove the resource from your configuration".
   dynamic "security_and_analysis" {
-    for_each = var.visibility == "public" && !var.archived ? [1] : []
+    for_each = var.visibility == "public" && coalesce(var.live_visibility, var.visibility) == "public" && !var.archived ? [1] : []
 
     content {
       secret_scanning {
