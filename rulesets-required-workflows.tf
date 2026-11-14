@@ -1,10 +1,9 @@
 # Org-wide markdown linting, enforced as a Required Workflow.
 #
-# The moved block below keeps the adopted live ruleset at its indexed
-# address. `do_not_enforce_on_create` keeps brand-new repos from being
-# blocked before their default branch exists. Enforcement defaults to
-# the legacy `evaluate` posture; pass `-var markdown_lint_enforcement=active`
-# to enforce.
+# The moved block keeps the adopted live ruleset at its indexed address.
+# `do_not_enforce_on_create` keeps brand-new repos from being blocked before
+# their default branch exists. Enforcement defaults to `evaluate`; pass
+# `-var markdown_lint_enforcement=active` to enforce.
 resource "github_organization_ruleset" "markdown_lint" {
   count       = var.dryvist_org_extras ? 1 : 0
   name        = "org-markdown-lint"
@@ -51,14 +50,12 @@ moved {
 # AGENTS.md, a Nix dev-shell entry, and a release-please config) into every
 # repo's default-branch PRs. Mirrors markdown_lint's shape.
 #
-# SOFT ROLLOUT: this is a brand-new ruleset (no live import) and its
-# enforcement defaults to "evaluate" (dry-run — reports in Rulesets > Insights
-# without blocking merges), not the "active" default used for other new
-# rulesets, because a large share of org repos currently lack AGENTS.md. The
-# workflow itself also defaults to WARN (exit 0), so the check stays
-# non-blocking on two independent levers until deliberately escalated.
-# `do_not_enforce_on_create` keeps brand-new repos from being blocked before
-# their default branch exists. Enforce with:
+# SOFT ROLLOUT: brand-new ruleset with no live import. Enforcement defaults to
+# "evaluate" (reports in Rulesets > Insights without blocking), not "active",
+# because many org repos currently lack AGENTS.md. The workflow also defaults
+# to WARN (exit 0), so the check stays non-blocking on two independent levers
+# until escalated. `do_not_enforce_on_create` keeps brand-new repos unblocked
+# before their default branch exists. Enforce with:
 # `tofu apply -var conventions_enforcement=active`.
 resource "github_organization_ruleset" "conventions" {
   count       = var.dryvist_org_extras ? 1 : 0
@@ -103,12 +100,11 @@ moved {
 # Org-wide AI review, enforced as a Required Workflow.
 #
 # Injects the org `.github` repo's ai-review.yml (PR-Agent against the model
-# router) into every repo's pull requests, so no repo skips an AI review by
+# router) into every repo's pull requests so no repo skips an AI review by
 # omitting a caller. Same shape as `conventions` above; enforcement is
-# var.ai_review_enforcement (default evaluate — every pull request is
-# reviewed and the outcome is reported, but does not gate the merge; "active"
-# gates the merge instead). `do_not_enforce_on_create` keeps brand-new repos
-# from being blocked before their default branch exists.
+# var.ai_review_enforcement (default evaluate — reviewed and reported, not
+# gating; "active" gates the merge). `do_not_enforce_on_create` keeps
+# brand-new repos unblocked before their default branch exists.
 #
 # Targets only the branches pull requests merge into: the default branch and
 # main (git-flow repos default to develop). A required workflow behaves like a

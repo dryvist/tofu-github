@@ -1,18 +1,16 @@
 # Org-wide branch-protection — quality rules on the default branch of every
 # repo not covered by the git-flow rulesets.
 #
-# Reverse-engineered from the pre-Terraform "main" org ruleset plus new
-# directives: Conventional Commits enforcement and PR
-# thread resolution. No bypass actors: rules apply to everyone including
-# org admins, so an admin's own commits are still signed and
-# Conventional-format. A separate imported ruleset below extends signature
-# enforcement to every branch. Review-count enforcement lives in a separate
-# ruleset (org_review_gate) so admin bypass on review doesn't accidentally
+# Conventional Commits enforcement and PR thread resolution. No bypass actors:
+# rules apply to everyone including org admins, so an admin's own commits are
+# still signed and Conventional-format. A separate imported ruleset below
+# extends signature enforcement to every branch. Review-count enforcement lives
+# in a separate ruleset (org_review_gate) so admin bypass on review doesn't
 # weaken these quality gates.
 #
-# Import-on-first-apply: the import block below adopts the live ruleset
-# into Terraform state so apply reconciles instead of creating a duplicate.
-# Only the existing flat-config workspace adopts this organization-specific ID.
+# Import-on-first-apply: the import block below adopts the live ruleset into
+# state so apply reconciles instead of creating a duplicate. Only the existing
+# flat-config workspace adopts this organization-specific ID.
 import {
   for_each = try(local.ruleset_imports.org_branch_protection, null) == null ? {} : { existing = local.ruleset_imports.org_branch_protection }
   to       = restapi_object.org_branch_protection
@@ -103,10 +101,9 @@ resource "restapi_object" "org_branch_protection" {
 
 # Org-wide signature enforcement on every branch.
 #
-# This ruleset already exists live and is adopted. Keeping it separate from
-# default-branch protection preserves the broader all-branch coverage. Upstream
-# forks are the one exclusion: their upstream history is unsigned by
-# construction, so no sync could ever land.
+# Adopted from the live ruleset; kept separate from default-branch protection
+# to preserve its all-branch coverage. Upstream forks are excluded: their
+# upstream history is unsigned by construction, so no sync could ever land.
 # Only the existing flat-config workspace adopts this organization-specific ID.
 import {
   for_each = try(local.ruleset_imports.required_signatures, null) == null ? {} : { existing = local.ruleset_imports.required_signatures }
@@ -172,15 +169,14 @@ resource "github_organization_ruleset" "commit_subject_branches" {
 
 # Org-wide review gate — resolved review threads on PRs, no required approval.
 #
-# Separate ruleset (rather than rolled into org_branch_protection) so the
-# bypass actors below apply ONLY to review enforcement, not
-# to signed commits or commit format. It requires no approving or CODEOWNER
-# review; enabling it adds only the thread-resolution rule.
+# Separate from org_branch_protection so the bypass actors below apply ONLY to
+# review enforcement, not signed commits or commit format. It requires no
+# approving or CODEOWNER review; enabling it adds only thread resolution.
 #
-# bypass_mode = "pull_request": admins bypass on merge only, not on push.
-# Pushes still satisfy every other rule (signed, conventional).
-# Granting an additional account the OrganizationAdmin role extends this
-# bypass to them — review the role assignments before adding admins.
+# bypass_mode = "pull_request": admins bypass on merge only, not on push;
+# pushes still satisfy every other rule. Granting an additional account the
+# OrganizationAdmin role extends this bypass to them — review role
+# assignments before adding admins.
 removed {
   from = github_organization_ruleset.org_review_gate
 
