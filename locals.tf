@@ -54,6 +54,8 @@ locals {
   copilot_review_targets = try(yamldecode(file("${local.org_config_dir}/copilot-review.yml")).copilot_review, {})
   iac_drift              = try(yamldecode(file("${local.org_config_dir}/iac-drift.yml")), { repos = {} })
 
+  runner_group_defaults = local.rulesets_defaults.runner_groups
+
   push_protection_defaults   = local.rulesets_defaults.push_protection
   branch_protection_defaults = local.rulesets_defaults.branch_protection
   gitflow_defaults           = local.rulesets_defaults.gitflow

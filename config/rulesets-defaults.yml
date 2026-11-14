@@ -77,3 +77,10 @@ actions:
   sha_pinning_required: false
   default_workflow_permissions: read
   can_approve_pull_request_reviews: false
+
+# Consumed by github_actions_runner_group.pr_agent in runner-groups.tf.
+runner_groups:
+  # The review runner group is available to every repository in the
+  # organization, but only the shared review workflow may run in it.
+  selected_workflows:
+    - JacobPEvans/.github-ai/.github/workflows/pr-agent.yml@v1

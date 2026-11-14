@@ -167,6 +167,19 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   }
 
   assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset([
+        "JacobPEvans/.github-ai/.github/workflows/pr-agent.yml@v1",
+      ])
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
+  }
+
+  assert {
     condition     = length(local.repos) == 0 && length(local.ruleset_imports) == 0
     error_message = "An owner with no YAML overrides must use empty repo data and skip org-specific imports."
   }
@@ -314,6 +327,17 @@ run "required_workflow_gates_follow_the_owner_config" {
     values = {
       names = []
     }
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
   }
 
   assert {
@@ -636,6 +660,17 @@ run "placeholder_org_disables_org_specific_extras" {
   }
 
   assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
+  }
+
+  assert {
     condition     = length(module.repo_settings) == 3
     error_message = "Shared repository settings must remain enabled."
   }
@@ -898,5 +933,132 @@ run "merge_hold_ruleset_follows_the_owner_config" {
       [for actor in github_organization_ruleset.merge_hold[0].bypass_actors : "${actor.actor_type}/${actor.bypass_mode}"] == ["OrganizationAdmin/pull_request"]
     )
     error_message = "merge-hold.yml must set the ruleset's enforcement, repositories, the merge-hold context and the admin bypass."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
+  }
+}
+
+run "review_runner_group_declared_for_jpe_ansible" {
+  command = plan
+
+  variables {
+    github_owner              = "jpe-ansible"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
+  }
+}
+
+run "review_runner_group_declared_for_jpe_cribl" {
+  command = plan
+
+  variables {
+    github_owner              = "jpe-cribl"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
+  }
+}
+
+run "review_runner_group_declared_for_jpe_nix" {
+  command = plan
+
+  variables {
+    github_owner              = "jpe-nix"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
+  }
+}
+
+run "review_runner_group_declared_for_jpe_splunk" {
+  command = plan
+
+  variables {
+    github_owner              = "jpe-splunk"
+    dryvist_org_extras        = false
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.allows_public_repositories &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      toset(github_actions_runner_group.pr_agent.selected_workflows) == toset(local.runner_group_defaults.selected_workflows)
+    )
+    error_message = "Every managed organisation must have exactly one pr-agent runner group with the shared review-runner settings."
   }
 }
