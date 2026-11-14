@@ -900,3 +900,68 @@ run "merge_hold_ruleset_follows_the_owner_config" {
     error_message = "merge-hold.yml must set the ruleset's enforcement, repositories, the merge-hold context and the admin bypass."
   }
 }
+
+run "fork_approval_defaults_to_all_external_contributors" {
+  command = plan
+
+  variables {
+    github_owner              = "tofu-test-fixture"
+    automation_bypass_app_ids = [1]
+    codeql_import_enabled     = false
+  }
+
+  override_data {
+    target = data.github_repositories.org
+    values = {
+      names = []
+    }
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = jsondecode(restapi_object.fork_pr_contributor_approval.data).approval_policy == "all_external_contributors"
+    error_message = "Fork pull-request workflows must require approval from all external contributors by default."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.default.name == "Default" &&
+      github_actions_runner_group.default.visibility == "all" &&
+      github_actions_runner_group.default.allows_public_repositories
+    )
+    error_message = "The built-in Default runner group must stay visible to all repositories and serve public ones."
+  }
+}
+
+run "invalid_fork_approval_policy_is_rejected" {
+  command = plan
+
+  variables {
+    github_owner                 = "tofu-test-fixture"
+    automation_bypass_app_ids    = [1]
+    codeql_import_enabled        = false
+    fork_pr_contributor_approval = "no_approval_required"
+  }
+
+  expect_failures = [var.fork_pr_contributor_approval]
+}
+
+run "public_default_runner_group_with_weaker_policy_is_rejected" {
+  command = plan
+
+  variables {
+    github_owner                                    = "tofu-test-fixture"
+    automation_bypass_app_ids                       = [1]
+    codeql_import_enabled                           = false
+    fork_pr_contributor_approval                    = "first_time_contributors"
+    default_runner_group_allows_public_repositories = true
+  }
+
+  expect_failures = [var.default_runner_group_allows_public_repositories]
+}

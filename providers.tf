@@ -36,3 +36,17 @@ provider "restapi" {
     "X-GitHub-Api-Version" = "2022-11-28"
   }
 }
+
+# Endpoints that answer 204 with no body on write: the default block above
+# would try to parse the missing response object.
+provider "restapi" {
+  alias                = "no_body"
+  uri                  = "https://api.github.com"
+  write_returns_object = false
+
+  headers = {
+    Authorization          = "Bearer ${ephemeral.vault_generic_endpoint.github_token.write_data["token"]}"
+    Accept                 = "application/vnd.github+json"
+    "X-GitHub-Api-Version" = "2022-11-28"
+  }
+}

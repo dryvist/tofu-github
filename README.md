@@ -36,6 +36,8 @@ once, and each workspace selects one organization and its own configuration.
 | `github_organization_ruleset.org_copilot_review` | Explicit Copilot review targets | `copilot-review.tf` |
 | `github_actions_organization_permissions.org` | Allowed Actions and SHA policy | `actions.tf` |
 | `github_actions_organization_workflow_permissions.org` | Default `GITHUB_TOKEN` permissions | `actions.tf` |
+| `restapi_object.fork_pr_contributor_approval` | Fork pull-request contributor approval policy | `actions-policy.tf` |
+| `github_actions_runner_group.default` | Default self-hosted runner group's repository reach | `actions-policy.tf` |
 | `module.repo_settings` | Repository settings | `repos.tf`, `modules/repo-settings/main.tf` |
 | `github_issue_label.org` | Labels read from the org's `.github` repo | `labels.tf` |
 | `github_actions_variable.iac_drift_enabled` | Per-repository IaC drift opt-in variable | `iac-drift.tf` |
@@ -83,11 +85,16 @@ required approving or CODEOWNER review. Disabled by default.
 
 All repositories and Actions are allowed. SHA pinning is not required so
 first-party references can use floating major-version tags. Workflow tokens
-default to read-only, and workflows cannot approve pull requests.
+default to read-only, and workflows cannot approve pull requests. Fork
+pull-request workflows from contributors always require approval before they
+can run.
 
 ### Runner groups
 
-The homelab runner role cannot use public repositories. The PR-Agent runner
+The homelab runner role cannot use public repositories. The built-in `Default`
+runner group serves every repository, public ones included, and the
+`default_runner_group_allows_public_repositories` variable refuses `true`
+unless fork workflows always face contributor approval. The PR-Agent runner
 group is enterprise-level and is not managed here.
 
 ### Manual-repo approval
