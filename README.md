@@ -49,10 +49,8 @@ set `require_extra_approval_for_unattributed_changes`.
 
 Repository settings cover every unarchived repo plus the always-managed public
 `.github` organization-defaults repo and private `.github-private` members-only
-profile repo. The optional `family` property is unset unless a repo's selected
-`config/orgs/<github_owner>/repos.yml` entry supplies a value. The selected
-`config/orgs/<github_owner>/ai-untrusted.yml` lists repos opted into lower-trust
-AI sandbox access.
+profile repo. The selected `config/orgs/<github_owner>/repos.yml` supplies per-repo
+overrides; `ai-untrusted.yml` lists repos opted into lower-trust AI sandbox access.
 
 ### Push protection
 
@@ -90,10 +88,9 @@ default to read-only, and workflows cannot approve pull requests.
 ### Runner groups
 
 The homelab runner role cannot use public repositories. The `pr-agent` runner
-group exists in every managed organization and sends jobs only to the review
-workflows listed in the required `review_runner_selected_workflows` variable
-(e.g. `example-org/example-repo/.github/workflows/review.yml@v1`), so
-self-hosted review runners never pick up unrelated jobs.
+group sends jobs only to the review workflows listed in the required
+`review_runner_selected_workflows` variable, so self-hosted review runners
+never pick up unrelated jobs.
 
 ### Manual-repo approval
 
@@ -127,15 +124,12 @@ allowed source branches, enforcement, and the hotfix flow.
 ### Branch-write restriction
 
 Only the GitHub Apps listed in `automation_bypass_app_ids` can create or
-update a branch other than `main`. Everyone else, org admins included, can
-open and merge pull requests into `main` but cannot push or create any other
-branch. The list is a required workspace variable with no default.
+update a branch other than `main`. Everyone else can open and merge pull
+requests into `main` but cannot push or create any other branch. The list is
+a required workspace variable with no default.
 
 Existing orgs adopt their live rulesets through these `import` blocks; IDs
-live in `config/orgs/<github_owner>/ruleset-imports.yml` (other orgs omit it):
-`org_branch_protection`, `org_review_gate`, `org_gitflow_main`,
-`org_gitflow_develop`, `org_automerge_manual`, `docs_publisher`,
-`org_upstream_fork_protection`, `required_signatures`.
+live in `config/orgs/<github_owner>/ruleset-imports.yml` (other orgs omit it).
 
 Org Actions variables and secrets are configured in the secret manager and
 synced to GitHub; this root does not manage them (`ai-variables.tf`). CodeQL
@@ -176,9 +170,8 @@ committed as a local template.
 
 `private_repo_overrides` is read from the protected OpenBao KV v2 document at
 `secret/infrastructure/tofu-github/private-overrides` for orgs whose merge-gate
-config requires private repos. Its optional `merge_gate` map carries
-required-check contexts for those repositories; the repo list is derived from
-each outer repo key.
+config requires private repos; its optional `merge_gate` map carries
+required-check contexts and the repo list is derived from each outer repo key.
 
 ## Installation
 
@@ -193,8 +186,7 @@ each outer repo key.
 
 - **A reachable Terrakube workspace.** State, locking, and remote execution
   come from the homelab Terrakube instance; the `tofu-github` workspace is
-  defined as code in the platform repo. The platform is deliberately not-24/7
-  — power its node on for off-hours work.
+  defined as code in the platform repo.
 
 - **One-time login per machine** (no keychain, no stored passwords). The
   `TF_CLOUD_*` coordinates (`TF_CLOUD_HOSTNAME`, `TF_CLOUD_ORGANIZATION`,

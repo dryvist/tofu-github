@@ -6,7 +6,7 @@ variable "markdown_lint_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.markdown_lint_enforcement)
-    error_message = "markdown_lint_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -17,7 +17,7 @@ variable "conventions_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.conventions_enforcement)
-    error_message = "conventions_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -28,7 +28,7 @@ variable "ai_review_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.ai_review_enforcement)
-    error_message = "ai_review_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -39,7 +39,7 @@ variable "docs_publisher_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.docs_publisher_enforcement)
-    error_message = "docs_publisher_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -50,7 +50,7 @@ variable "org_branch_protection_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_branch_protection_enforcement)
-    error_message = "org_branch_protection_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -61,7 +61,7 @@ variable "required_signatures_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.required_signatures_enforcement)
-    error_message = "required_signatures_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -72,7 +72,7 @@ variable "org_review_gate_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_review_gate_enforcement)
-    error_message = "org_review_gate_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -94,7 +94,7 @@ variable "org_gitflow_main_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_gitflow_main_enforcement)
-    error_message = "org_gitflow_main_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -105,7 +105,7 @@ variable "org_gitflow_develop_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_gitflow_develop_enforcement)
-    error_message = "org_gitflow_develop_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -116,7 +116,7 @@ variable "org_release_freeze_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_release_freeze_enforcement)
-    error_message = "org_release_freeze_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -127,7 +127,7 @@ variable "org_copilot_review_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_copilot_review_enforcement)
-    error_message = "org_copilot_review_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -138,7 +138,7 @@ variable "org_push_protection_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_push_protection_enforcement)
-    error_message = "org_push_protection_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -149,7 +149,7 @@ variable "org_code_scanning_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_code_scanning_enforcement)
-    error_message = "org_code_scanning_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -166,7 +166,7 @@ variable "org_merge_gate_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_merge_gate_enforcement)
-    error_message = "org_merge_gate_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -177,7 +177,7 @@ variable "merge_gate_strict_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.merge_gate_strict_enforcement)
-    error_message = "merge_gate_strict_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -188,7 +188,7 @@ variable "org_upstream_fork_protection_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_upstream_fork_protection_enforcement)
-    error_message = "org_upstream_fork_protection_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -199,7 +199,7 @@ variable "org_branch_write_restriction_enforcement" {
 
   validation {
     condition     = contains(["disabled", "evaluate", "active"], var.org_branch_write_restriction_enforcement)
-    error_message = "org_branch_write_restriction_enforcement must be one of: disabled, evaluate, active."
+    error_message = "Use disabled, evaluate or active."
   }
 }
 
@@ -209,7 +209,7 @@ variable "automation_bypass_app_ids" {
 
   validation {
     condition     = length(var.automation_bypass_app_ids) > 0
-    error_message = "automation_bypass_app_ids must list at least one GitHub App ID."
+    error_message = "List at least one GitHub App ID."
   }
 }
 
@@ -225,7 +225,7 @@ variable "review_runner_selected_workflows" {
       for workflow in var.review_runner_selected_workflows :
       can(regex("^[^/]+/[^/]+/\\.github/workflows/[^@]+@.+$", workflow))
     ])
-    error_message = "review_runner_selected_workflows must list at least one org/repo/.github/workflows/file.yml@ref."
+    error_message = "List at least one org/repo/.github/workflows/file.yml@ref."
   }
 }
 
