@@ -13,3 +13,15 @@ moved {
   from = github_actions_runner_group.homelab
   to   = github_actions_runner_group.homelab[0]
 }
+
+# Review runners register into this organization runner group, declared in
+# every workspace this root manages. Jobs come only from the workspace-selected
+# review workflows; the group is open to all repositories so those workflows
+# run on public and private repositories alike.
+resource "github_actions_runner_group" "pr_agent" {
+  name                       = "pr-agent"
+  visibility                 = "all"
+  allows_public_repositories = true
+  restricted_to_workflows    = true
+  selected_workflows         = var.review_runner_selected_workflows
+}

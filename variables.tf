@@ -251,6 +251,24 @@ variable "automation_bypass_app_ids" {
   }
 }
 
+# Self-hosted review runners register into the pr-agent runner group, which
+# only sends jobs to the workflows listed here. The review workflow lives in a
+# repository selected per workspace outside this repository.
+variable "review_runner_selected_workflows" {
+  description = <<-EOT
+    Required workspace list with no default: workflow refs in org/repo/.github/workflows/file.yml@ref form that may send jobs to the pr-agent runner group. Review runners register into that group, so every review workflow must be listed or its jobs find no runner.
+  EOT
+  type        = list(string)
+
+  validation {
+    condition = length(var.review_runner_selected_workflows) > 0 && alltrue([
+      for workflow in var.review_runner_selected_workflows :
+      can(regex("^[^/]+/[^/]+/\\.github/workflows/[^@]+@.+$", workflow))
+    ])
+    error_message = "review_runner_selected_workflows must list at least one org/repo/.github/workflows/file.yml@ref."
+  }
+}
+
 # Workspace selectors.
 variable "github_owner" {
   description = "GitHub org login to manage: 1-39 letters, digits, or hyphens."

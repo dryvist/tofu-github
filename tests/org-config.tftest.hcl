@@ -91,9 +91,10 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
   command = plan
 
   variables {
-    github_owner              = "JacobPEvans"
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "JacobPEvans"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -164,6 +165,17 @@ run "empty_non_dryvist_config_plans_from_live_repo_data" {
       github_actions_runner_group.pr_reconcile[0].allows_public_repositories
     )
     error_message = "The PR Reconcile runner group must be limited to the sweep repository and its two main-branch workflows."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
   }
 
   assert {
@@ -242,9 +254,10 @@ run "main_from_renovate_preset_is_configured_as_default" {
   command = plan
 
   variables {
-    github_owner              = "tofu-test-fixture"
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "tofu-test-fixture"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -290,16 +303,28 @@ run "main_from_renovate_preset_is_configured_as_default" {
     condition     = yamldecode(file("${path.module}/config/orgs/dryvist/repos.yml")).repos["ai-cli-permissions"].main_from_renovate_preset
     error_message = "The first repo must select the shared main-branch bootstrap through its org config."
   }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
 }
 
 run "required_workflow_gates_follow_the_owner_config" {
   command = plan
 
   variables {
-    github_owner              = "tofu-test-fixture"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "tofu-test-fixture"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -359,10 +384,11 @@ run "derives_ci_gate_property_from_default_branch_workflow_call" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -409,10 +435,11 @@ run "skips_ci_gate_branch_read_on_empty_repo" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -451,10 +478,11 @@ run "derives_ci_gate_from_sha_pinned_org_home_caller" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -501,10 +529,11 @@ run "ignores_ci_gate_caller_under_other_job_id" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -551,10 +580,11 @@ run "private_merge_gate_repos_share_one_gate" {
   command = plan
 
   variables {
-    github_owner              = "tofu-test-fixture"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "tofu-test-fixture"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -578,12 +608,13 @@ run "placeholder_org_disables_org_specific_extras" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = false
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
-    hermes_webhook_url        = "https://example.invalid/hook"
-    hermes_webhook_secret     = "test-secret"
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = false
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+    hermes_webhook_url               = "https://example.invalid/hook"
+    hermes_webhook_secret            = "test-secret"
   }
 
   override_data {
@@ -645,10 +676,11 @@ run "required_workflow_rulesets_use_default_enforcement" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = true
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = true
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -696,11 +728,12 @@ run "event_forwarder_is_independently_opted_in" {
   command = plan
 
   variables {
-    github_owner              = "example-org"
-    dryvist_org_extras        = false
-    event_forwarder_enabled   = true
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "example-org"
+    dryvist_org_extras               = false
+    event_forwarder_enabled          = true
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -737,9 +770,10 @@ run "merge_gate_strict_exempts_only_listed_apps" {
   command = plan
 
   variables {
-    github_owner              = "tofu-test-fixture"
-    dryvist_org_extras        = true
-    automation_bypass_app_ids = [1]
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "tofu-test-fixture"
+    dryvist_org_extras               = true
+    automation_bypass_app_ids        = [1]
   }
 
   override_data {
@@ -804,10 +838,11 @@ run "event_queue_webhook_created_when_enabled_with_intake_records" {
   command = plan
 
   variables {
-    github_owner                = "tofu-test-fixture"
-    dryvist_org_extras          = true
-    automation_bypass_app_ids   = [1]
-    event_queue_webhook_enabled = true
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "tofu-test-fixture"
+    dryvist_org_extras               = true
+    automation_bypass_app_ids        = [1]
+    event_queue_webhook_enabled      = true
   }
 
   override_data {
@@ -865,9 +900,10 @@ run "merge_hold_ruleset_follows_the_owner_config" {
   command = plan
 
   variables {
-    github_owner              = "JacobPEvans-ai"
-    automation_bypass_app_ids = [1]
-    codeql_import_enabled     = false
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "JacobPEvans-ai"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
   }
 
   override_data {
@@ -899,4 +935,213 @@ run "merge_hold_ruleset_follows_the_owner_config" {
     )
     error_message = "merge-hold.yml must set the ruleset's enforcement, repositories, the merge-hold context and the admin bypass."
   }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
+}
+
+# One pr-agent runner group per managed organisation, every one equal to
+# the same settings, with the workflow refs taken from the workspace input.
+run "pr_agent_group_declared_for_dryvist" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "dryvist"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = local.org == "dryvist"
+    error_message = "The selected org must come from the workspace owner."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
+}
+
+run "pr_agent_group_declared_for_jpe_ansible" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "jpe-ansible"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = local.org == "jpe-ansible"
+    error_message = "The selected org must come from the workspace owner."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
+}
+
+run "pr_agent_group_declared_for_jpe_cribl" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "jpe-cribl"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = local.org == "jpe-cribl"
+    error_message = "The selected org must come from the workspace owner."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
+}
+
+run "pr_agent_group_declared_for_jpe_nix" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "jpe-nix"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = local.org == "jpe-nix"
+    error_message = "The selected org must come from the workspace owner."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
+}
+
+run "pr_agent_group_declared_for_jpe_splunk" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = ["example-org/example-repo/.github/workflows/review.yml@v1"]
+    github_owner                     = "jpe-splunk"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  override_data {
+    target = data.github_repositories.existing
+    values = {
+      names = []
+    }
+  }
+
+  assert {
+    condition     = local.org == "jpe-splunk"
+    error_message = "The selected org must come from the workspace owner."
+  }
+
+  assert {
+    condition = (
+      github_actions_runner_group.pr_agent.name == "pr-agent" &&
+      github_actions_runner_group.pr_agent.visibility == "all" &&
+      github_actions_runner_group.pr_agent.restricted_to_workflows &&
+      github_actions_runner_group.pr_agent.selected_workflows == var.review_runner_selected_workflows &&
+      github_actions_runner_group.pr_agent.allows_public_repositories
+    )
+    error_message = "The pr-agent runner group must exist once per managed organisation with the shared settings, taking jobs only from the workspace-selected review workflows."
+  }
+}
+
+run "rejects_empty_review_workflow_list" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = []
+    github_owner                     = "example-org"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  expect_failures = [var.review_runner_selected_workflows]
+}
+
+run "rejects_malformed_review_workflow_ref" {
+  command = plan
+
+  variables {
+    review_runner_selected_workflows = ["example-org/example-repo/review.yml@v1"]
+    github_owner                     = "example-org"
+    automation_bypass_app_ids        = [1]
+    codeql_import_enabled            = false
+  }
+
+  expect_failures = [var.review_runner_selected_workflows]
 }
